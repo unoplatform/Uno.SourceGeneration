@@ -1,0 +1,21 @@
+image: Visual Studio 2017
+
+branches:
+  only:
+  - master
+
+nuget:
+  disable_publish_on_pr: true
+  
+skip_commits:
+  files:
+    - 'doc/**/*.*'  
+
+init:
+- ps: git config --global core.autocrlf true
+
+build_script:
+- ps: .\build\build.ps1 -Script="build\build.cake"
+
+artifacts:
+- path: .\build\*.nupkg
