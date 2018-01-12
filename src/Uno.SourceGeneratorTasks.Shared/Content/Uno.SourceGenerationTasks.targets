@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<PropertyGroup>
+		<UnoSourceGeneratorTasksPath Condition="'$(UnoSourceGeneratorTasksPath)'=='' and '$(MSBuildToolsVersion)'=='14.0'">..\Dev14.0</UnoSourceGeneratorTasksPath>
+		<UnoSourceGeneratorTasksPath Condition="'$(UnoSourceGeneratorTasksPath)'=='' and '$(MSBuildToolsVersion)'=='15.0'">..\Dev15.0</UnoSourceGeneratorTasksPath>
+
+		<_UnoSourceGeneratorOutputPath Condition="'$(UnoSourceGeneratorOutputPath)'==''">$(IntermediateOutputPath)</_UnoSourceGeneratorOutputPath>
+		<_UnoSourceGeneratorOutputPath Condition="'$(UnoSourceGeneratorOutputPath)'!=''">$(UnoSourceGeneratorOutputPath)</_UnoSourceGeneratorOutputPath>
+
+		<_UnoSourceGeneratorCacheFile>$(_UnoSourceGeneratorOutputPath)\g\generation.cache</_UnoSourceGeneratorCacheFile>
+
+		<_UnoSourceGeneratorProjectType Condition="'$(ProjectTypeGuids)'=='{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}'">ios</_UnoSourceGeneratorProjectType>
+		<_UnoSourceGeneratorProjectType Condition="'$(ProjectTypeGuids)'=='{A3F8F2AB-B479-4A4A-A458-A89E7DC349F1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}'">mac</_UnoSourceGeneratorProjectType>
+		<_UnoSourceGeneratorProjectType Condition="'$(ProjectTypeGuids)'=='{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}'">android</_UnoSourceGeneratorProjectType>
+		<_UnoSourceGeneratorProjectType Condition="'$(ProjectTypeGuids)'=='{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}'">uap</_UnoSourceGeneratorProjectType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<UnoSourceGeneratorBeforeTarget Include="XamlPreCompile" />
+		<UnoSourceGeneratorBeforeTarget Include="CoreCompile" />
+
+		<SourceGeneratorInput Include="@(Compile)" />
+		<SourceGeneratorInput Include="@(Content)" />
+		<SourceGeneratorInput Include="@(None)" />
+	</ItemGroup>
+
+	<UsingTask AssemblyFile="$(UnoSourceGeneratorTasksPath)\Uno.SourceGeneratorTasks.v0.dll" TaskName="Uno.SourceGeneratorTasks.SourceGenerationTask_v0" />
+
+	<Target Name="UnoSourceGeneratorClean"
+					BeforeTargets="Clean">
+		<RemoveDir Directories="$(UnoSourceGeneratorOutputPath)\g" />
+	</Target>
+
+	<Target Name="_InjectGeneratedFiles"
+					BeforeTargets="ResolveNuGetPackageAssets;BeforeCompile"
+					Condition="('$(BuildingProject)' == 'false' or '$(DesignTimeBuild)' == 'true') and '$(BuildingInsideUnoSourceGenerator)' == ''">
+
+		<!-- 
+		This target is used to temporarily include generated files to help intellisense 
+		make sense of generated code.
+		-->
+
+		<ReadLinesFromFile File="$(_UnoSourceGeneratorCacheFile)">
+			<Output
+					TaskParameter="Lines"
+					ItemName="GeneratedFilesCachedItems"/>
+		</ReadLinesFromFile>
+
+		<ItemGroup>
+			<Compile Include="@(GeneratedFilesCachedItems)" />
+		</ItemGroup>
+
+	</Target>
+
+	<Target Name="_UnoSourceGenerator"
+					Condition="'$(BuildingProject)' == 'true' and '$(BuildingInsideUnoSourceGenerator)' == '' and '$(DesignTimeBuild)' != 'true'"
+					BeforeTargets="@(UnoSourceGeneratorBeforeTarget)"
+					Inputs="@(SourceGeneratorInput)" Outputs="$(_UnoSourceGeneratorCacheFile)">
+		<!-- 
+		This target must run before "CoreCompile" otherwise the dependencies
+		for the current project will not be built before the source generator runs.
+		-->
+
+		<PropertyGroup Condition="'$(SourceGeneratorTargetFramework)'==''">
+			<SourceGeneratorTargetFramework>$(TargetFramework)</SourceGeneratorTargetFramework>
+
+			<!-- 
+			  "Legacy" projects required that the TargetFramework property to be set for 
+			  references to be resolved properly.
+			 -->
+			<SourceGeneratorTargetFramework Condition="'$(_UnoSourceGeneratorProjectType)'=='uap'">uap10.0</SourceGeneratorTargetFramework>
+			<SourceGeneratorTargetFramework Condition="'$(_UnoSourceGeneratorProjectType)'=='ios'">xamarinios10</SourceGeneratorTargetFramework>
+			<SourceGeneratorTargetFramework Condition="'$(_UnoSourceGeneratorProjectType)'=='mac'">xamarinmac20</SourceGeneratorTargetFramework>
+			<SourceGeneratorTargetFramework Condition="'$(_UnoSourceGeneratorProjectType)'=='android'">monoandroid$(TargetFrameworkVersion.Trim('v').Replace('.', ''))</SourceGeneratorTargetFramework>
+		</PropertyGroup>
+
+		<PropertyGroup>
+
+			<!-- Don't spin up the generators task if there are no source generators -->
+			<_hasSourceGenerators>true</_hasSourceGenerators>
+			<_hasSourceGenerators Condition="'@(SourceGenerator)'=='' and '$(VisualStudioVersion)' &gt; '15.0'">false</_hasSourceGenerators>
+		</PropertyGroup>
+
+		<PropertyGroup Condition="'$(_UnoSourceGeneratorProjectType)'=='ios' or '$(_UnoSourceGeneratorProjectType)'=='mac'">
+			<!-- 
+			Workaround until we can determine where the logic behind `TargetFrameworkRootPathSearchPathsOSX` 
+			is defined, to be applied in a roslyn based project loading.
+			The TargetFrameworkRootPathSearchPathsOSX variable is defined in MSBuild.dll config sections on OSX.
+			-->
+			<SourceGeneratorTargetFrameworkRootPath>$(TargetFrameworkRootPath)</SourceGeneratorTargetFrameworkRootPath>
+			<SourceGeneratorTargetFrameworkRootPath Condition="'$(SourceGeneratorTargetFrameworkRootPath)'==''">$(TargetFrameworkRootPathSearchPathsOSX)</SourceGeneratorTargetFrameworkRootPath>
+		</PropertyGroup>
+
+		<SourceGenerationTask_v0 ProjectFile="$(MSBuildProjectFullPath)"
+													OutputPath="$(_UnoSourceGeneratorOutputPath)\g"
+													Configuration="$(Configuration)"
+													SourceGenerators="@(SourceGenerator)"
+													Platform="$(Platform)"
+													VisualStudioVersion="$(VisualStudioVersion)"
+													TargetFramework="$(SourceGeneratorTargetFramework)"
+													TargetFrameworkRootPath="$(TargetFrameworkRootPath)"
+													AdditionalAssemblies="@(SourceGeneratorAdditionalAssemblies)"
+													Condition="$(_hasSourceGenerators)">
+			<Output TaskParameter="GenereratedFiles" ItemName="UnoGeneratedFiles" />
+		</SourceGenerationTask_v0>
+
+		<Message Condition="$(_hasSourceGenerators)" Text="Generated files @(UnoGeneratedFiles)" />
+
+		<ItemGroup Condition="$(_hasSourceGenerators)">
+			<Compile Include="@(UnoGeneratedFiles)" />
+		</ItemGroup>
+
+		<WriteLinesToFile
+				Condition="'@(UnoGeneratedFiles)'!='' and $(_hasSourceGenerators)"
+				File="$(_UnoSourceGeneratorCacheFile)"
+				Lines="@(UnoGeneratedFiles)"
+				Overwrite="true" />
+
+	</Target>
+	
+	<Target Name="_FillSourceGeneratorInput"
+					BeforeTargets="_UnoSourceGenerator">
+
+		<!-- 
+		Capture the source generator input before executing _UnoSourceGenerator, and not as a global itemgroup.
+		Global itemgroups are executed too early, and Compile, Content and None groups 
+		are not available at this time.
+		-->
+		<ItemGroup>
+			<SourceGeneratorInput Include="@(Compile)" />
+			<SourceGeneratorInput Include="@(Content)" />
+			<SourceGeneratorInput Include="@(None)" />
+			<SourceGeneratorInput Include="@(Reference)" />
+			<SourceGeneratorInput Include="@(PackageReference)" />
+			<SourceGeneratorInput Include="@(ProjectReference)" />
+		</ItemGroup>
+	</Target>
+
+</Project>

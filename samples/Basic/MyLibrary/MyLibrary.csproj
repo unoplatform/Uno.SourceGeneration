@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net46</TargetFramework>
+  </PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Uno.SourceGenerationTasks" Version="1.5.0" />
+	</ItemGroup>
+
+	<Import Project="..\MyGenerator\build\MyGenerator.props" />
+
+</Project>
