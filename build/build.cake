@@ -25,7 +25,7 @@ var signClientVersion = "0.9.0";
 
 var baseDir = MakeAbsolute(Directory("../")).ToString();
 var buildDir = baseDir + "/build";
-var Solution = baseDir + "/../src/Uno.SourceGenerator.sln";
+var Solution = baseDir + "/src/Uno.SourceGenerator.sln";
 var toolsDir = buildDir + "/tools";
 GitVersion versionInfo = null;
 
@@ -91,6 +91,15 @@ Task("Build")
     Information("\nBuilding Solution");
 
     var buildSettings = new MSBuildSettings
+    {
+        MaxCpuCount = 1
+    }
+    .SetConfiguration("Release")
+    .WithTarget("Restore");
+	
+	MSBuild(Solution, buildSettings);
+
+    buildSettings = new MSBuildSettings
     {
         MaxCpuCount = 1
     }
