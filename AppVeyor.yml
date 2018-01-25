@@ -4,6 +4,9 @@ branches:
   only:
   - master
 
+# Don't create a build when a PR is opened
+skip_branch_with_pr: true
+
 nuget:
   disable_publish_on_pr: true
   
@@ -19,3 +22,11 @@ build_script:
 
 artifacts:
 - path: .\build\*.nupkg
+
+deploy:
+  provider: NuGet
+  server:                  # remove to push to NuGet.org
+  api_key:
+    secure: IkXtar7GUlIHtb4exXwdX6TjQA52w9rP7Gw+VwawieVu/frS0nP/RHf+umjWbINk
+  skip_symbols: true
+  artifact: /.*\.nupkg/
