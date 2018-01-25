@@ -1,4 +1,4 @@
-// ******************************************************************
+﻿// ******************************************************************
 // Copyright � 2015-2018 nventive inc. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,23 +18,25 @@ using Uno.SourceGeneration;
 
 namespace Uno.SampleGenerators
 {
-	public class MyCustomSourceGenerator : SourceGenerator
+	[SourceGeneratorDependency("Uno.SampleGenerators.MyCustomSourceGenerator")]
+	[SourceGeneratorDependency("Uno.SampleGenerators.UselessGenerator")]
+	public class AnotherCustomSourceGenerator : SourceGenerator
 	{
 		public override void Execute(SourceGeneratorContext context)
 		{
 			var project = context.GetProjectInstance();
 
 			context.AddCompilationUnit(
-				"Test",
+				"Test2",
 				$@"
 namespace Test {{
-	public static class MyGeneratedType 
+	public static class MyGeneratedType2
 	{{
 		// Project: {project?.FullPath}
-		public const string Project = @""{ project?.FullPath}"";
+		// reusing the compiled code form other generator
+		public const string Project = MyGeneratedType.Project;
 	}}
-}}"
-			);
+}}");
 		}
 	}
 }

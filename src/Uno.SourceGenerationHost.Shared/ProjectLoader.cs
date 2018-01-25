@@ -297,9 +297,8 @@ namespace Uno.SourceGeneration.Host
 
 				try
 				{
-					ResolveEventHandler localResolve = (s, e) =>
+					Assembly LocalResolve(object s, ResolveEventArgs e)
 					{
-
 						var assemblyName = new AssemblyName(e.Name).Name;
 
 						if (assemblyName == "Uno.SourceGeneration")
@@ -310,11 +309,11 @@ namespace Uno.SourceGeneration.Host
 						{
 							return Assembly.LoadFile(Path.Combine(assemblyDirectory, assemblyName + ".dll"));
 						}
-					};
+					}
 
 					try
 					{
-						AppDomain.CurrentDomain.AssemblyResolve += localResolve;
+						AppDomain.CurrentDomain.AssemblyResolve += LocalResolve;
 
 						// Use LoadFrom and not LoadFile, in order for the AppDomain shadowing
 						// to function properly.
@@ -333,7 +332,7 @@ namespace Uno.SourceGeneration.Host
 					}
 					finally
 					{
-						AppDomain.CurrentDomain.AssemblyResolve -= localResolve;
+						AppDomain.CurrentDomain.AssemblyResolve -= LocalResolve;
 					}
 				}
 				catch (Exception e)

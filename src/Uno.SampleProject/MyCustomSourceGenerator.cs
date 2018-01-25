@@ -14,23 +14,15 @@
 // limitations under the License.
 //
 // ******************************************************************
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Uno.SampleProject
 { 
 	public class MyCustomSourceGenerator 
 	{ 
-		Test.MyGeneratedType _test;  
-		 
 		public MyCustomSourceGenerator() 
 		{ 
-			_test = null;
-			_test.ToString();     
-		}   
+			Debug.WriteLine(Test.MyGeneratedType2.Project);
+		}
 	}
 }
-    
