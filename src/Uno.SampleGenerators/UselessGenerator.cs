@@ -1,4 +1,4 @@
-// ******************************************************************
+﻿// ******************************************************************
 // Copyright � 2015-2018 nventive inc. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,22 +14,15 @@
 // limitations under the License.
 //
 // ******************************************************************
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Uno.SourceGeneration;
 
-namespace Uno.SampleProject
+namespace Uno.SampleGenerators
 {
-	public class MyCustomSourceGenerator
+	public class UselessGenerator : SourceGenerator
 	{
-		Test.MyGeneratedType _test;
-
-		public MyCustomSourceGenerator()
+		public override void Execute(SourceGeneratorContext context)
 		{
-			_test = null;
-			_test.ToString();
+			// To honor its name, it must do nothing :-)
 		}
 	}
 }

@@ -68,8 +68,10 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AnotherCustomSourceGenerator.cs" />
     <Compile Include="MyCustomSourceGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UselessGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Uno.SourceGeneration\Uno.SourceGeneration.csproj">

@@ -34,6 +34,7 @@ using Uno.SourceGeneratorTasks.Helpers;
 using MSB = Microsoft.Build;
 using MSBE = Microsoft.Build.Execution;
 using Microsoft.Extensions.Logging;
+using Uno.SourceGeneration.host.Helpers;
 using Uno.SourceGeneratorTasks;
 
 namespace Uno.SourceGeneration.Host
@@ -64,84 +65,132 @@ namespace Uno.SourceGeneration.Host
 				return new string[0];
 			}
 
-			var compilationResult = GetCompilation(details).Result;
+			var compilationResult = GetCompilation().Result;
 
 			if (this.Log().IsEnabled(LogLevel.Debug))
 			{
 				this.Log().Debug($"Got compilation after {globalExecution.Elapsed}");
 			}
 
-			var generatorResults = details.Generators
-				.AsParallel()
-				.Select(generatorDef =>
-				{
-                    var generator = generatorDef.builder();
+			// Build dependencies graph
+			var generatorsByName = details.Generators.ToDictionary(g => g.generatorType.FullName);
+			var generatorNames = generatorsByName.Keys;
 
-					try
-					{
-						var context = new InternalSourceGeneratorContext(compilationResult.Item1, compilationResult.Item2);
-						context.SetProjectInstance(details.ExecutedProject);
+			// Dependencies list, in the form (before, after)
+			var dependencies = details.Generators
+				.Select(g => g.generatorType)
+				.SelectMany(t => t.GetCustomAttributes<SourceGeneratorDependencyAttribute>()
+					.Select(a => a.DependsOn)
+					.Intersect(generatorNames, StringComparer.InvariantCultureIgnoreCase)
+					.Select(dependency => ((string incoming, string outgoing)) (t.FullName, dependency)))
+				.Where(x => x.incoming != x.outgoing)
+				.Distinct()
+				.ToList();
 
-						var w = Stopwatch.StartNew();
-						generator.Execute(context);
+			var groupedGenerators = generatorNames.GroupSort(dependencies);
 
-						if (this.Log().IsEnabled(LogLevel.Debug))
-						{
-							this.Log().Debug($"Ran {w.Elapsed} for [{generator.GetType()}]");
-						}
-
-						return new
-						{
-							Generator = generator,
-							Context = context
-						};
-					}
-					catch (Exception e)
-					{
-						// Wrap the exception into a string to avoid serialization issue when 
-						// parts of the stack are coming from an assembly the msbuild task is 
-						// not able to load properly.
-
-						throw new InvalidOperationException($"Generation failed for {generator.GetType()}. {e}");
-					}
-				})
-				.ToArray();
-
-			var files = from result in generatorResults
-						from tree in result.Context.Trees
-						select new
-						{
-							FilePath = Path.Combine(_environment.OutputPath ?? details.IntermediatePath, BuildTreeFileName(result.Generator, tree.Key)),
-							Content = tree.Value
-						};
-
-			files = files.ToArray();
-
-			foreach (var file in files)
+			if (groupedGenerators == null)
 			{
-				Directory.CreateDirectory(Path.GetDirectoryName(file.FilePath));
+				this.Log().Error($"There is a cyclic dependency in the generators:\n\t{dependencies.Select(d => $"{d.incoming} -> {d.outgoing}").JoinBy("\n\t")}");
+				return new string[0];
+			}
 
-				if (File.Exists(file.FilePath))
+			if (dependencies.Any())
+			{
+				this.Log().Info($"Generators Dependencies:\n\t{dependencies.Select(d => $"{d.incoming} -> {d.outgoing}").JoinBy("\n\t")}");
+			}
+
+			// Run
+			var output = new List<string>();
+			(string filePath, string content)[] generatedFilesAndContent = null;
+
+			foreach (var group in groupedGenerators)
+			{
+				if (generatedFilesAndContent != null)
 				{
-					if (File.ReadAllText(file.FilePath).SequenceEqual(file.Content))
-					{
-						if (this.Log().IsEnabled(LogLevel.Information))
-						{
-							this.Log().Info($"Skipping generated file with same content: {file.FilePath}");
-						}
-
-						continue;
-					}
-					else
-					{
-						if (this.Log().IsEnabled(LogLevel.Information))
-						{
-							this.Log().Info($"Overwriting generated file with different content: {file.FilePath}");
-						}
-					}
+					// We must recompile with the generated files of the previous group
+					compilationResult = AddToCompilation(compilationResult, generatedFilesAndContent).Result;
 				}
 
-				File.WriteAllText(file.FilePath, file.Content);
+				if (this.Log().IsEnabled(LogLevel.Debug))
+				{
+					this.Log().Debug($"Running concurrently the following generators: {group.JoinBy(", ")}");
+				}
+
+				var generators = details.Generators.Where(g => group.Contains(g.generatorType.FullName));
+
+				var generatorResults = generators
+					.AsParallel()
+					.Select(generatorDef =>
+					{
+						var generator = generatorDef.builder();
+
+						try
+						{
+							var context = new InternalSourceGeneratorContext(compilationResult.compilation, compilationResult.project);
+							context.SetProjectInstance(details.ExecutedProject);
+
+							var w = Stopwatch.StartNew();
+							generator.Execute(context);
+
+							if (this.Log().IsEnabled(LogLevel.Debug))
+							{
+								this.Log().Debug($"Ran {w.Elapsed} for [{generator.GetType()}]");
+							}
+
+							return new
+							{
+								Generator = generator,
+								Context = context
+							};
+						}
+						catch (Exception e)
+						{
+							// Wrap the exception into a string to avoid serialization issue when 
+							// parts of the stack are coming from an assembly the msbuild task is 
+							// not able to load properly.
+
+							throw new InvalidOperationException($"Generation failed for {generator.GetType()}. {e}");
+						}
+					})
+					.ToArray();
+
+				generatedFilesAndContent = (from result in generatorResults
+						from tree in result.Context.Trees
+						select (
+							Path.Combine(_environment.OutputPath ?? details.IntermediatePath, BuildTreeFileName(result.Generator, tree.Key)),
+							tree.Value)
+					)
+					.ToArray();
+
+				foreach (var file in generatedFilesAndContent)
+				{
+					Directory.CreateDirectory(Path.GetDirectoryName(file.filePath));
+
+					if (File.Exists(file.filePath))
+					{
+						if (File.ReadAllText(file.filePath).SequenceEqual(file.content))
+						{
+							if (this.Log().IsEnabled(LogLevel.Information))
+							{
+								this.Log().Info($"Skipping generated file with same content: {file.filePath}");
+							}
+
+							continue;
+						}
+						else
+						{
+							if (this.Log().IsEnabled(LogLevel.Information))
+							{
+								this.Log().Info($"Overwriting generated file with different content: {file.filePath}");
+							}
+						}
+					}
+
+					File.WriteAllText(file.filePath, file.content);
+				}
+
+				output.AddRange(generatedFilesAndContent.Select(f => f.filePath));
 			}
 
 			if (this.Log().IsEnabled(LogLevel.Debug))
@@ -149,7 +198,7 @@ namespace Uno.SourceGeneration.Host
 				this.Log().Debug($"Code generation ran for {globalExecution.Elapsed}");
 			}
 
-			return files.Select(f => f.FilePath).ToArray();
+			return output.ToArray();
 		}
 
 		private string BuildTreeFileName(SourceGenerator generator, string key)
@@ -168,7 +217,7 @@ namespace Uno.SourceGeneration.Host
 			return Path.Combine(generator.GetType().Name, key + $".g.cs");
 		}
 
-		private async Task<Tuple<Compilation, Project>> GetCompilation(ProjectDetails details)
+		private async Task<(Compilation compilation, Project project)> GetCompilation()
 		{
 			try
 			{
@@ -251,7 +300,7 @@ namespace Uno.SourceGeneration.Host
 				// unbound NRE later during the execution when calling this exact same method;
 				SyntaxFactory.ParseStatement("");
 
-				return Tuple.Create(compilation, project);
+				return (compilation, project);
 			}
 			catch (Exception e)
 			{
@@ -268,6 +317,20 @@ namespace Uno.SourceGeneration.Host
 					throw new InvalidOperationException(e.ToString());
 				}
 			}
+		}
+
+		private async Task<(Compilation compilation, Project project)> AddToCompilation(
+			(Compilation compilation, Project project) previousCompilation,
+			IEnumerable<(string name, string content)> files)
+		{
+			var (_, project) = previousCompilation;
+
+			foreach (var (name, content) in files)
+			{
+				project = project.AddDocument(name, content, filePath: name).Project;
+			}
+
+			return (await project.GetCompilationAsync(), project);
 		}
 
 		private Project RemoveGeneratedDocuments(Project project)

@@ -112,7 +112,9 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MyCustomSourceGenerator.cs" />
+    <Compile Include="..\Uno.SampleProject\MyCustomSourceGenerator.cs">
+      <Link>MyCustomSourceGenerator.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Properties\Uno.SampleProject.UWP.rd.xml" />
   </ItemGroup>

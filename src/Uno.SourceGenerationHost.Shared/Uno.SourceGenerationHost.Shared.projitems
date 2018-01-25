@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\BuildTargets.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\TaskLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\TaskLoggerProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\TopologicalSorting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InternalSourceGeneratorContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ProjectDetails.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ProjectLoader.cs" />
