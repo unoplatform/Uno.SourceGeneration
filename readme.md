@@ -1,5 +1,5 @@
 # Uno SourceGenerator
-The Uno source generator is a API compatible source generator inspired 
+The Uno source generator is an API compatible source generator inspired 
 by [Roslyn v2.0 source generation feature](https://github.com/dotnet/roslyn/blob/12bd769ebcd3121b88f535e8559f5a42d9c0e873/docs/features/generators.md), and an
 msbuild task which executes the SourceGenerators.
 
@@ -9,7 +9,16 @@ Using this generator allows for a set of generators to share the same Roslyn com
 
 The `Uno.SourceGeneratorTasks` support updating generators on the fly, making iterative development easier as visual studio or MSBuild will not lock the generator's assemblies.
 
-The `Uno.SourceGeneratorTasks` support any target framework for code generation, though there are limitations when [using a mixed targetframeworks graph](https://github.com/dotnet/roslyn/issues/23114), such as generating code in a `net47` project that references a `netstandard2.0` project. In such cases, prefer adding a `net47` target instead of targeting `netstandard2.0`.
+The `Uno.SourceGeneratorTasks` support any target framework for code generation, though there are limitations when [using a mixed targetframeworks graph](https://github.com/dotnet/roslyn/issues/23114), such as generating code 
+in a `net47` project that references a `netstandard2.0` project. In such cases, prefer adding a `net47` target instead of targeting `netstandard2.0`.
+
+Visual Studio 2017 15.3+ for Windows and macOS are supported.
+
+## Build status
+
+| Target | Branch | Status | Recommended Nuget packages version |
+| ------ | ------ | ------ | ------ |
+| development | master |[![Build status](https://ci.appveyor.com/api/projects/status/0jsq4wg0ce7a5rqu/branch/master?svg=true)](https://ci.appveyor.com/project/nventivedevops/uno-sourcegeneration/branch/master) | [![NuGet](https://img.shields.io/nuget/v/Uno.SourceGenerationTasks.svg)](https://www.nuget.org/packages/Uno.SourceGenerationTasks/) [![NuGet](https://img.shields.io/nuget/v/Uno.SourceGeneration.svg)](https://www.nuget.org/packages/Uno.SourceGeneration/) |
 
 ## Creating a Source Generator
 
