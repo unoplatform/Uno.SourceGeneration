@@ -135,8 +135,15 @@ This will open another visual studio instance, and allow for stepping through th
 * Generators should have the least possible external dependencies.
   Generators are loaded in a separate `AppDomain` but multiple assemblies versions can be
   troublesome when loaded side by side.
-* A generator currently cannot depend on another generator. When a project is loaded to be
-  analyzed, all generated files are excluded from the roslyn `Compilation`, meaning that if
+* You can add a dependency on your generator by adding the `Uno.SourceGeneration.SourceGeneratorDependency`
+  attribute on your class:
+	```csharp
+	[SourceGeneratorDependency("Uno.ImmutableGenerator")]
+	public class EqualityGenerator : SourceGenerator
+	```
+  For instance here, it will ensure that the `ImmutableGenerator` is executed before your `EqualityGenerator`.
+  If you don't declare those dependencies, when a project is loaded to be analyzed, all generated files 
+  from a generator are excluded from the roslyn `Compilation` object of other generators, meaning that if
   two generators use the same conditions to generate the same code, there will be a compilation
   error in the resulting code.
 * If you need a generator to use the result of another one for its own compilation, you can use
