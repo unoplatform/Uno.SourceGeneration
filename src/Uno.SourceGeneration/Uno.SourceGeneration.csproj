@@ -78,6 +78,7 @@
     <Compile Include="..\..\Build\AssemblyVersion.cs">
       <Link>AssemblyVersion.cs</Link>
     </Compile>
+    <Compile Include="DependentSourceGeneratorAttribute.cs" />
     <Compile Include="SourceGeneratorDependencyAttribute.cs" />
     <Compile Include="SourceGeneratorExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

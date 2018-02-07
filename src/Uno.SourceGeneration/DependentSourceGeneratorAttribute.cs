@@ -19,32 +19,32 @@ using System;
 namespace Uno.SourceGeneration
 {
 	/// <summary>
-	/// Defines a dependency between source generators
+	/// Defines a dependent source generators, which should be executed after
 	/// </summary>
 	/// <remarks>
 	/// Can be defined more than once for a generator.
 	/// No effect when generator is not found.
 	/// </remarks>
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-	public class SourceGeneratorDependencyAttribute : Attribute
+	public class DependentSourceGeneratorAttribute : Attribute
 	{
 		/// <summary>
-		/// Fully Qualified Name (FQN: namespace + class name) of the generator to execute before.
+		/// Fully Qualified Name (FQN: namespace + class name) of the generator to execute after.
 		/// </summary>
 		/// <remarks>
 		/// No effect if the generator is not found.
 		/// </remarks>
-		public string DependsOn { get; }
+		public string DependentGenerator { get; }
 
 		/// <summary>
-		/// Defines a dependency between source generators
+		/// Defines a dependent source generators, which should be executed after
 		/// </summary>
-		/// <param name="dependsOn">
-		/// Fully Qualified Name (FQN: namespace + class name) of the generator to execute before
+		/// <param name="dependentGenerator">
+		/// Fully Qualified Name (FQN: namespace + class name) of the generator to execute after.
 		/// </param>
-		public SourceGeneratorDependencyAttribute(string dependsOn)
+		public DependentSourceGeneratorAttribute(string dependentGenerator)
 		{
-			DependsOn = dependsOn;
+			DependentGenerator = dependentGenerator;
 		}
 	}
 }
