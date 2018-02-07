@@ -135,10 +135,11 @@ This will open another visual studio instance, and allow for stepping through th
 * Generators should have the least possible external dependencies.
   Generators are loaded in a separate `AppDomain` but multiple assemblies versions can be
   troublesome when loaded side by side.
+
 * You can add a dependency on your generator by adding the `Uno.SourceGeneration.SourceGeneratorDependency`
   attribute on your class:
 	```csharp
-	[SourceGeneratorDependency("Uno.ImmutableGenerator")]
+	[GenerateAfter("Uno.ImmutableGenerator")] // Generate ImmutableGenerator before EqualityGenerator
 	public class EqualityGenerator : SourceGenerator
 	```
   For instance here, it will ensure that the `ImmutableGenerator` is executed before your `EqualityGenerator`.
@@ -146,10 +147,14 @@ This will open another visual studio instance, and allow for stepping through th
   from a generator are excluded from the roslyn `Compilation` object of other generators, meaning that if
   two generators use the same conditions to generate the same code, there will be a compilation
   error in the resulting code.
-* If you need a generator to use the result of another one for its own compilation, you can use
-  the `[SourceGeneratorDependency]` attribute. You simply need to specify the FullName
-  (namespace + type name) of another generator.  If this generator is found, it will ensure it
-  is executed before and the result is added to the compilation before calling yours.
+  
+* You can also define a generator which must be executed **after** yours. To do this, you need to declare a
+  _dependent generator_:
+  ```csharp
+  [GenerateBefore("Uno.EqualityGenerator")] // Generate ImmutableGenerator before EqualityGenerator
+  public class ImmutableGenerator : SourceGenerator
+  ```
+
 * Sometimes you may need to kill all instances of MsBuild. On Windows, the fatest way to to that
   is to open a shell in admin mode and type this line:
   ```

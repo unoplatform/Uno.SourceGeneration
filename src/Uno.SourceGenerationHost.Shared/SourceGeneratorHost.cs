@@ -77,32 +77,48 @@ namespace Uno.SourceGeneration.Host
 			var generatorNames = generatorsByName.Keys;
 
 			// Dependencies list, in the form (before, after)
-			var dependencies = details.Generators
+			var afterGenerators = details.Generators
 				.Select(g => g.generatorType)
-				.SelectMany(t => t.GetCustomAttributes<SourceGeneratorDependencyAttribute>()
-					.Select(a => a.DependsOn)
+				.SelectMany(t => t.GetCustomAttributes<GenerateAfterAttribute>()
+					.Select(a => a.GeneratorToExecuteBefore)
 					.Intersect(generatorNames, StringComparer.InvariantCultureIgnoreCase)
-					.Select(dependency => ((string incoming, string outgoing)) (t.FullName, dependency)))
+					.Select(dependency => ((string incoming, string outgoing)) (t.FullName, dependency)));
+
+			var beforeGenerators = details.Generators
+				.Select(g => g.generatorType)
+				.SelectMany(t => t.GetCustomAttributes<GenerateBeforeAttribute>()
+					.Select(a => a.GeneratorToExecuteAfter)
+					.Intersect(generatorNames, StringComparer.InvariantCultureIgnoreCase)
+					.Select(dependent => ((string incoming, string outgoing))(dependent, t.FullName)));
+
+			var dependencies = afterGenerators.Concat(beforeGenerators)
 				.Where(x => x.incoming != x.outgoing)
 				.Distinct()
 				.ToList();
+
+			if (dependencies.Any())
+			{
+				this.Log().Info($"Generators Ordering restrictions:\n\t{dependencies.Select(d => $"{d.incoming} -> {d.outgoing}").JoinBy("\n\t")}");
+			}
 
 			var groupedGenerators = generatorNames.GroupSort(dependencies);
 
 			if (groupedGenerators == null)
 			{
-				this.Log().Error($"There is a cyclic dependency in the generators:\n\t{dependencies.Select(d => $"{d.incoming} -> {d.outgoing}").JoinBy("\n\t")}");
+				this.Log().Error("There is a cyclic ordering in the generators. You need to fix it. You may need to set your build output to 'normal' to see dependencies list.");
 				return new string[0];
 			}
 
 			if (dependencies.Any())
 			{
-				this.Log().Info($"Generators Dependencies:\n\t{dependencies.Select(d => $"{d.incoming} -> {d.outgoing}").JoinBy("\n\t")}");
+				this.Log().Info($"**Generators Execution Plan**\n\tConcurrently: {groupedGenerators.Select(grp=>grp.JoinBy(", ")).JoinBy("\n\tFollowed by: ")}");
 			}
 
 			// Run
 			var output = new List<string>();
 			(string filePath, string content)[] generatedFilesAndContent = null;
+
+			//Debugger.Launch();
 
 			foreach (var group in groupedGenerators)
 			{

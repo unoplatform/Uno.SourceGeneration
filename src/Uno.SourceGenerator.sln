@@ -32,6 +32,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uno.SampleProject.UWP", "Un
 		{D45247E2-A279-472C-8D8B-CBCB83F37FB1} = {D45247E2-A279-472C-8D8B-CBCB83F37FB1}
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Doc", "Doc", "{DEB6C3E9-CC58-4925-B635-083634263ABC}"
+	ProjectSection(SolutionItems) = preProject
+		..\readme.md = ..\readme.md
+		..\doc\using sourcegenerators.md = ..\doc\using sourcegenerators.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Uno.SourceGenerationHost.Shared\Uno.SourceGenerationHost.Shared.projitems*{0a1cc471-6080-415f-8947-e41d8534395e}*SharedItemsImports = 4

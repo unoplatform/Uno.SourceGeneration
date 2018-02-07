@@ -1,7 +1,8 @@
 
 namespace Test {
-	class MyGeneratedType 
+	public static class MyGeneratedType 
 	{
-		// Project: /Users/admin/Documents/s/Uno.SourceGenerator/Uno.SourceGenerator/Uno.SampleProject/Uno.SampleProject.csproj
+		// Project: C:\src\uno.sourcegeneration\src\Uno.SampleProject\Uno.SampleProject.csproj
+		public const string Project = @"C:\src\uno.sourcegeneration\src\Uno.SampleProject\Uno.SampleProject.csproj";
 	}
 }
