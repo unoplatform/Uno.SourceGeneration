@@ -26,7 +26,7 @@ namespace Uno.SourceGeneration
 	/// No effect when generator is not found.
 	/// </remarks>
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-	public class SourceGeneratorDependencyAttribute : Attribute
+	public class GenerateAfterAttribute : Attribute
 	{
 		/// <summary>
 		/// Fully Qualified Name (FQN: namespace + class name) of the generator to execute before.
@@ -34,17 +34,17 @@ namespace Uno.SourceGeneration
 		/// <remarks>
 		/// No effect if the generator is not found.
 		/// </remarks>
-		public string DependsOn { get; }
+		public string GeneratorToExecuteBefore { get; }
 
 		/// <summary>
 		/// Defines a dependency between source generators
 		/// </summary>
-		/// <param name="dependsOn">
+		/// <param name="generatorToExecuteBefore">
 		/// Fully Qualified Name (FQN: namespace + class name) of the generator to execute before
 		/// </param>
-		public SourceGeneratorDependencyAttribute(string dependsOn)
+		public GenerateAfterAttribute(string generatorToExecuteBefore)
 		{
-			DependsOn = dependsOn;
+			GeneratorToExecuteBefore = generatorToExecuteBefore;
 		}
 	}
 }

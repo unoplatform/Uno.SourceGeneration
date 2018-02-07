@@ -18,7 +18,7 @@ using Uno.SourceGeneration;
 
 namespace Uno.SampleGenerators
 {
-	[DependentSourceGenerator("Uno.SampleGenerators.AnotherCustomSourceGenerator")]
+	[GenerateBefore("Uno.SampleGenerators.AnotherCustomSourceGenerator")]
 	public class UselessGenerator : SourceGenerator
 	{
 		public override void Execute(SourceGeneratorContext context)
