@@ -146,6 +146,14 @@ This will open another visual studio instance, and allow for stepping through th
   from a generator are excluded from the roslyn `Compilation` object of other generators, meaning that if
   two generators use the same conditions to generate the same code, there will be a compilation
   error in the resulting code.
+  
+* You can also define a generator which must be executed **after** yours. To do this, you need to declare a
+  _dependent generator_:
+  ```csharp
+  [DependentSourceGenerator("Uno.EqualityGenerator")] // ensure EqualityGenerator is generated AFTER
+  public class ImmutableGenerator : SourceGenerator
+  ```
+  
 * If you need a generator to use the result of another one for its own compilation, you can use
   the `[SourceGeneratorDependency]` attribute. You simply need to specify the FullName
   (namespace + type name) of another generator.  If this generator is found, it will ensure it
