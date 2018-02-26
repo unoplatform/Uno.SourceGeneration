@@ -28,7 +28,7 @@
 
 	<Target Name="UnoSourceGeneratorClean"
 					BeforeTargets="Clean">
-		<RemoveDir Directories="$(UnoSourceGeneratorOutputPath)\g" />
+		<RemoveDir Directories="$(_UnoSourceGeneratorOutputPath)\g" />
 	</Target>
 
 	<Target Name="_InjectGeneratedFiles"
