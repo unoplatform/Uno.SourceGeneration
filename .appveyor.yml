@@ -3,6 +3,7 @@ image: Visual Studio 2017
 branches:
   only:
   - master
+  - stable
 
 # Don't create a build when a PR is opened
 skip_branch_with_pr: true
