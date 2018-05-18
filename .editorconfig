@@ -1,0 +1,28 @@
+root = true
+
+[*]
+end_of_line = crlf
+tab_width = 4
+trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.yml]
+indent_style = space
+
+[*.md]
+indent_style = space
+
+[*.ps1]
+indent_style = space
+
+[*.xml]
+indent_style = tab
+
+[*.config]
+indent_style = tab
+
+[*.cs]
+indent_style = tab
+
+[*.json]
+indent_style = tab
