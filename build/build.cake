@@ -103,6 +103,7 @@ Task("Build")
 	{
 		MaxCpuCount = 1
 	}
+	.SetPlatformTarget(PlatformTarget.x86)
 	.SetConfiguration("Release")
 	.WithTarget("Build");
 	
