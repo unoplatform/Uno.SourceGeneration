@@ -18,6 +18,9 @@ indent_style = space
 [*.xml]
 indent_style = tab
 
+[*.nuspec]
+indent_style = tab
+
 [*.config]
 indent_style = tab
 

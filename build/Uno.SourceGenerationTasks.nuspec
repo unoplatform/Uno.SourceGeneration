@@ -8,6 +8,10 @@
 		<owners />
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>The Uno Source Generator is an msbuild tasks used to generate C# code.</description>
+		<projectUrl>https://github.com/nventive/Uno.SourceGeneration</projectUrl>
+		<iconUrl>https://nv-assets.azurewebsites.net/logos/uno.png</iconUrl>
+		<copyright>Copyright (C) 2015-2018 nventive inc. - all rights reserved</copyright>
+		<repository url="https://github.com/nventive/Uno.SourceGeneration" />
 	</metadata>
 	<files>
 		<file src="..\src\Uno.SourceGeneratorTasks.Dev14.0\Bin\Release\*.dll" target="build\Dev14.0" />
