@@ -77,14 +77,23 @@ namespace Uno.SourceGeneration.Intellisense
 			{
 				var property= document.ProjectItem.Properties.Item("ItemType");
 				var previousValue = property.Value as string;
-				if (previousValue == "Compile")
+				if (previousValue.Equals("Compile"))
 				{
-					property.Value = "None";
-					property.Value = previousValue;
-				}
+					try
+					{
+						property.Value = "None";
+					}
+					finally
+					{
+						while(!(property.Value as string).Equals("Compile"))
+						{
+							property.Value = "Compile";
+						}
+					}
 
-				// Force save project to avoid annoying the user about saving it
-				document.ProjectItem.ContainingProject.Save();
+					// Force save project to avoid annoying the user about saving it
+					document.ProjectItem.ContainingProject.Save();
+				}
 			}
 		}
 	}
