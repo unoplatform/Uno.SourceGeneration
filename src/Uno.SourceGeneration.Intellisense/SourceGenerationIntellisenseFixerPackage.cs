@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Web.UI.Design;
 using EnvDTE;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -26,6 +27,7 @@ namespace Uno.SourceGeneration.Intellisense
 		private DocumentEvents _documentEvents;
 
 		public const string PackageGuidString = "04912a0c-bf5d-4e71-9e04-5d5d3309e781";
+		private const string SolutionFolderItemKind = "{66A26722-8FB5-11D2-AA7E-00C04F688DDE}";
 
 		protected override void Initialize()
 		{
@@ -105,7 +107,7 @@ namespace Uno.SourceGeneration.Intellisense
 
 				var subProjects = project.ProjectItems
 					.OfType<ProjectItem>()
-					.Where(p=> p.Kind.Equals("{66A26722-8FB5-11D2-AA7E-00C04F688DDE}", StringComparison.OrdinalIgnoreCase))
+					.Where(p=> p.Kind.Equals(SolutionFolderItemKind, StringComparison.OrdinalIgnoreCase))
 					.Select(p => p.SubProject)
 					.Where(x => x != null)
 					.ToArray();
