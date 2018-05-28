@@ -3,9 +3,11 @@
 	<PropertyGroup>
 		<UnoSourceGeneratorTasksPath Condition="'$(UnoSourceGeneratorTasksPath)'=='' and '$(MSBuildToolsVersion)'=='14.0'">..\Dev14.0</UnoSourceGeneratorTasksPath>
 		<UnoSourceGeneratorTasksPath Condition="'$(UnoSourceGeneratorTasksPath)'=='' and '$(MSBuildToolsVersion)'=='15.0'">..\Dev15.0</UnoSourceGeneratorTasksPath>
+		<UnoSourceGeneration_FixIntellisense Condition="'$(UnoSourceGeneration_FixIntellisense)'==''">true</UnoSourceGeneration_FixIntellisense>
 
 		<_UnoSourceGeneratorOutputPath Condition="'$(UnoSourceGeneratorOutputPath)'==''">$(IntermediateOutputPath)</_UnoSourceGeneratorOutputPath>
 		<_UnoSourceGeneratorOutputPath Condition="'$(UnoSourceGeneratorOutputPath)'!=''">$(UnoSourceGeneratorOutputPath)</_UnoSourceGeneratorOutputPath>
+
 
 		<_UnoSourceGeneratorCacheFile>$(_UnoSourceGeneratorOutputPath)\g\generation.cache</_UnoSourceGeneratorCacheFile>
 

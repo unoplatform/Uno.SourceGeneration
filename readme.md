@@ -195,7 +195,15 @@ To view this information either place visual studio in `details` verbosity (**Op
 Many generators will produce code you can use directly in your app. Visual Studio may fail to reset _intellisense_
 to show generated code.
 
-Until this problem is fixed by Microsoft, we developped a simple _VSIX_ extension to force VisualStudio to reset the
-_Intellisense_ cache after a build. This package is not published to the Microsoft Extensions Gallery: you can find it
-in the artifacts of the _Appveyor_ build ouput­. Check for the `Uno.SourceGeneration.Intellisense.vsix` file in the build output
+Until this problem is fixed by Microsoft, we developped a simple _VSIX_ extension to force VisualStudio
+to reset the _Intellisense_ cache after a build. This package is not published to the Microsoft Extensions
+Gallery: you can find it in the artifacts of the _Appveyor_ build ouput­. Check for the
+`Uno.SourceGeneration.Intellisense.vsix` file in the build output
 (in the _Build Status_ table at the beginning of this document).
+
+If you want to deactivate this behavior for a specific project, just add the following property in your
+`.csproj` file:
+
+``` xml
+  <UnoSourceGeneration_FixIntellisense>false</UnoSourceGeneration_FixIntellisense>
+```
