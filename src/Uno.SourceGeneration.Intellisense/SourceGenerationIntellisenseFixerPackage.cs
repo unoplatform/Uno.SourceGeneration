@@ -1,10 +1,13 @@
-﻿using System.Collections.Concurrent;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading;
+using System.Web.UI.Design;
 using EnvDTE;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 
@@ -14,19 +17,22 @@ namespace Uno.SourceGeneration.Intellisense
 	[InstalledProductRegistration("#110", "#112", "1.0", IconResourceID = 400)]
 	[Guid(PackageGuidString)]
 	[SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1650:ElementDocumentationMustBeSpelledCorrectly", Justification = "pkgdef, VS and vsixmanifest are valid VS terms")]
-	[ProvideAutoLoad(UIContextGuids80.SolutionExists)]
+	[ProvideAutoLoad(UIContextGuids80.SolutionExists, PackageAutoLoadFlags.BackgroundLoad)]
 	public sealed class SourceGenerationIntellisenseFixerPackage : Package
 	{
 		private DTE _dte;
+		private IVsSolution _solution;
 		private Events _events;
 		private BuildEvents _buildEvents;
 		private DocumentEvents _documentEvents;
 
 		public const string PackageGuidString = "04912a0c-bf5d-4e71-9e04-5d5d3309e781";
+		private const string SolutionFolderItemKind = "{66A26722-8FB5-11D2-AA7E-00C04F688DDE}";
 
 		protected override void Initialize()
 		{
-			_dte = GetService(typeof(DTE)) as DTE;
+			_dte = (DTE)GetService(typeof(DTE));
+			_solution = (IVsSolution)GetService(typeof(SVsSolution));
 
 			_events = _dte.Events;
 			_buildEvents = _events.BuildEvents;
@@ -65,27 +71,57 @@ namespace Uno.SourceGeneration.Intellisense
 					return; // not interesting
 			}
 
-			var documents = Interlocked.Exchange(ref _changedDocuments, new ConcurrentBag<Document>());
-
-			// Fixing only one document per project is enough
-			var oneDocumentPerProject = documents
-				.GroupBy(d => d.ProjectItem.ContainingProject)
-				.Select(p => p.FirstOrDefault(d => File.Exists(d.FullName))) // we want non-deleted documents
-				.Where(d => d != null); // prevent NRE
-
-			foreach (var document in oneDocumentPerProject)
+			foreach(var project in GetProjectsUsingCodeGen())
 			{
-				var property= document.ProjectItem.Properties.Item("ItemType");
-				var previousValue = property.Value as string;
-				if (previousValue == "Compile")
+				try
 				{
-					property.Value = "None";
-					property.Value = previousValue;
+					var folderItem = project.ProjectItems.AddFolder("__temp-to-delete");
+					folderItem.Remove();
 				}
-
-				// Force save project to avoid annoying the user about saving it
-				document.ProjectItem.ContainingProject.Save();
+				catch(Exception ex)
+				{
+					Debug.WriteLine($"Error: {ex.Message}");
+				}
 			}
 		}
+
+		private IEnumerable<Project> GetProjectsUsingCodeGen(Project[] projects = null)
+		{
+			projects = projects ?? _dte.Solution.Projects.OfType<Project>().ToArray();
+
+			foreach (var project in projects)
+			{
+				_solution.GetProjectOfUniqueName(project.FullName, out var hierarchy);
+
+				if (hierarchy is IVsBuildPropertyStorage storage)
+				{
+					storage.GetPropertyValue("UnoSourceGeneration_FixIntellisense", string.Empty, (uint)_PersistStorageType.PST_PROJECT_FILE, out var value);
+
+					if (!string.IsNullOrWhiteSpace(value) &&
+						bool.TryParse(value, out var fixIntellisense) &&
+						fixIntellisense)
+					{
+						yield return project;
+					}
+				}
+
+				var subProjects = project.ProjectItems
+					.OfType<ProjectItem>()
+					.Where(p=> p.Kind.Equals(SolutionFolderItemKind, StringComparison.OrdinalIgnoreCase))
+					.Select(p => p.SubProject)
+					.Where(x => x != null)
+					.ToArray();
+
+				if (subProjects.Length > 0)
+				{
+					foreach (var subProject in GetProjectsUsingCodeGen(subProjects))
+					{
+						yield return subProject;
+					}
+				}
+			}
+		}
+
+		//private static 
 	}
 }
