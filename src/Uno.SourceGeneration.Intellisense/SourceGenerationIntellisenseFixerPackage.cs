@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Web.UI.Design;
@@ -26,8 +27,13 @@ namespace Uno.SourceGeneration.Intellisense
 		private BuildEvents _buildEvents;
 		private DocumentEvents _documentEvents;
 
+		private Window _outputWindow;
+		private OutputWindowPane _outputPane;
+
 		public const string PackageGuidString = "04912a0c-bf5d-4e71-9e04-5d5d3309e781";
 		private const string SolutionFolderItemKind = "{66A26722-8FB5-11D2-AA7E-00C04F688DDE}";
+		private const string FixintellisenseProperty = "UnoSourceGeneration_FixIntellisense";
+		private const string TempFolderName = "__temp-to-delete";
 
 		protected override void Initialize()
 		{
@@ -40,6 +46,9 @@ namespace Uno.SourceGeneration.Intellisense
 
 			_documentEvents.DocumentSaved += DocumentEventsOnDocumentSaved;
 			_buildEvents.OnBuildDone += BuildEventsOnOnBuildDone;
+
+			_outputWindow = _dte.Windows.Item(EnvDTE.Constants.vsWindowKindOutput);
+			_outputPane = ((OutputWindow)_outputWindow.Object).OutputWindowPanes.Add("Uno.SourceGeneration - Intellisense Fixer");
 
 			base.Initialize();
 		}
@@ -71,18 +80,62 @@ namespace Uno.SourceGeneration.Intellisense
 					return; // not interesting
 			}
 
-			foreach(var project in GetProjectsUsingCodeGen())
+			Log("\t---");
+			Log($"{action} detected. Checking for projects to fix...");
+
+			var projectsUsingCodeGen = GetProjectsUsingCodeGen().ToArray();
+
+			if (projectsUsingCodeGen.Length == 0)
+			{
+				Log($"No project with property <{FixintellisenseProperty}>true</{FixintellisenseProperty}> defined in csproj.");
+				return;
+			}
+
+			foreach (var project in projectsUsingCodeGen)
 			{
 				try
 				{
-					var folderItem = project.ProjectItems.AddFolder("__temp-to-delete");
+					var projectFolder = Path.GetDirectoryName(project.FileName);
+					var folderPath = Path.Combine(projectFolder, TempFolderName);
+
+					var folderItem = project.ProjectItems.OfType<ProjectItem>().FirstOrDefault(i => i.Name.Equals(TempFolderName, StringComparison.OrdinalIgnoreCase));
+					if (folderItem == null)
+					{
+						if (Directory.Exists(folderPath))
+						{
+							Log($"Deleting local folder {folderPath} for {project.Name}.");
+							Directory.Delete(folderPath);
+						}
+
+						Log($"Fixing project {project.Name} by creating a temp folder...");
+						folderItem = project.ProjectItems.AddFolder(TempFolderName);
+					}
+					else
+					{
+						Log($"Fixing folder already exists in project {project.Name}. Simply deleting it.");
+					}
 					folderItem.Remove();
+					if (Directory.Exists(folderPath))
+					{
+						Directory.Delete(folderPath);
+					}
+					Log($"Temp folder {folderItem.Name} removed successfully.");
 				}
-				catch(Exception ex)
+				catch (Exception ex)
 				{
-					Debug.WriteLine($"Error: {ex.Message}");
+					Log("-------------------------------------");
+					Log($"Error fixing project {project.Name}:");
+					Log(ex.ToString());
+					Log("-------------------------------------");
 				}
 			}
+			Log("Finished applying fix for intellisense.");
+		}
+
+		private void Log(string str)
+		{
+			_outputPane.OutputString(str);
+			_outputPane.OutputString("\r\n");
 		}
 
 		private IEnumerable<Project> GetProjectsUsingCodeGen(Project[] projects = null)
@@ -95,7 +148,7 @@ namespace Uno.SourceGeneration.Intellisense
 
 				if (hierarchy is IVsBuildPropertyStorage storage)
 				{
-					storage.GetPropertyValue("UnoSourceGeneration_FixIntellisense", string.Empty, (uint)_PersistStorageType.PST_PROJECT_FILE, out var value);
+					storage.GetPropertyValue(FixintellisenseProperty, string.Empty, (uint)_PersistStorageType.PST_PROJECT_FILE, out var value);
 
 					if (!string.IsNullOrWhiteSpace(value) &&
 						bool.TryParse(value, out var fixIntellisense) &&
