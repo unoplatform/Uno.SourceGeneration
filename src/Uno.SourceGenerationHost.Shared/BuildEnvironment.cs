@@ -29,6 +29,7 @@ namespace Uno.SourceGeneratorTasks
 		public string VisualStudioVersion { get; }
 		public string TargetFrameworkRootPath { get; }
 		public string BinLogOutputPath { get; }
+		public string BinLogEnabled { get; }
 
 		public BuildEnvironment(
 			string configuration,
@@ -38,7 +39,8 @@ namespace Uno.SourceGeneratorTasks
 			string targetFramework,
 			string visualStudioVersion,
 			string targetFrameworkRootPath,
-			string binLogOutputPath
+			string binLogOutputPath,
+			bool binLogEnabled
 		)
 		{
 			Configuration = configuration;

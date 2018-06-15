@@ -49,7 +49,8 @@ namespace Uno.SourceGeneratorTasks.Console
 					targetFramework: null,
 					visualStudioVersion: "15.0",
 					targetFrameworkRootPath: Path.GetDirectoryName(new Uri(typeof(Microsoft.Build.Logging.ConsoleLogger).Assembly.CodeBase).LocalPath),
-					binLogOutputPath: null
+					binLogOutputPath: null,
+					binLogEnabled: false
 				)
 			);
 

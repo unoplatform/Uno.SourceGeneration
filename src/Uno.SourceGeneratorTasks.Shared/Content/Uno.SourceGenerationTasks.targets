@@ -96,16 +96,17 @@
 		</PropertyGroup>
 
 	  <SourceGenerationTask_v0 ProjectFile="$(MSBuildProjectFullPath)"
-													OutputPath="$(_UnoSourceGeneratorOutputPath)\g"
-													Configuration="$(Configuration)"
-													SourceGenerators="@(SourceGenerator)"
-													Platform="$(Platform)"
-													VisualStudioVersion="$(VisualStudioVersion)"
-													TargetFramework="$(SourceGeneratorTargetFramework)"
-													TargetFrameworkRootPath="$(TargetFrameworkRootPath)"
-													AdditionalAssemblies="@(SourceGeneratorAdditionalAssemblies)"
-													BinLogOutputPath="$(UnoSourceGeneratorBinLogOutputPath)"
-													Condition="$(_hasSourceGenerators)">
+								OutputPath="$(_UnoSourceGeneratorOutputPath)\g"
+								Configuration="$(Configuration)"
+								SourceGenerators="@(SourceGenerator)"
+								Platform="$(Platform)"
+								VisualStudioVersion="$(VisualStudioVersion)"
+								TargetFramework="$(SourceGeneratorTargetFramework)"
+								TargetFrameworkRootPath="$(TargetFrameworkRootPath)"
+								AdditionalAssemblies="@(SourceGeneratorAdditionalAssemblies)"
+								BinLogOutputPath="$(UnoSourceGeneratorBinLogOutputPath)"
+								BinLogEnabled="$(UnoSourceGeneratorUnsecureBinLogEnabled)"
+								Condition="$(_hasSourceGenerators)">
 			<Output TaskParameter="GenereratedFiles" ItemName="UnoGeneratedFiles" />
 		</SourceGenerationTask_v0>
 

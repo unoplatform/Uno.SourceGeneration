@@ -190,10 +190,12 @@ To view this information either place visual studio in `details` verbosity (**Op
 **Build and Run** then **MSBuild project build output verbosity**) or by using the excellent
 [MSBuild Binary and Structured Log Viewer](http://msbuildlog.com/) from [Kirill Osenkov](https://twitter.com/KirillOsenkov).
 
-The source generation target also produces `binlog` file in the output folder, used to troubleshoot issues with the msbuild instance
+The source generation target can also optionally produces `binlog` file in the obj folder, used to troubleshoot issues with the msbuild instance
 created inside the application domain used to generate the code. The path for those files can be altered using the
 `UnoSourceGeneratorBinLogOutputPath` msbuild property. In the context of a VSTS build, setting it to `$(build.artifactstagingdirectory)`
-allows for an improved diagnostics experience.
+allows for an improved diagnostics experience. Set the `UnoSourceGeneratorUnsecureBinLogEnabled` property to true to enabled binary logging.
+
+> **Important**: The binary logger may leak secret environment variables, it is a best practice to never enable this feature as part of normal build.
 
 ### Generated code & Intellisense
 

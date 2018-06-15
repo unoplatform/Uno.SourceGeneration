@@ -64,6 +64,8 @@ namespace Uno.SourceGeneratorTasks
 
 		public string BinLogOutputPath { get; set; }
 
+		public bool BinLogEnabled { get; set; }
+
 		[Output]
 		public string[] GenereratedFiles { get; set; }
 
@@ -199,7 +201,8 @@ namespace Uno.SourceGeneratorTasks
 					TargetFramework,
 					VisualStudioVersion,
 					TargetFrameworkRootPath,
-					BinLogOutputPath
+					BinLogOutputPath,
+					BinLogEnabled
 				);
 
 				GenereratedFiles = hostEntry.Wrapper.Generate(remotableLogger, environment);
