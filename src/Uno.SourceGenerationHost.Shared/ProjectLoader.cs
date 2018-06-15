@@ -41,16 +41,16 @@ namespace Uno.SourceGeneration.Host
 	{
 		private static readonly Microsoft.Extensions.Logging.ILogger _log = typeof(ProjectLoader).Log();
 
-		private static ConcurrentDictionary<Tuple<string, string>, ProjectDetails> _allProjects = new ConcurrentDictionary<Tuple<string, string>, ProjectDetails>();
+		private static ConcurrentDictionary<(string projectFile, string configuration, string targetFramework), ProjectDetails> _allProjects
+			= new ConcurrentDictionary<(string projectFile, string configuration, string targetFramework), ProjectDetails>();
 
 		public static ProjectDetails LoadProjectDetails(BuildEnvironment environment)
 		{
-			var key = Tuple.Create(environment.ProjectFile, environment.Configuration);
-			ProjectDetails details;
+			var key = (environment.ProjectFile, environment.Configuration, environment.TargetFramework);
 
-			if(_allProjects.TryGetValue(key, out details))
+			if (_allProjects.TryGetValue(key, out var details))
 			{
-				if(!details.HasChanged())
+				if (!details.HasChanged())
 				{
 					if (_log.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
 					{
@@ -68,7 +68,7 @@ namespace Uno.SourceGeneration.Host
 				}
 			}
 
-            if (_log.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
+			if (_log.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
             {
                 _log.LogDebug($"Loading project file [{environment.ProjectFile}]");
 			}
