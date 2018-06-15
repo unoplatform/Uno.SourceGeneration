@@ -115,10 +115,30 @@ namespace Uno.SourceGeneration.Host
             // Change this logger details to troubleshoot project loading details.
             collection.RegisterLogger(new Microsoft.Build.Logging.ConsoleLogger() { Verbosity = LoggerVerbosity.Minimal });
 
-            // Uncomment this to enable file logging for debugging purposes.
-            // collection.RegisterLogger(new Microsoft.Build.BuildEngine.FileLogger() { Verbosity = LoggerVerbosity.Diagnostic, Parameters = $@"logfile=c:\temp\build\MSBuild.{Guid.NewGuid()}.log" });
+#if HAS_BINLOG
+			Microsoft.Build.Logging.BinaryLogger binaryLogger = null;
 
-            collection.OnlyLogCriticalEvents = false;
+			if (environment.BinLogOutputPath != null)
+			{
+				var binLogPath = Path.Combine(
+					environment.BinLogOutputPath,
+					$"SourceGenerator-{environment.TargetFramework}-{Path.GetFileNameWithoutExtension(environment.ProjectFile)}-{Guid.NewGuid()}.binlog"
+				);
+
+				collection.RegisterLogger(
+					binaryLogger = new Microsoft.Build.Logging.BinaryLogger()
+					{
+						Verbosity = LoggerVerbosity.Diagnostic,
+						CollectProjectImports = Microsoft.Build.Logging.BinaryLogger.ProjectImportsCollectionMode.Embed,
+						Parameters = $"logfile={binLogPath}"
+					}
+				);
+
+				_log.LogInformation("Using BinaryLogger: " + binLogPath);
+			}
+#endif
+
+			collection.OnlyLogCriticalEvents = false;
 			var xml = Microsoft.Build.Construction.ProjectRootElement.Create(xmlReader, collection);
 
 			// When constructing a project from an XmlReader, MSBuild cannot determine the project file path.  Setting the
@@ -239,6 +259,10 @@ namespace Uno.SourceGeneration.Host
 			_allProjects.TryAdd(key, details);
 
 			details.BuildImportsMap();
+
+#if HAS_BINLOG
+			binaryLogger?.Shutdown();
+#endif
 
 			return details;
 		}
