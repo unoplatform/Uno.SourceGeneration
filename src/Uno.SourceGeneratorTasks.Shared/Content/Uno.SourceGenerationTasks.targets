@@ -4,7 +4,7 @@
 		<UnoSourceGeneratorTasksPath Condition="'$(UnoSourceGeneratorTasksPath)'=='' and '$(MSBuildToolsVersion)'=='14.0'">..\Dev14.0</UnoSourceGeneratorTasksPath>
 		<UnoSourceGeneratorTasksPath Condition="'$(UnoSourceGeneratorTasksPath)'=='' and '$(MSBuildToolsVersion)'=='15.0'">..\Dev15.0</UnoSourceGeneratorTasksPath>
 		<UnoSourceGeneration_FixIntellisense Condition="'$(UnoSourceGeneration_FixIntellisense)'==''">true</UnoSourceGeneration_FixIntellisense>
-
+	  
 		<_UnoSourceGeneratorOutputPath Condition="'$(UnoSourceGeneratorOutputPath)'==''">$(IntermediateOutputPath)</_UnoSourceGeneratorOutputPath>
 		<_UnoSourceGeneratorOutputPath Condition="'$(UnoSourceGeneratorOutputPath)'!=''">$(UnoSourceGeneratorOutputPath)</_UnoSourceGeneratorOutputPath>
 
@@ -81,6 +81,8 @@
 			<!-- Don't spin up the generators task if there are no source generators -->
 			<_hasSourceGenerators>true</_hasSourceGenerators>
 			<_hasSourceGenerators Condition="'@(SourceGenerator)'=='' and '$(VisualStudioVersion)' &gt; '15.0'">false</_hasSourceGenerators>
+
+			<UnoSourceGeneratorBinLogOutputPath Condition="'$(UnoSourceGeneratorBinLogOutputPath)'==''">$(IntermediateOutputPath)</UnoSourceGeneratorBinLogOutputPath>
 		</PropertyGroup>
 
 		<PropertyGroup Condition="'$(_UnoSourceGeneratorProjectType)'=='ios' or '$(_UnoSourceGeneratorProjectType)'=='mac'">
@@ -93,16 +95,18 @@
 			<SourceGeneratorTargetFrameworkRootPath Condition="'$(SourceGeneratorTargetFrameworkRootPath)'==''">$(TargetFrameworkRootPathSearchPathsOSX)</SourceGeneratorTargetFrameworkRootPath>
 		</PropertyGroup>
 
-		<SourceGenerationTask_v0 ProjectFile="$(MSBuildProjectFullPath)"
-													OutputPath="$(_UnoSourceGeneratorOutputPath)\g"
-													Configuration="$(Configuration)"
-													SourceGenerators="@(SourceGenerator)"
-													Platform="$(Platform)"
-													VisualStudioVersion="$(VisualStudioVersion)"
-													TargetFramework="$(SourceGeneratorTargetFramework)"
-													TargetFrameworkRootPath="$(TargetFrameworkRootPath)"
-													AdditionalAssemblies="@(SourceGeneratorAdditionalAssemblies)"
-													Condition="$(_hasSourceGenerators)">
+	  <SourceGenerationTask_v0 ProjectFile="$(MSBuildProjectFullPath)"
+								OutputPath="$(_UnoSourceGeneratorOutputPath)\g"
+								Configuration="$(Configuration)"
+								SourceGenerators="@(SourceGenerator)"
+								Platform="$(Platform)"
+								VisualStudioVersion="$(VisualStudioVersion)"
+								TargetFramework="$(SourceGeneratorTargetFramework)"
+								TargetFrameworkRootPath="$(TargetFrameworkRootPath)"
+								AdditionalAssemblies="@(SourceGeneratorAdditionalAssemblies)"
+								BinLogOutputPath="$(UnoSourceGeneratorBinLogOutputPath)"
+								BinLogEnabled="$(UnoSourceGeneratorUnsecureBinLogEnabled)"
+								Condition="$(_hasSourceGenerators)">
 			<Output TaskParameter="GenereratedFiles" ItemName="UnoGeneratedFiles" />
 		</SourceGenerationTask_v0>
 
