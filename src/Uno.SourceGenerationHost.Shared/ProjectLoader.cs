@@ -118,7 +118,10 @@ namespace Uno.SourceGeneration.Host
 #if HAS_BINLOG
 			Microsoft.Build.Logging.BinaryLogger binaryLogger = null;
 
-			if (environment.BinLogOutputPath != null)
+			if (
+				environment.BinLogOutputPath != null
+				&& environment.BinLogEnabled
+			)
 			{
 				var binLogPath = Path.Combine(
 					environment.BinLogOutputPath,
