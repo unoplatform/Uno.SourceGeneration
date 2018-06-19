@@ -70,4 +70,11 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="ValidateBinLog" Condition="'$(Configuration)' == 'Release'" AfterTargets="Build">
+	<ItemGroup>
+	  <_binLogFiles Include="$(IntermediateOutputPath)\**\*.binlog" />
+	</ItemGroup>
+	<Message Text="Validating binlog files presence in $(IntermediateOutputPath)" Importance="High" />
+	<Error Text="No binlog file should be generated in Release configuration (found @(_binLogFiles))" Condition="'@(_binLogFiles)' != ''" />
+  </Target>
 </Project>
