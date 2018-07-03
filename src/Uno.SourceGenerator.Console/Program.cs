@@ -48,7 +48,9 @@ namespace Uno.SourceGeneratorTasks.Console
 					outputPath: @"C:\s\TuneInWin10\TuneIn.Core.Uwa\obj\g\test",
 					targetFramework: null,
 					visualStudioVersion: "15.0",
-					targetFrameworkRootPath: Path.GetDirectoryName(new Uri(typeof(Microsoft.Build.Logging.ConsoleLogger).Assembly.CodeBase).LocalPath)
+					targetFrameworkRootPath: Path.GetDirectoryName(new Uri(typeof(Microsoft.Build.Logging.ConsoleLogger).Assembly.CodeBase).LocalPath),
+					binLogOutputPath: null,
+					binLogEnabled: false
 				)
 			);
 

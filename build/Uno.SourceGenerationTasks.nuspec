@@ -8,16 +8,20 @@
 		<owners />
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>The Uno Source Generator is an msbuild tasks used to generate C# code.</description>
+		<projectUrl>https://github.com/nventive/Uno.SourceGeneration</projectUrl>
+		<iconUrl>https://nv-assets.azurewebsites.net/logos/uno.png</iconUrl>
+		<copyright>Copyright (C) 2015-2018 nventive inc. - all rights reserved</copyright>
+		<repository url="https://github.com/nventive/Uno.SourceGeneration" />
 	</metadata>
 	<files>
-    <file src="..\src\Uno.SourceGeneratorTasks.Dev14.0\Bin\Release\*.dll" target="build\Dev14.0" />
-    <file src="..\src\Uno.SourceGeneratorTasks.Dev14.0\Bin\Release\*.pdb" target="build\Dev14.0" />
-    <file src="..\src\Uno.SourceGeneratorTasks.Dev14.0\Bin\Release\*.config" target="build\Dev14.0" />
-    <file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\*.dll" target="build\Dev15.0" />
-    <file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\*.pdb" target="build\Dev15.0" />
-    <file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\*.config" target="build\Dev15.0" />
-    <file src="..\src\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" target="build\net45" />
-    <file src="..\src\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" target="build\uap" />
+		<file src="..\src\Uno.SourceGeneratorTasks.Dev14.0\Bin\Release\*.dll" target="build\Dev14.0" />
+		<file src="..\src\Uno.SourceGeneratorTasks.Dev14.0\Bin\Release\*.pdb" target="build\Dev14.0" />
+		<file src="..\src\Uno.SourceGeneratorTasks.Dev14.0\Bin\Release\*.config" target="build\Dev14.0" />
+		<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\*.dll" target="build\Dev15.0" />
+		<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\*.pdb" target="build\Dev15.0" />
+		<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\*.config" target="build\Dev15.0" />
+		<file src="..\src\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" target="build\net45" />
+		<file src="..\src\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" target="build\uap" />
 		<file src="..\src\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" target="build\MonoAndroid" />
 		<file src="..\src\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" target="build\Xamarin.iOS10" />
 		<file src="..\src\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" target="build\Xamarin.Mac20" />

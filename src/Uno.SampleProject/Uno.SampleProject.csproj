@@ -22,6 +22,7 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>
     </CodeAnalysisRuleSet>
+	<UnoSourceGeneratorUnsecureBinLogEnabled>true</UnoSourceGeneratorUnsecureBinLogEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -69,4 +70,11 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="ValidateBinLog" Condition="'$(Configuration)' == 'Release'" AfterTargets="Build">
+	<ItemGroup>
+	  <_binLogFiles Include="$(IntermediateOutputPath)\**\*.binlog" />
+	</ItemGroup>
+	<Message Text="Validating binlog files presence in $(IntermediateOutputPath)" Importance="High" />
+	<Error Text="No binlog file should be generated in Release configuration (found @(_binLogFiles))" Condition="'@(_binLogFiles)' != ''" />
+  </Target>
 </Project>

@@ -8,12 +8,16 @@
 		<owners />
 		<requireLicenseAcceptance>false</requireLicenseAcceptance>
 		<description>The Uno Source Generator is a set of classes used to generate C# code.</description>
+		<projectUrl>https://github.com/nventive/Uno.SourceGeneration</projectUrl>
+		<iconUrl>https://nv-assets.azurewebsites.net/logos/uno.png</iconUrl>
+		<copyright>Copyright (C) 2015-2018 nventive inc. - all rights reserved</copyright>
+		<repository url="https://github.com/nventive/Uno.SourceGeneration" />
 
 		<dependencies>
 			<group>
-        <dependency id="Microsoft.Build" version="14.3.0" />
-        <dependency id="Microsoft.Build.Engine" version="14.3.0" />
-        <dependency id="Microsoft.Build.Tasks.Core" version="14.3.0" />
+				<dependency id="Microsoft.Build" version="14.3.0" />
+				<dependency id="Microsoft.Build.Engine" version="14.3.0" />
+				<dependency id="Microsoft.Build.Tasks.Core" version="14.3.0" />
 				<dependency id="Microsoft.CodeAnalysis" version="1.3.2" />
 				<dependency id="Microsoft.CodeAnalysis.Common" version="1.3.2" />
 				<dependency id="Microsoft.CodeAnalysis.CSharp" version="1.3.2" />
