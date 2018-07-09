@@ -31,7 +31,14 @@ namespace Uno.SourceGeneratorTasks.Helpers
             _categoryName = categoryName;
 		}
 
-        public IDisposable BeginScope<TState>(TState state) => new DisposableAction(() => { });
+		public override object InitializeLifetimeService()
+		{
+			// Keep this object alive infinitely, it will be deleted along with the 
+			// host msbuild.exe process.
+			return null;
+		}
+
+		public IDisposable BeginScope<TState>(TState state) => new DisposableAction(() => { });
 
         public bool IsEnabled(LogLevel logLevel) => logLevel >= LogLevel.Debug;
 

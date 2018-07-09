@@ -30,7 +30,14 @@ namespace Uno.SourceGeneratorTasks.Logger
             _log = log;
         }
 
-        public void WriteLog(int logLevel, string message)
+		public override object InitializeLifetimeService()
+		{
+			// Keep this object alive infinitely, it will be deleted along with the 
+			// host msbuild.exe process.
+			return null;
+		}
+
+		public void WriteLog(int logLevel, string message)
         {
 			try
 			{
