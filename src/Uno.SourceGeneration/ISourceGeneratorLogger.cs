@@ -30,6 +30,16 @@ namespace Uno.SourceGeneration
 		/// logger.Debug($"The count is {count}.");
 		/// </example>
 		void Debug(IFormattable message, Exception exception = null);
+		/// <summary>
+		/// Log a debugging information.
+		/// </summary>
+		/// <remarks>
+		/// Will appear in build output when the level is set to _normal_.
+		/// </remarks>
+		/// <example>
+		/// logger.Debug($"The count is {count}.");
+		/// </example>
+		void Debug(string message, Exception exception = null);
 
 		/// <summary>
 		/// Log a useful information to build output.
@@ -43,6 +53,17 @@ namespace Uno.SourceGeneration
 		void Info(IFormattable message, Exception exception = null);
 
 		/// <summary>
+		/// Log a useful information to build output.
+		/// </summary>
+		/// <remarks>
+		/// Will appear in build output when the level is set to _detailed_.
+		/// </remarks>
+		/// <example>
+		/// logger.Info($"The count is {count}.");
+		/// </example>
+		void Info(string message, Exception exception = null);
+
+		/// <summary>
 		/// Log a WARNING information to build output.
 		/// </summary>
 		/// <remarks>
@@ -54,6 +75,17 @@ namespace Uno.SourceGeneration
 		void Warn(IFormattable message, Exception exception = null);
 
 		/// <summary>
+		/// Log a WARNING information to build output.
+		/// </summary>
+		/// <remarks>
+		/// Will be reported as a _warning_ in the build result.
+		/// </remarks>
+		/// <example>
+		/// logger.Warn($"The count is {count}.");
+		/// </example>
+		void Warn(string message, Exception exception = null);
+
+		/// <summary>
 		/// Log an ERROR information to build output.
 		/// </summary>
 		/// <remarks>
@@ -63,5 +95,16 @@ namespace Uno.SourceGeneration
 		/// logger.Error($"The count is {count}.", exception);
 		/// </example>
 		void Error(IFormattable message, Exception exception = null);
+
+		/// <summary>
+		/// Log an ERROR information to build output.
+		/// </summary>
+		/// <remarks>
+		/// Will be reported as an _error_ in the build result.
+		/// </remarks>
+		/// <example>
+		/// logger.Error($"The count is {count}.", exception);
+		/// </example>
+		void Error(string message, Exception exception = null);
 	}
 }

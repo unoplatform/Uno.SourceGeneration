@@ -29,24 +29,52 @@ namespace Uno.SourceGeneration.Host
 			_logger = logger;
 		}
 
+		/// <inheritdoc />
 		public void Debug(IFormattable message, Exception exception = null)
 		{
 			_logger.Debug(() => message?.ToString(), exception);
 		}
 
+		/// <inheritdoc />
+		public void Debug(string message, Exception exception = null)
+		{
+			_logger.Debug(message, exception);
+		}
+
+		/// <inheritdoc />
 		public void Info(IFormattable message, Exception exception = null)
 		{
 			_logger.Info(() => message?.ToString(), exception);
 		}
 
+		/// <inheritdoc />
+		public void Info(string message, Exception exception = null)
+		{
+			_logger.Info(message, exception);
+		}
+
+		/// <inheritdoc />
 		public void Warn(IFormattable message, Exception exception = null)
 		{
 			_logger.Warn(() => message?.ToString(), exception);
 		}
 
+		/// <inheritdoc />
+		public void Warn(string message, Exception exception = null)
+		{
+			_logger.Warn(message, exception);
+		}
+
+		/// <inheritdoc />
 		public void Error(IFormattable message, Exception exception = null)
 		{
 			_logger.Error(() => message?.ToString(), exception);
+		}
+
+		/// <inheritdoc />
+		public void Error(string message, Exception exception = null)
+		{
+			_logger.Error(message, exception);
 		}
 	}
 }
