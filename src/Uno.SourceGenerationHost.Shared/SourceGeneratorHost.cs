@@ -143,8 +143,13 @@ namespace Uno.SourceGeneration.Host
 
 						try
 						{
+							var generatorLogger = new GeneratorLogger(generator.Log());
+
 							var context = new InternalSourceGeneratorContext(compilationResult.compilation, compilationResult.project);
 							context.SetProjectInstance(details.ExecutedProject);
+							context.SetLogger(generatorLogger);
+
+							generatorLogger.Debug($"{2}");
 
 							var w = Stopwatch.StartNew();
 							generator.Execute(context);

@@ -22,39 +22,35 @@ using System.Text;
 
 namespace Uno.SourceGeneratorTasks.Helpers
 {
-    public class TaskLoggerProvider : ILoggerProvider
-    {
-        private TaskLoggingHelper _taskLog;
-        private List<TaskLogger> _loggers = new List<TaskLogger>();
+	public class TaskLoggerProvider : ILoggerProvider
+	{
+		private TaskLoggingHelper _taskLog;
+		private readonly List<TaskLogger> _loggers = new List<TaskLogger>(2);
 
+		public ILogger CreateLogger(string categoryName)
+		{
+			var logger = new TaskLogger(categoryName) { TaskLog = _taskLog };
 
-        public ILogger CreateLogger(string categoryName)
-        {
-            var logger = new TaskLogger(categoryName) { TaskLog = _taskLog };
+			return logger;
+		}
 
-            return logger;
-        }
+		public void Dispose()
+		{
 
-        public void Dispose()
-        {
+		}
 
-        }
+		public TaskLoggingHelper TaskLog
+		{
+			get => _taskLog;
+			set
+			{
+				_taskLog = value;
 
-        public TaskLoggingHelper TaskLog
-        {
-            get
-            {
-                return _taskLog;
-            }
-            set
-            {
-                _taskLog = value;
-
-                foreach(var logger in _loggers)
-                {
-                    logger.TaskLog = value;
-                }
-            }
-        }
-    }
+				foreach(var logger in _loggers)
+				{
+					logger.TaskLog = value;
+				}
+			}
+		}
+	}
 }
