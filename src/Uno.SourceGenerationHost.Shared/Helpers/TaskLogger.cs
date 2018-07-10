@@ -23,12 +23,11 @@ namespace Uno.SourceGeneratorTasks.Helpers
 {
 	public class TaskLogger : MarshalByRefObject, Microsoft.Extensions.Logging.ILogger
 	{
-		private TaskLoggingHelper _taskLog;
-        private string _categoryName;
+		private string _categoryName;
 
-        public TaskLogger(string categoryName)
+		public TaskLogger(string categoryName)
 		{
-            _categoryName = categoryName;
+			_categoryName = categoryName;
 		}
 
 		public override object InitializeLifetimeService()
@@ -40,56 +39,46 @@ namespace Uno.SourceGeneratorTasks.Helpers
 
 		public IDisposable BeginScope<TState>(TState state) => new DisposableAction(() => { });
 
-        public bool IsEnabled(LogLevel logLevel) => logLevel >= LogLevel.Debug;
+		public bool IsEnabled(LogLevel logLevel) => logLevel >= LogLevel.Debug;
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
-        {
-            if (formatter == null)
-            {
-                throw new ArgumentNullException(nameof(formatter));
-            }
+		public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
+		{
+			if (formatter == null)
+			{
+				throw new ArgumentNullException(nameof(formatter));
+			}
 
-            var message = formatter(state, exception);
+			var message = formatter(state, exception);
 
-            if (string.IsNullOrEmpty(message))
-            {
-                return;
-            }
+			if (string.IsNullOrEmpty(message))
+			{
+				return;
+			}
 
-            switch (logLevel)
-            {
-                case LogLevel.Error:
-                    TaskLog?.LogError(message);
-                    break;
+			switch (logLevel)
+			{
+				case LogLevel.Error:
+					TaskLog?.LogError(message);
+					break;
 
-                case LogLevel.Warning:
-                    TaskLog?.LogWarning(message);
-                    break;
+				case LogLevel.Warning:
+					TaskLog?.LogWarning(message);
+					break;
 
-                case LogLevel.Information:
-                    TaskLog?.LogMessage(MessageImportance.Normal, message);
-                    break;
+				case LogLevel.Information:
+					TaskLog?.LogMessage(MessageImportance.Normal, message);
+					break;
 
-                case LogLevel.Debug:
-                    TaskLog?.LogMessage(MessageImportance.Low, message);
-                    break;
+				case LogLevel.Debug:
+					TaskLog?.LogMessage(MessageImportance.Low, message);
+					break;
 
-                default:
-                    TaskLog?.LogMessage(message);
-                    break;
-            }
-        }
+				default:
+					TaskLog?.LogMessage(message);
+					break;
+			}
+		}
 
-        public TaskLoggingHelper TaskLog
-        {
-            get
-            {
-                return _taskLog;
-            }
-            set
-            {
-                _taskLog = value;
-            }
-        }
-    }
+		public TaskLoggingHelper TaskLog { get; set; }
+	}
 }
