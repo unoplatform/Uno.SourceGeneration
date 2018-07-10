@@ -180,6 +180,29 @@ This will open another visual studio instance, and allow for stepping through th
   taskkill /fi "imagename eq msbuild.exe" /f /t
   ```
 
+## Logging to build output
+
+You can write to build output using the following code:
+
+``` csharp
+    public override void Execute(SourceGeneratorContext context)
+    {
+        var logger = context.GetLogger(); // this is an extension method on SourceGeneratorContext
+
+        // Log something to build output when the mode is "detailed".
+        logger.Debug($"The current count is {count}");
+
+        // Log something to build output when the mode is "normal".
+        logger.Info($"A total of {filesCount} has been generated.");
+
+        // Log something as warning in build output.
+        logger.Warn($"No code generated because the mode is {currentMode}.");
+
+        // Log something as error in build output.
+        logger.Error($"Unable to open file {filename}. No code generated.");
+    }
+```
+
 ## Troubleshooting
 
 ### Generation output
