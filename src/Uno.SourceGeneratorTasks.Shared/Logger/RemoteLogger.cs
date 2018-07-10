@@ -32,7 +32,14 @@ namespace Uno.SourceGeneratorTasks.Logger
             _loggerName = loggerName;
         }
 
-        public RemotableLogger2 TaskLog
+		public override object InitializeLifetimeService()
+		{
+			// Keep this object alive infinitely, it will be deleted along with the 
+			// host msbuild.exe process.
+			return null;
+		}
+
+		public RemotableLogger2 TaskLog
         {
             get
             {
