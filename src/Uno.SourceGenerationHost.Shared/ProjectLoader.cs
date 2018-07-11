@@ -69,26 +69,26 @@ namespace Uno.SourceGeneration.Host
 			}
 
 			if (_log.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
-            {
-                _log.LogDebug($"Loading project file [{environment.ProjectFile}]");
+			{
+				_log.LogDebug($"Loading project file [{environment.ProjectFile}]");
 			}
 
 			details = new ProjectDetails();
 
-            var properties = new Dictionary<string, string>(ImmutableDictionary<string, string>.Empty)
-            {
-                ["DesignTimeBuild"] = "true", // this will tell msbuild to not build the dependent projects
-                ["BuildingInsideVisualStudio"] = "true", // this will force CoreCompile task to execute even if all inputs and outputs are up to date
-                ["BuildingInsideUnoSourceGenerator"] = "true", // this will force prevent the task to run recursively
-                ["Configuration"] = environment.Configuration,
-                ["UseHostCompilerIfAvailable"] = "true",
-                ["UseSharedCompilation"] = "true",
-                ["VisualStudioVersion"] = environment.VisualStudioVersion,
+			var properties = new Dictionary<string, string>(ImmutableDictionary<string, string>.Empty)
+			{
+				["DesignTimeBuild"] = "true", // this will tell msbuild to not build the dependent projects
+				["BuildingInsideVisualStudio"] = "true", // this will force CoreCompile task to execute even if all inputs and outputs are up to date
+				["BuildingInsideUnoSourceGenerator"] = "true", // this will force prevent the task to run recursively
+				["Configuration"] = environment.Configuration,
+				["UseHostCompilerIfAvailable"] = "true",
+				["UseSharedCompilation"] = "true",
+				["VisualStudioVersion"] = environment.VisualStudioVersion,
 
-                // Force the intermediate path to be different from the VS default path
-                // so that the generated files don't mess up the file count for incremental builds.
-                ["IntermediateOutputPath"] = Path.Combine(environment.OutputPath, "obj") + Path.DirectorySeparatorChar
-            };
+				// Force the intermediate path to be different from the VS default path
+				// so that the generated files don't mess up the file count for incremental builds.
+				["IntermediateOutputPath"] = Path.Combine(environment.OutputPath, "obj") + Path.DirectorySeparatorChar
+			};
 
 			// Target framework is required for the MSBuild 15.0 Cross Compilation.
 			// Loading a project without the target framework results in an empty project, which interatively
@@ -112,8 +112,8 @@ namespace Uno.SourceGeneration.Host
 			var xmlReader = XmlReader.Create(environment.ProjectFile);
 			var collection = new Microsoft.Build.Evaluation.ProjectCollection();
 
-            // Change this logger details to troubleshoot project loading details.
-            collection.RegisterLogger(new Microsoft.Build.Logging.ConsoleLogger() { Verbosity = LoggerVerbosity.Minimal });
+			// Change this logger details to troubleshoot project loading details.
+			collection.RegisterLogger(new Microsoft.Build.Logging.ConsoleLogger() { Verbosity = LoggerVerbosity.Minimal });
 
 #if HAS_BINLOG
 			Microsoft.Build.Logging.BinaryLogger binaryLogger = null;
@@ -191,40 +191,40 @@ namespace Uno.SourceGeneration.Host
 				details.References = details.ExecutedProject.GetItems("ReferencePath").Select(r => r.EvaluatedInclude).ToArray();
 
 				if(!details.References.Any())
-                {
-                    if (_log.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Error))
-                    {
-                        _log.LogError($"Project has no references.");
-                    }
+				{
+					if (_log.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Error))
+					{
+						_log.LogError($"Project has no references.");
+					}
 
-                    LogFailedTargets(environment.ProjectFile, result);
+					LogFailedTargets(environment.ProjectFile, result);
 					details.Generators = new (Type, Func<SourceGenerator>)[0];
 					return details;
 				}
-                // else
-                // {
-                //     if (_log.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
-                //     {
-                //         _log.LogDebug($"Project references: {string.Join("; ", details.References)}");
-                //     }
-                // }
+				// else
+				// {
+				//     if (_log.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
+				//     {
+				//         _log.LogDebug($"Project references: {string.Join("; ", details.References)}");
+				//     }
+				// }
 
-                details.IntermediatePath = Path.Combine(projectFilePath, details.ExecutedProject.GetPropertyValue("IntermediateOutputPath"));
+				details.IntermediatePath = Path.Combine(projectFilePath, details.ExecutedProject.GetPropertyValue("IntermediateOutputPath"));
 
-                // This is the legacy way of looking for source generators, based on the defunct "Roslyn 2.0 Source Generator" proposal.
-                // This causes issues with the VS IDE, where roslyn tries to load our source generators to 
-                // find analyzers, but does not find any and reports it in the errors window.
-                //
-                // The SourceGenerator ItemGroup should now be used instead.
-                var analyzerFiles = details.ExecutedProject
-                    .GetItems("Analyzer")
-                    .Select(r => Path.Combine(projectFilePath, r.EvaluatedInclude))
-                    .Select(Path.GetFullPath);
+				// This is the legacy way of looking for source generators, based on the defunct "Roslyn 2.0 Source Generator" proposal.
+				// This causes issues with the VS IDE, where roslyn tries to load our source generators to 
+				// find analyzers, but does not find any and reports it in the errors window.
+				//
+				// The SourceGenerator ItemGroup should now be used instead.
+				var analyzerFiles = details.ExecutedProject
+					.GetItems("Analyzer")
+					.Select(r => Path.Combine(projectFilePath, r.EvaluatedInclude))
+					.Select(Path.GetFullPath);
 
-                var sourceGeneratorFiles = details.ExecutedProject
-                    .GetItems("SourceGenerator")
-                    .Select(r => Path.Combine(projectFilePath, r.EvaluatedInclude))
-                    .Select(Path.GetFullPath);
+				var sourceGeneratorFiles = details.ExecutedProject
+					.GetItems("SourceGenerator")
+					.Select(r => Path.Combine(projectFilePath, r.EvaluatedInclude))
+					.Select(Path.GetFullPath);
 
 				var sourceGeneratorAdditionalDependencies = details.ExecutedProject
 					.GetItems("SourceGeneratorAdditionalDependency")
@@ -240,21 +240,21 @@ namespace Uno.SourceGeneration.Host
 
 				details.Generators = LoadAnalyzers(analyzerFiles.Concat(sourceGeneratorFiles).Distinct());
 
-                if (_log.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
-                {
-                    var allGenerators = details.Generators.Select(g => g.generatorType.FullName).JoinBy("; ");
+				if (_log.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
+				{
+					var allGenerators = details.Generators.Select(g => g.generatorType.FullName).JoinBy("; ");
 
 					_log.LogDebug($"Found {details.Generators.Length} Source Generators. ({allGenerators}");
 				}
 			}
 			else
-            {
-                if (_log.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Error))
-                {
-                    _log.LogError($"Project analysis failed ({result.Exception}");
-                }
+			{
+				if (_log.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Error))
+				{
+					_log.LogError($"Project analysis failed ({result.Exception}");
+				}
 
-                LogFailedTargets(environment.ProjectFile, result);
+				LogFailedTargets(environment.ProjectFile, result);
 
 				details.Generators = new (Type, Func<SourceGenerator>)[0];
 			}
@@ -272,9 +272,9 @@ namespace Uno.SourceGeneration.Host
 
 		private static void LogFailedTargets(string projectFile, BuildResult result)
 		{
-            if (_log.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
-            {
-                var failedTargetsEnum = result
+			if (_log.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
+			{
+				var failedTargetsEnum = result
 					.ResultsByTarget
 					.Where(p => p.Value.ResultCode == TargetResultCode.Failure)
 
@@ -328,14 +328,9 @@ namespace Uno.SourceGeneration.Host
 					{
 						var assemblyName = new AssemblyName(e.Name).Name;
 
-						if (assemblyName == "Uno.SourceGeneration")
-						{
-							return typeof(SourceGenerator).Assembly;
-						}
-						else
-						{
-							return Assembly.LoadFile(Path.Combine(assemblyDirectory, assemblyName + ".dll"));
-						}
+						return assemblyName == "Uno.SourceGeneration"
+							? typeof(SourceGenerator).Assembly
+							: Assembly.LoadFile(Path.Combine(assemblyDirectory, assemblyName + ".dll"));
 					}
 
 					try
@@ -347,6 +342,7 @@ namespace Uno.SourceGeneration.Host
 						var asm = Assembly.LoadFrom(analyzerAsm);
 
 						var q = from type in asm.GetTypes()
+								where !type.IsAbstract
 								where type.GetBaseTypes().Any(c => c.FullName == typeof(SourceGenerator).FullName)
 								select type;
 
