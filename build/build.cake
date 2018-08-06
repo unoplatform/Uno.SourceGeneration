@@ -158,17 +158,6 @@ Task("Version")
 		System.IO.File.WriteAllText(file, text.Replace("v0", "v" + versionInfo.Sha));
 	}
 
-
-	var manifests = new[] {
-		@"..\src\Uno.SourceGeneration.Intellisense\source.extension.vsixmanifest"
-	};
-	
-	foreach(var manifest in manifests)
-	{
-		var f = File(manifest);
-		XmlPoke(f, "//*[local-name()='Identity']/@Version", "" + versionInfo.MajorMinorPatch);
-	}
-
 });
 
 //////////////////////////////////////////////////////////////////////
