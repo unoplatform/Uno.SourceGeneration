@@ -24,8 +24,6 @@ build_script:
 artifacts:
 - path: .\build\*.nupkg
 
-- path: .\src\**\*.vsix
-
 deploy:
   provider: NuGet
   api_key:

@@ -80,6 +80,7 @@
     </Compile>
     <Compile Include="GenerateBeforeAttribute.cs" />
     <Compile Include="GenerateAfterAttribute.cs" />
+    <Compile Include="ISourceGeneratorLogger.cs" />
     <Compile Include="SourceGeneratorExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SourceGenerator.cs" />

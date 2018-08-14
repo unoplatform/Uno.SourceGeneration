@@ -26,23 +26,40 @@ namespace Uno.SourceGeneration
 {
 	public static class SourceGeneratorExtensions
 	{
-		private static ConditionalWeakTable<SourceGeneratorContext, ProjectInstance> _project = new ConditionalWeakTable<SourceGeneratorContext, ProjectInstance>();
+		private static readonly ConditionalWeakTable<SourceGeneratorContext, ProjectInstance> _project
+			= new ConditionalWeakTable<SourceGeneratorContext, ProjectInstance>();
+
+		private static readonly ConditionalWeakTable<SourceGeneratorContext, ISourceGeneratorLogger> _logger
+			= new ConditionalWeakTable<SourceGeneratorContext, ISourceGeneratorLogger>();
 
 		public static ProjectInstance GetProjectInstance(this SourceGeneratorContext context)
 		{
-			ProjectInstance instance;
-
-			if(!_project.TryGetValue(context, out instance))
+			if (_project.TryGetValue(context, out var instance))
 			{
-				throw new InvalidOperationException("The SourceGeneratorContext has not been initialized from a SourceGeneratorHost.");
+				return instance;
 			}
 
-			return instance;
+			throw new InvalidOperationException("The SourceGeneratorContext has not been initialized from a SourceGeneratorHost.");
 		}
 
 		public static void SetProjectInstance(this SourceGeneratorContext context, ProjectInstance projectInstance)
 		{
 			_project.Add(context, projectInstance);
+		}
+
+		public static ISourceGeneratorLogger GetLogger(this SourceGeneratorContext context)
+		{
+			if (_logger.TryGetValue(context, out var logger))
+			{
+				return logger;
+			}
+
+			throw new InvalidOperationException("The SourceGeneratorContext has not been initialized from a SourceGeneratorHost.");
+		}
+
+		public static void SetLogger(this SourceGeneratorContext context, ISourceGeneratorLogger logger)
+		{
+			_logger.Add(context, logger);
 		}
 	}
 }

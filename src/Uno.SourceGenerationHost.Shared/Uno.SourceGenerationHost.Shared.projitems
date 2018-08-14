@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)BuildEnvironment.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GeneratorLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\BuildTargets.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\TaskLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\TaskLoggerProvider.cs" />

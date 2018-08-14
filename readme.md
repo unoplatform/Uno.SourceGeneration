@@ -180,6 +180,29 @@ This will open another visual studio instance, and allow for stepping through th
   taskkill /fi "imagename eq msbuild.exe" /f /t
   ```
 
+## Logging to build output
+
+You can write to build output using the following code:
+
+``` csharp
+    public override void Execute(SourceGeneratorContext context)
+    {
+        var logger = context.GetLogger(); // this is an extension method on SourceGeneratorContext
+
+        // Log something to build output when the mode is "detailed".
+        logger.Debug($"The current count is {count}");
+
+        // Log something to build output when the mode is "normal".
+        logger.Info($"A total of {filesCount} has been generated.");
+
+        // Log something as warning in build output.
+        logger.Warn($"No code generated because the mode is {currentMode}.");
+
+        // Log something as error in build output.
+        logger.Error($"Unable to open file {filename}. No code generated.");
+    }
+```
+
 ## Troubleshooting
 
 ### Generation output
@@ -196,21 +219,3 @@ created inside the application domain used to generate the code. The path for th
 allows for an improved diagnostics experience. Set the `UnoSourceGeneratorUnsecureBinLogEnabled` property to true to enabled binary logging.
 
 > **Important**: The binary logger may leak secret environment variables, it is a best practice to never enable this feature as part of normal build.
-
-### Generated code & Intellisense
-
-Many generators will produce code you can use directly in your app. Visual Studio may fail to reset _intellisense_
-to show generated code.
-
-Until this problem is fixed by Microsoft, we developped a simple _VSIX_ extension to force VisualStudio
-to reset the _Intellisense_ cache after a build. This package is not published to the Microsoft Extensions
-Gallery: you can find it in the artifacts of the _Appveyor_ build ouput­. Check for the
-`Uno.SourceGeneration.Intellisense.vsix` file in the build output
-(in the _Build Status_ table at the beginning of this document).
-
-If you want to deactivate this behavior for a specific project, just add the following property in your
-`.csproj` file:
-
-``` xml
-  <UnoSourceGeneration_FixIntellisense>false</UnoSourceGeneration_FixIntellisense>
-```

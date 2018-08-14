@@ -24,6 +24,14 @@ namespace Uno.SampleGenerators
 		{
 			var project = context.GetProjectInstance();
 
+			context.GetLogger().Debug($"{nameof(MyCustomSourceGenerator)}: This is a DEBUG logging");
+			context.GetLogger().Info($"{nameof(MyCustomSourceGenerator)}: This is an INFO logging");
+
+#if DEBUG // Only in DEBUG to prevent breaking the CI build.
+			context.GetLogger().Warn($"{nameof(MyCustomSourceGenerator)}: This is a WARN logging");
+			context.GetLogger().Error($"{nameof(MyCustomSourceGenerator)}: This is an ERROR logging");
+#endif
+
 			context.AddCompilationUnit(
 				"Test",
 				$@"

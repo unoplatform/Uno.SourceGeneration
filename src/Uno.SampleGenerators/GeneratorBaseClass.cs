@@ -1,4 +1,4 @@
-// ******************************************************************
+﻿// ******************************************************************
 // Copyright � 2015-2018 nventive inc. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,33 +14,13 @@
 // limitations under the License.
 //
 // ******************************************************************
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
+using Uno.SourceGeneration;
 
-namespace Uno.SourceGeneratorTasks.Helpers
+namespace Uno.SampleGenerators
 {
-	public static class TypeExtensions
+	public abstract class GeneratorBaseClass : SourceGenerator
 	{
-		public static IEnumerable<Type> GetBaseTypes(this Type type)
-		{
-			var previousType = type;
-
-			while (true)
-			{
-				var baseType = previousType.BaseType;
-
-				if (baseType == null || baseType.FullName == previousType.FullName)
-				{
-					yield break;
-				}
-				else
-				{
-					yield return baseType;
-					previousType = baseType;
-				}
-			}
-		}
+		// Abstract base class.
+		// The generation task shouldn't try to instanciate it.
 	}
 }
