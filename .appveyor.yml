@@ -3,6 +3,7 @@ image: Visual Studio 2017
 branches:
   only:
   - master
+  - beta
   - stable
 
 # Don't create a build when a PR is opened
