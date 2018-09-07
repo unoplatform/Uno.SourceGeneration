@@ -45,14 +45,15 @@ namespace Uno.SourceGeneratorTasks
 
 			ApplyVS4MacWorkarounds();
 
-			RegisterAssmblyLoader();
+			RegisterAssemblyLoader();
 
 			AppDomain.CurrentDomain.DomainUnload += (s, e) => this.Log().Debug($"Unloading domain ({AppDomain.CurrentDomain.FriendlyName}");
 		}
 
 		public string MSBuildBasePath
 		{
-			get => _mSBuildBasePath; set
+			get => _mSBuildBasePath;
+			set
 			{
 				_mSBuildBasePath = value;
 
@@ -76,7 +77,7 @@ namespace Uno.SourceGeneratorTasks
 			return new SourceGeneratorHost(environment).Generate();
 		}
 
-		private void RegisterAssmblyLoader()
+		private void RegisterAssemblyLoader()
 		{
 			// Force assembly loader to consider siblings, when running in a separate appdomain.
 
