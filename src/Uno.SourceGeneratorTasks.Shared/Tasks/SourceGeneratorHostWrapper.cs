@@ -36,32 +36,36 @@ namespace Uno.SourceGeneratorTasks
 	{
 		private readonly RemoteLoggerProvider _remoteLoggerProvider = new RemoteLoggerProvider();
 		private bool _additionalAssembliesLoaded;
-		private string _mSBuildBasePath;
+		private bool _initialized;
 
 		public SourceGeneratorHostWrapper()
 		{
-			LogExtensionPoint.AmbientLoggerFactory.AddProvider(_remoteLoggerProvider);
-			LogExtensionPoint.AmbientLoggerFactory.AddDebug();
-
-			ApplyVS4MacWorkarounds();
-
-			RegisterAssemblyLoader();
-
-			AppDomain.CurrentDomain.DomainUnload += (s, e) => this.Log().Debug($"Unloading domain ({AppDomain.CurrentDomain.FriendlyName}");
 		}
 
-		public string MSBuildBasePath
-		{
-			get => _mSBuildBasePath;
-			set
-			{
-				_mSBuildBasePath = value;
-
-				ApplyCacheFolderMSBuildWorkaround();
-			}
-		}
+		public string MSBuildBasePath { get; set; }
 
 		public string[] AdditionalAssemblies { get; set; }
+
+		public void Initialize()
+		{
+			if (!_initialized)
+			{
+				_initialized = true;
+
+				LogExtensionPoint.AmbientLoggerFactory.AddProvider(_remoteLoggerProvider);
+				LogExtensionPoint.AmbientLoggerFactory.AddDebug();
+
+				// Apply the workaround before registsering assembly loader to avoid
+				// invalid lookups.
+				ApplyCacheFolderMSBuildWorkaround();
+
+				ApplyVS4MacWorkarounds();
+
+				RegisterAssemblyLoader();
+
+				AppDomain.CurrentDomain.DomainUnload += (s, e) => this.Log().Debug($"Unloading domain ({AppDomain.CurrentDomain.FriendlyName}");
+			}
+		}
 
 		public override object InitializeLifetimeService()
 		{
@@ -72,6 +76,11 @@ namespace Uno.SourceGeneratorTasks
 
 		internal string[] Generate(RemotableLogger2 logger, BuildEnvironment environment)
 		{
+			if (!_initialized)
+			{
+				throw new InvalidOperationException("Initialize must be called before calling Generate");
+			}
+
 			_remoteLoggerProvider.TaskLog = logger;
 
 			return new SourceGeneratorHost(environment).Generate();
