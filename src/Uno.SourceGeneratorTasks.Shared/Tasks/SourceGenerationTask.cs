@@ -258,6 +258,8 @@ namespace Uno.SourceGeneratorTasks
 			newHost.MSBuildBasePath = msbuildBasePath;
 			newHost.AdditionalAssemblies = AdditionalAssemblies;
 
+			newHost.Initialize();
+
 			hostEntry = (newHost, domain);
 			return hostEntry;
 		}

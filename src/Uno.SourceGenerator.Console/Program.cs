@@ -39,6 +39,7 @@ namespace Uno.SourceGeneratorTasks.Console
 		{
 			// var generator = Build();
 			var generator = new SourceGeneratorHostWrapper();
+			generator.Initialize();
 			var output = generator.Generate(
 				logger: null,
 				environment: new BuildEnvironment(
