@@ -28,29 +28,44 @@ using Uno.SourceGeneration.Host;
 using Uno.SourceGeneratorTasks.Helpers;
 using Uno.SourceGeneratorTasks.Logger;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace Uno.SourceGeneratorTasks
 {
-    public class SourceGeneratorHostWrapper : MarshalByRefObject
+	public class SourceGeneratorHostWrapper : MarshalByRefObject
 	{
-        private readonly RemoteLoggerProvider _remoteLoggerProvider = new RemoteLoggerProvider();
+		private readonly RemoteLoggerProvider _remoteLoggerProvider = new RemoteLoggerProvider();
 		private bool _additionalAssembliesLoaded;
+		private bool _initialized;
 
 		public SourceGeneratorHostWrapper()
-        {
-            LogExtensionPoint.AmbientLoggerFactory.AddProvider(_remoteLoggerProvider);
-            LogExtensionPoint.AmbientLoggerFactory.AddDebug();
-
-            ApplyVS4MacWorkarounds();
-
-            RegisterAssmblyLoader();
-
-            AppDomain.CurrentDomain.DomainUnload += (s, e) => this.Log().Debug($"Unloading domain ({AppDomain.CurrentDomain.FriendlyName}");
-        }
+		{
+		}
 
 		public string MSBuildBasePath { get; set; }
 
 		public string[] AdditionalAssemblies { get; set; }
+
+		public void Initialize()
+		{
+			if (!_initialized)
+			{
+				_initialized = true;
+
+				LogExtensionPoint.AmbientLoggerFactory.AddProvider(_remoteLoggerProvider);
+				LogExtensionPoint.AmbientLoggerFactory.AddDebug();
+
+				// Apply the workaround before registsering assembly loader to avoid
+				// invalid lookups.
+				ApplyCacheFolderMSBuildWorkaround();
+
+				ApplyVS4MacWorkarounds();
+
+				RegisterAssemblyLoader();
+
+				AppDomain.CurrentDomain.DomainUnload += (s, e) => this.Log().Debug($"Unloading domain ({AppDomain.CurrentDomain.FriendlyName}");
+			}
+		}
 
 		public override object InitializeLifetimeService()
 		{
@@ -60,24 +75,29 @@ namespace Uno.SourceGeneratorTasks
 		}
 
 		internal string[] Generate(RemotableLogger2 logger, BuildEnvironment environment)
-        {
-            _remoteLoggerProvider.TaskLog = logger;
+		{
+			if (!_initialized)
+			{
+				throw new InvalidOperationException("Initialize must be called before calling Generate");
+			}
 
-            return new SourceGeneratorHost(environment).Generate();
+			_remoteLoggerProvider.TaskLog = logger;
+
+			return new SourceGeneratorHost(environment).Generate();
 		}
 
-		private void RegisterAssmblyLoader()
+		private void RegisterAssemblyLoader()
 		{
 			// Force assembly loader to consider siblings, when running in a separate appdomain.
 
 			ResolveEventHandler localResolve = (s, e) =>
 			{
-                if(e.Name == "Mono.Runtime")
-                {
-                    // Roslyn 2.0 and later checks for the presence of the Mono runtime
-                    // through this check.
-                    return null;
-                }
+				if (e.Name == "Mono.Runtime")
+				{
+					// Roslyn 2.0 and later checks for the presence of the Mono runtime
+					// through this check.
+					return null;
+				}
 
 				var assembly = new AssemblyName(e.Name);
 				var basePath = Path.GetDirectoryName(new Uri(this.GetType().Assembly.CodeBase).LocalPath);
@@ -103,7 +123,7 @@ namespace Uno.SourceGeneratorTasks
 									select asm
 								).ToArray();
 
-				if(loadedAsm.Length > 1)
+				if (loadedAsm.Length > 1)
 				{
 					var duplicates = loadedAsm
 						.Skip(1)
@@ -117,7 +137,7 @@ namespace Uno.SourceGeneratorTasks
 
 					return loadedAsm[0];
 				}
-				else if(loadedAsm.Length == 1)
+				else if (loadedAsm.Length == 1)
 				{
 					return loadedAsm[0];
 				}
@@ -158,12 +178,12 @@ namespace Uno.SourceGeneratorTasks
 			};
 
 			AppDomain.CurrentDomain.AssemblyResolve += localResolve;
-            AppDomain.CurrentDomain.TypeResolve += localResolve;
+			AppDomain.CurrentDomain.TypeResolve += localResolve;
 		}
 
 		private void TryLoadAdditionalAssemblies()
 		{
-			if(!_additionalAssembliesLoaded)
+			if (!_additionalAssembliesLoaded)
 			{
 				_additionalAssembliesLoaded = true;
 
@@ -193,6 +213,60 @@ namespace Uno.SourceGeneratorTasks
 				Assembly.Load("System.Reflection.Metadata");
 			}
 		}
+
+		private void ApplyCacheFolderMSBuildWorkaround()
+		{
+			// This is a workaround for a race condition that can be created when the generation tasks
+			// are run inside an AppDomain.
+			// This field https://github.com/Microsoft/msbuild/blob/d8d43bca5bfe28e62c22211ddd1c5578cf3e37f8/src/Build/BackEnd/Components/Scheduler/Scheduler.cs#L1525
+			// is static per app domain, and creates a file that may be discarded in cases of concurrency when the same ID is being used twice, and the following error can happen:
+			//
+			// UNHANDLED EXCEPTIONS FROM PROCESS 15024:
+			// System.IO.FileNotFoundException: Could not find file 'C:\Users\build-svc-defpool\AppData\Local\Temp\MSBuild15024\Configuration191.cache'.
+			// File name: 'C:\Users\build-svc-defpool\AppData\Local\Temp\MSBuild15024\Configuration191.cache'
+			//    at System.IO.__Error.WinIOError(Int32 errorCode, String maybeFullPath)
+			//    at System.IO.FileStream.Init(String path, FileMode mode, FileAccess access, Int32 rights, Boolean useRights, FileShare share, Int32 bufferSize, FileOptions options, SECURITY_ATTRIBUTES secAttrs, String msgPath, Boolean bFromProxy, Boolean useLongPath, Boolean checkHost)
+			//    at System.IO.FileStream..ctor(String path, FileMode mode, FileAccess access, FileShare share)
+			//    at Microsoft.Build.BackEnd.BuildRequestConfiguration.GetConfigurationTranslator(TranslationDirection direction)
+			//    at Microsoft.Build.BackEnd.BuildRequestConfiguration.RetrieveFromCache()
+			//    at Microsoft.Build.BackEnd.BuildRequestEngine.ActivateBuildRequest(BuildRequestEntry entry)
+			//    at Microsoft.Build.BackEnd.BuildRequestEngine.<>c__DisplayClass39_0.<SubmitBuildRequest>b__0()
+			//    at Microsoft.Build.BackEnd.BuildRequestEngine.<>c__DisplayClass67_0.<QueueAction>b__0()
+			//
+			//
+			// The only way to avoid this, considering only one generation task can run per process, and per app domain, is to change the msbuild cache path specifically
+			// for the source generation app domain.
+			//
+			// This field https://github.com/Microsoft/msbuild/blob/0591c15d6c638cad38091fbe625dde968f86748d/src/Shared/FileUtilities.cs#L44
+			// is being forcibly set to a non-conflicting value before any msbuild code is run.
+			//
+			// This code will be removed when this issue is resolved: https://github.com/nventive/Uno.SourceGeneration/issues/33
+
+			try
+			{
+				var asm = Assembly.Load("Microsoft.Build");
+
+				if (Type.GetType("Microsoft.Build.Shared.FileUtilities, Microsoft.Build", false) is Type fileUtilitiesType)
+				{
+					if (fileUtilitiesType.GetField("cacheDirectory", BindingFlags.NonPublic | BindingFlags.Static) is FieldInfo field)
+					{
+						var existingcacheDirectory = field.GetValue(null);
+
+						if (existingcacheDirectory == null)
+						{
+							var cacheDirectory = Path.Combine(Path.GetTempPath(), String.Format(CultureInfo.CurrentUICulture, "MSBuild{0}-SourceGeneration", Process.GetCurrentProcess().Id));
+
+							field.SetValue(null, cacheDirectory);
+						}
+					}
+				}
+			}
+			catch (Exception)
+			{
+				System.Console.WriteLine("Failed to override internal msbuild cache directory");
+			}
+		}
+
 
 		/// <summary>
 		/// Allows for the remote client to determine if the server is available.
