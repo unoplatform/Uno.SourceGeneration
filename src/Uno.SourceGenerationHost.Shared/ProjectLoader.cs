@@ -105,6 +105,14 @@ namespace Uno.SourceGeneration.Host
 				properties["TargetFrameworkRootPath"] = environment.TargetFrameworkRootPath;
 			}
 
+			if (Environment.GetEnvironmentVariable("Platform") is string envPlatform && !string.IsNullOrEmpty(envPlatform))
+			{
+				throw new InvalidOperationException(
+					$"Your system has the Platform environment variable set to [{envPlatform}], which " +
+					"is known to break some msbuild projects. Visit https://github.com/nventive/Uno.SourceGeneration/issues/48 for more details."
+				);
+			}
+
 			// Platform is intentionally kept as not defined, to avoid having 
 			// dependent projects being loaded with a platform they don't support.
 			// properties["Platform"] = _platform;
