@@ -207,7 +207,13 @@ namespace Uno.SourceGeneratorTasks
 			var currentPath = Path.GetDirectoryName(new Uri(GetType().Assembly.CodeBase).LocalPath);
 			var hostPlatform = RuntimeHelpers.IsNetCore ? "netcoreapp2.1" : "net462";
 			var installedPath = Path.Combine(currentPath, $"..\\host\\{hostPlatform}");
-			var devPath = Path.Combine(currentPath, $"..\\..\\..\\Uno.SourceGeneration.Host\\bin\\Debug\\{hostPlatform}");
+#if DEBUG
+			var configuration = "Debug";
+#else
+			var configuration = "Release";
+#endif
+
+			var devPath = Path.Combine(currentPath, $"..\\..\\..\\Uno.SourceGeneration.Host\\bin\\{configuration}\\{hostPlatform}");
 
 			if (Directory.Exists(devPath))
 			{
