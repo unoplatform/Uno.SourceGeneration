@@ -14,9 +14,6 @@
 	<repository url="https://github.com/nventive/Uno.SourceGeneration" />
   </metadata>
   <files>
-	<file src="..\src\Uno.SourceGeneratorTasks.Dev14.0\Bin\Release\*.dll" target="build\Dev14.0" />
-	<file src="..\src\Uno.SourceGeneratorTasks.Dev14.0\Bin\Release\*.pdb" target="build\Dev14.0" />
-	<file src="..\src\Uno.SourceGeneratorTasks.Dev14.0\Bin\Release\*.config" target="build\Dev14.0" />
 	<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\*.dll" target="build\Dev15.0" />
 	<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\*.pdb" target="build\Dev15.0" />
 	<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\*.config" target="build\Dev15.0" />
