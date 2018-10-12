@@ -12,11 +12,6 @@
     <None Include="$(MSBuildThisFileDirectory)Content\Uno.SourceGenerationTasks.targets" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\DisposableAction.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\LogExtensionPoint.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\LogExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\StringExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\TypeExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logger\RemotableLogger2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logger\RemoteLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Logger\RemoteLoggerProvider.cs" />

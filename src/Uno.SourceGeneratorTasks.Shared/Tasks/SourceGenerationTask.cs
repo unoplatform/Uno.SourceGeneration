@@ -30,6 +30,9 @@ using System.Threading.Tasks;
 using Uno.SourceGeneration.Host;
 using Uno.SourceGeneratorTasks.Helpers;
 using System.Diagnostics;
+using System.Runtime.Serialization;
+using System.Runtime.InteropServices;
+using Uno.SourceGeneration.Helpers;
 
 namespace Uno.SourceGeneratorTasks
 {
@@ -49,6 +52,12 @@ namespace Uno.SourceGeneratorTasks
 		public string VisualStudioVersion { get; set; }
 
 		public string TargetFrameworkRootPath { get; set; }
+
+		/// <summary>
+		/// Determines the use of the external source generation host.
+		/// Enabled by default when running under Mono and .NET Core.
+		/// </summary>
+		public string UseGenerationHost { get; set; }
 
 		/// <summary>
 		/// Provides a list of assemblies to be loaded in the SourceGenerator
@@ -89,17 +98,14 @@ namespace Uno.SourceGeneratorTasks
 					return true;
 				}
 
-				Directory.CreateDirectory(OutputPath);
-				File.WriteAllText(lockFile, "");
-
-				Log.LogMessage("Running Source Generation Task");
-
-				_taskLogger = new TaskLoggerProvider() { TaskLog = Log };
-				LogExtensionPoint.AmbientLoggerFactory.AddProvider(_taskLogger);
-
-				var collection = GetCollection();
-
-				GenerateForCollection(collection);
+				if (NeedsGenerationHost)
+				{
+					GenerateWithHost();
+				}
+				else
+				{
+					GenerateWithAppDomains(lockFile);
+				}
 
 				return true;
 			}
@@ -122,8 +128,115 @@ namespace Uno.SourceGeneratorTasks
 			}
 			finally
 			{
-				File.Delete(lockFile);
+				if (File.Exists(lockFile))
+				{
+					File.Delete(lockFile);
+				}
 			}
+		}
+
+		private void GenerateWithHost()
+		{
+			var hostPath = GetHostPath();
+
+			var responseFile = Path.GetTempFileName();
+			var outputFile = Path.GetTempFileName();
+			var binlogFile = Path.GetTempFileName() + ".binlog";
+
+			try
+			{
+				using (var responseStream = File.OpenWrite(responseFile))
+				{
+					var serializer = new DataContractSerializer(typeof(BuildEnvironment));
+					serializer.WriteObject(responseStream, CreateBuildEnvironment());
+				}
+
+				ProcessStartInfo buildInfo()
+				{
+					if (RuntimeHelpers.IsNetCore)
+					{
+						var hostBinPath = Path.Combine(hostPath, "Uno.SourceGeneration.Host.dll");
+						string arguments = $"\"{hostBinPath}\" \"{responseFile}\" \"{outputFile}\" \"{binlogFile}\"";
+						var pi = new ProcessStartInfo("dotnet", arguments);
+						pi.UseShellExecute = false;
+
+						return pi;
+					}
+					else
+					{
+						var hostBinPath = Path.Combine(hostPath, "Uno.SourceGeneration.Host.exe");
+						string arguments = $"\"{responseFile}\" \"{outputFile}\" \"{binlogFile}\"";
+						var pi = new ProcessStartInfo(hostBinPath, arguments);
+						pi.UseShellExecute = false;
+
+						return pi;
+					}
+				}
+
+				var p = Process.Start(buildInfo());
+		
+				p.WaitForExit();
+
+				if (p.ExitCode == 0)
+				{
+					GenereratedFiles = File.ReadAllText(outputFile).Split(';');
+				}
+				else
+				{
+					throw new InvalidOperationException($"Generation failed");
+				}
+
+				BinaryLoggerReplayHelper.Replay(BuildEngine, binlogFile);
+			}
+			finally
+			{
+				File.Delete(responseFile);
+				File.Delete(outputFile);
+				File.Delete(binlogFile);
+			}
+		}
+
+
+		public bool NeedsGenerationHost
+			=> (bool.TryParse(UseGenerationHost, out var result) && result)
+			|| RuntimeHelpers.IsMono
+			|| RuntimeHelpers.IsNetCore;
+
+		private string GetHostPath()
+		{
+			var currentPath = Path.GetDirectoryName(new Uri(GetType().Assembly.CodeBase).LocalPath);
+			var hostPlatform = RuntimeHelpers.IsNetCore ? "netcoreapp2.1" : "net462";
+			var installedPath = Path.Combine(currentPath, $"..\\host\\{hostPlatform}");
+			var devPath = Path.Combine(currentPath, $"..\\..\\..\\Uno.SourceGeneration.Host\\bin\\Debug\\{hostPlatform}");
+
+			if (Directory.Exists(devPath))
+			{
+				return devPath;
+			}
+			else if (Directory.Exists(installedPath))
+			{
+				return installedPath;
+			}
+			else
+			{
+				throw new InvalidOperationException($"Unable to find Uno.SourceGeneration.Host.dll (in {devPath} or {installedPath})");
+			}
+			
+		}
+
+		private void GenerateWithAppDomains(string lockFile)
+		{
+			Directory.CreateDirectory(OutputPath);
+			File.WriteAllText(lockFile, "");
+
+			Log.LogMessage("Running Source Generation Task");
+
+			_taskLogger = new TaskLoggerProvider() { TaskLog = Log };
+			LogExtensionPoint.AmbientLoggerFactory.AddProvider(_taskLogger);
+
+			var collection = GetCollection();
+
+			GenerateForCollection(collection);
 		}
 
 		private HostCollection GetCollection()
@@ -193,17 +306,7 @@ namespace Uno.SourceGeneratorTasks
 
 				Logger.RemotableLogger2 remotableLogger = new Logger.RemotableLogger2(_taskLogger.CreateLogger("Logger.RemotableLogger"));
 
-				var environment = new BuildEnvironment(
-					Configuration,
-					Platform,
-					ProjectFile,
-					OutputPath,
-					TargetFramework,
-					VisualStudioVersion,
-					TargetFrameworkRootPath,
-					BinLogOutputPath,
-					BinLogEnabled
-				);
+				var environment = CreateBuildEnvironment();
 
 				GenereratedFiles = hostEntry.Wrapper.Generate(remotableLogger, environment);
 			}
@@ -215,6 +318,22 @@ namespace Uno.SourceGeneratorTasks
 				}
 			}
 		}
+
+		private BuildEnvironment CreateBuildEnvironment()
+			=> new BuildEnvironment
+			{
+				Configuration = Configuration,
+				Platform = Platform,
+				ProjectFile = ProjectFile,
+				OutputPath = OutputPath,
+				TargetFramework = TargetFramework,
+				VisualStudioVersion = VisualStudioVersion,
+				TargetFrameworkRootPath = TargetFrameworkRootPath,
+				BinLogOutputPath = BinLogOutputPath,
+				BinLogEnabled = BinLogEnabled,
+				MSBuildBinPath = Path.GetDirectoryName(new Uri(typeof(Microsoft.Build.Logging.ConsoleLogger).Assembly.CodeBase).LocalPath),
+				AdditionalAssemblies = AdditionalAssemblies
+			};
 
 		private (SourceGeneratorHostWrapper Wrapper, AppDomain Domain) CreateDomain(HostCollection collection)
 		{

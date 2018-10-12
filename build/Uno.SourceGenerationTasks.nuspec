@@ -1,29 +1,33 @@
 ﻿<?xml version="1.0"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
-	<metadata>
-		<id>Uno.SourceGenerationTasks</id>
-		<version>8.8.8.8</version>
-		<title>Uno SourceGenerator MSBuild Tasks</title>
-		<authors>nventive</authors>
-		<owners />
-		<requireLicenseAcceptance>false</requireLicenseAcceptance>
-		<description>The Uno Source Generator is an msbuild tasks used to generate C# code.</description>
-		<projectUrl>https://github.com/nventive/Uno.SourceGeneration</projectUrl>
-		<iconUrl>https://nv-assets.azurewebsites.net/logos/uno.png</iconUrl>
-		<copyright>Copyright (C) 2015-2018 nventive inc. - all rights reserved</copyright>
-		<repository url="https://github.com/nventive/Uno.SourceGeneration" />
-	</metadata>
-	<files>
-		<file src="..\src\Uno.SourceGeneratorTasks.Dev14.0\Bin\Release\*.dll" target="build\Dev14.0" />
-		<file src="..\src\Uno.SourceGeneratorTasks.Dev14.0\Bin\Release\*.pdb" target="build\Dev14.0" />
-		<file src="..\src\Uno.SourceGeneratorTasks.Dev14.0\Bin\Release\*.config" target="build\Dev14.0" />
-		<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\*.dll" target="build\Dev15.0" />
-		<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\*.pdb" target="build\Dev15.0" />
-		<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\*.config" target="build\Dev15.0" />
-		<file src="..\src\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" target="build\net45" />
-		<file src="..\src\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" target="build\uap" />
-		<file src="..\src\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" target="build\MonoAndroid" />
-		<file src="..\src\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" target="build\Xamarin.iOS10" />
-		<file src="..\src\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" target="build\Xamarin.Mac20" />
-	</files>
+  <metadata>
+	<id>Uno.SourceGenerationTasks</id>
+	<version>8.8.8.8</version>
+	<title>Uno SourceGenerator MSBuild Tasks</title>
+	<authors>nventive</authors>
+	<owners />
+	<requireLicenseAcceptance>false</requireLicenseAcceptance>
+	<description>The Uno Source Generator is an msbuild tasks used to generate C# code.</description>
+	<projectUrl>https://github.com/nventive/Uno.SourceGeneration</projectUrl>
+	<iconUrl>https://nv-assets.azurewebsites.net/logos/uno.png</iconUrl>
+	<copyright>Copyright (C) 2015-2018 nventive inc. - all rights reserved</copyright>
+	<repository url="https://github.com/nventive/Uno.SourceGeneration" />
+  </metadata>
+  <files>
+	<file src="..\src\Uno.SourceGeneratorTasks.Dev14.0\Bin\Release\*.dll" target="build\Dev14.0" />
+	<file src="..\src\Uno.SourceGeneratorTasks.Dev14.0\Bin\Release\*.pdb" target="build\Dev14.0" />
+	<file src="..\src\Uno.SourceGeneratorTasks.Dev14.0\Bin\Release\*.config" target="build\Dev14.0" />
+	<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\*.dll" target="build\Dev15.0" />
+	<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\*.pdb" target="build\Dev15.0" />
+	<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\*.config" target="build\Dev15.0" />
+
+	<file src="..\src\Uno.SourceGeneration.Host\bin\Debug\net462\*.*" target="build\host\net462" />
+	<file src="..\src\Uno.SourceGeneration.Host\bin\Debug\netcoreapp2.1\*.*" target="build\host\netcoreapp2.1" />
+
+	<file src="..\src\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" target="build\net45" />
+	<file src="..\src\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" target="build\uap" />
+	<file src="..\src\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" target="build\MonoAndroid" />
+	<file src="..\src\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" target="build\Xamarin.iOS10" />
+	<file src="..\src\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" target="build\Xamarin.Mac20" />
+  </files>
 </package>
