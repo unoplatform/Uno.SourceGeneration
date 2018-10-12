@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+	<UnoSourceGeneratorUseGenerationHost>true</UnoSourceGeneratorUseGenerationHost>
+  </PropertyGroup>
+
+  <PropertyGroup>
+	<UnoSourceGeneratorTasksPath>..\..\Uno.SourceGeneratorTasks.Dev$(MSBuildToolsVersion)\bin\$(Configuration)</UnoSourceGeneratorTasksPath>
+	<UnoSourceGeneratorOutputPath>GeneratedFiles</UnoSourceGeneratorOutputPath>
+  </PropertyGroup>
+  <Import Project="..\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" />
+  <ItemGroup>
+    <Compile Remove="GeneratedFiles\**" />
+    <EmbeddedResource Remove="GeneratedFiles\**" />
+    <None Remove="GeneratedFiles\**" />
+  </ItemGroup>
+  <ItemGroup>
+	<SourceGenerator Include="..\Uno.SampleGenerators\bin\$(Configuration)\Uno.SampleGenerators.dll" />
+  </ItemGroup>
+
+</Project>

@@ -8,7 +8,6 @@
 		<_UnoSourceGeneratorOutputPath Condition="'$(UnoSourceGeneratorOutputPath)'==''">$(IntermediateOutputPath)</_UnoSourceGeneratorOutputPath>
 		<_UnoSourceGeneratorOutputPath Condition="'$(UnoSourceGeneratorOutputPath)'!=''">$(UnoSourceGeneratorOutputPath)</_UnoSourceGeneratorOutputPath>
 
-
 		<_UnoSourceGeneratorCacheFile>$(_UnoSourceGeneratorOutputPath)\g\generation.cache</_UnoSourceGeneratorCacheFile>
 
 		<_UnoSourceGeneratorProjectType Condition="'$(ProjectTypeGuids)'=='{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}'">ios</_UnoSourceGeneratorProjectType>
@@ -109,6 +108,7 @@
 								AdditionalAssemblies="@(SourceGeneratorAdditionalAssemblies)"
 								BinLogOutputPath="$(UnoSourceGeneratorBinLogOutputPath)"
 								BinLogEnabled="$(UnoSourceGeneratorUnsecureBinLogEnabled)"
+								UseGenerationHost="$(UnoSourceGeneratorUseGenerationHost)"
 								Condition="$(_hasSourceGenerators)">
 			<Output TaskParameter="GenereratedFiles" ItemName="UnoGeneratedFiles" />
 		</SourceGenerationTask_v0>
