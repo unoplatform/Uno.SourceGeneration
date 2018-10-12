@@ -19,7 +19,7 @@ namespace Uno.SourceGeneration.Host
 			try
 			{
 				// Uncomment this for easier debugging
-				Debugger.Launch();
+				// Debugger.Launch();
 
 				if (args.Length != 3)
 				{
