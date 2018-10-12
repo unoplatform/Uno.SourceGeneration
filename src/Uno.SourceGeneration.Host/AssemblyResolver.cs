@@ -27,7 +27,7 @@ namespace Uno.SourceGeneration.Host
 				var assembly = new AssemblyName(e.Name);
 				var basePath = Path.GetDirectoryName(new Uri(typeof(Program).Assembly.CodeBase).LocalPath);
 
-				Console.WriteLine($"Searching for [{assembly}] from [{basePath}]");
+				typeof(AssemblyResolver).Log().Debug($"Searching for [{assembly}] from [{basePath}]");
 
 				// Ignore resource assemblies for now, we'll have to adjust this
 				// when adding globalization.
@@ -57,7 +57,7 @@ namespace Uno.SourceGeneration.Host
 
 					if (duplicates.Length != 0)
 					{
-						Console.WriteLine($"Selecting first occurrence of assembly [{e.Name}] which can be found at [{duplicates.Select(d => d.CodeBase).JoinBy("; ")}]");
+						typeof(AssemblyResolver).Log().Debug($"Selecting first occurrence of assembly [{e.Name}] which can be found at [{duplicates.Select(d => d.CodeBase).JoinBy("; ")}]");
 					}
 
 					return loadedAsm[0];
@@ -79,13 +79,13 @@ namespace Uno.SourceGeneration.Host
 							var output = Assembly.LoadFrom(filePath);
 #endif
 
-							Console.WriteLine($"Loaded [{output.GetName()}] from [{output.CodeBase}]");
+							typeof(AssemblyResolver).Log().Debug($"Loaded [{output.GetName()}] from [{output.CodeBase}]");
 
 							return output;
 						}
 						catch (Exception ex)
 						{
-							Console.WriteLine($"Failed to load [{assembly}] from [{filePath}]", ex);
+							typeof(AssemblyResolver).Log().Debug($"Failed to load [{assembly}] from [{filePath}]", ex);
 							return null;
 						}
 					}
@@ -123,11 +123,11 @@ namespace Uno.SourceGeneration.Host
 				try
 				{
 					var assembly = Assembly.LoadFrom(assemblyPath);
-					Console.WriteLine($"Preloaded additional assembly [{assembly.FullName}] from [{assemblyPath}]");
+					typeof(AssemblyResolver).Log().Debug($"Preloaded additional assembly [{assembly.FullName}] from [{assemblyPath}]");
 				}
 				catch (Exception e)
 				{
-					Console.WriteLine($"Failed to load additional assembly from [{assemblyPath}]", e);
+					typeof(AssemblyResolver).Log().Debug($"Failed to load additional assembly from [{assemblyPath}]", e);
 				}
 			}
 		}
