@@ -38,16 +38,7 @@ namespace Uno.SourceGeneration.Host
 					{
 						AssemblyResolver.RegisterAssemblyLoader(environment);
 
-						using (var logger = new BinaryLoggerForwarderProvider(binlogOutputPath))
-						{
-							var host = new SourceGeneratorHost(environment);
-
-							var generatedFiles = host.Generate();
-
-							File.WriteAllText(generatedFilesOutputPath, string.Join(";", generatedFiles));
-
-							return 0;
-						}
+						return RunGeneration(generatedFilesOutputPath, binlogOutputPath, environment);
 					}
 
 					return 1;
@@ -57,6 +48,32 @@ namespace Uno.SourceGeneration.Host
 			{
 				Console.Error.WriteLine(e.ToString());
 				return 2;
+			}
+		}
+
+		/// <summary>
+		/// Runs the source generation. This code has to be in a method so the AssemblyResolver
+		/// can resolve the dependencies in a proper order.
+		/// </summary>
+		private static int RunGeneration(string generatedFilesOutputPath, string binlogOutputPath, BuildEnvironment environment)
+		{
+			using (var logger = new BinaryLoggerForwarderProvider(binlogOutputPath))
+			{
+				try
+				{
+					var host = new SourceGeneratorHost(environment);
+
+					var generatedFiles = host.Generate();
+
+					File.WriteAllText(generatedFilesOutputPath, string.Join(";", generatedFiles));
+
+					return 0;
+				}
+				catch (Exception e)
+				{
+					typeof(Program).Log().Error("Generation failed " + e.Message, e);
+					return 3;
+				}
 			}
 		}
 	}
