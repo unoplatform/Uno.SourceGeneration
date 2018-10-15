@@ -15,7 +15,7 @@ phases:
   - task: CopyFiles@2
     inputs:
       SourceFolder: $(build.sourcesdirectory)
-      Contents: '.\build\*.nupkg'
+      Contents: ' $(build.sourcesdirectory)\build\*.nupkg'
       TargetFolder: $(build.artifactstagingdirectory)
       CleanTargetFolder: false
       OverWrite: false
