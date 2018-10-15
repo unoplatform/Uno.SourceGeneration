@@ -1,6 +1,6 @@
 #addin "nuget:?package=Cake.FileHelpers"
 #addin "nuget:?package=Cake.Powershell"
-#tool "nuget:?package=GitVersion.CommandLine"
+#tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
 
 using System;
 using System.Linq;
@@ -147,7 +147,6 @@ Task("Version")
 
 	var files = new[] {
 		@"..\src\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets",
-		@"..\src\Uno.SourceGeneratorTasks.Dev14.0\Uno.SourceGeneratorTasks.Dev14.0.csproj",
 		@"..\src\Uno.SourceGeneratorTasks.Dev15.0\Uno.SourceGeneratorTasks.Dev15.0.csproj",
 		@"..\src\Uno.SourceGeneratorTasks.Shared\Tasks\SourceGenerationTask.cs"
 	};

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Uno.SourceGeneration.Host": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\jerome.laban\\AppData\\Local\\Temp\\tmpC963.tmp\" \"C:\\Users\\jerome.laban\\AppData\\Local\\Temp\\tmpC964.tmp\""
+    }
+  }
+}

@@ -15,43 +15,35 @@
 //
 // ******************************************************************
 using System;
+using System.Runtime.Serialization;
 
 namespace Uno.SourceGeneratorTasks
 {
 	[Serializable]
+	[DataContract]
 	public class BuildEnvironment
 	{
-		public string Configuration { get; }
-		public string Platform { get; }
-		public string ProjectFile { get; }
-		public string OutputPath { get; }
-		public string TargetFramework { get; }
-		public string VisualStudioVersion { get; }
-		public string TargetFrameworkRootPath { get; }
-		public string BinLogOutputPath { get; }
-		public bool BinLogEnabled { get; }
-
-		public BuildEnvironment(
-			string configuration,
-			string platform,
-			string projectFile,
-			string outputPath,
-			string targetFramework,
-			string visualStudioVersion,
-			string targetFrameworkRootPath,
-			string binLogOutputPath,
-			bool binLogEnabled
-		)
-		{
-			Configuration = configuration;
-			Platform = platform;
-			ProjectFile = projectFile;
-			OutputPath = outputPath;
-			TargetFramework = targetFramework;
-			VisualStudioVersion = visualStudioVersion;
-			TargetFrameworkRootPath = targetFrameworkRootPath;
-			BinLogOutputPath = binLogOutputPath;
-			BinLogEnabled = binLogEnabled;
-		}
+		[DataMember]
+		public string Configuration { get; set; }
+		[DataMember]
+		public string Platform { get; set; }
+		[DataMember]
+		public string ProjectFile { get; set; }
+		[DataMember]
+		public string OutputPath { get; set; }
+		[DataMember]
+		public string TargetFramework { get; set; }
+		[DataMember]
+		public string VisualStudioVersion { get; set; }
+		[DataMember]
+		public string TargetFrameworkRootPath { get; set; }
+		[DataMember]
+		public string BinLogOutputPath { get; set; }
+		[DataMember]
+		public bool BinLogEnabled { get; set; }
+		[DataMember]
+		public string MSBuildBinPath { get; set; }
+		[DataMember]
+		public string[] AdditionalAssemblies { get; internal set; }
 	}
 }

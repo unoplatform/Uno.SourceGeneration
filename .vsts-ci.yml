@@ -1,0 +1,28 @@
+phases:
+- phase: VS_Latest
+  variables:
+    NUGET_PACKAGES: $(Agent.WorkFolder)\.nuget
+
+  steps:
+  - task: NuGetToolInstaller@0
+    inputs:
+      versionSpec: 4.7.0
+      checkLatest: false
+
+  - powershell: .\build\build.ps1 -script build\build.cake
+    displayName: Build 
+
+  - task: CopyFiles@2
+    inputs:
+      SourceFolder: $(build.sourcesdirectory)
+      Contents: ' $(build.sourcesdirectory)\build\*.nupkg'
+      TargetFolder: $(build.artifactstagingdirectory)
+      CleanTargetFolder: false
+      OverWrite: false
+      flattenFolders: false
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      PathtoPublish: $(build.artifactstagingdirectory)
+      ArtifactName: unosourcegenerator-drop
+      ArtifactType: Container
