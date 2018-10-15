@@ -15,6 +15,8 @@ namespace Uno.SourceGeneration.Helpers
 			var replaySource = new Microsoft.Build.Logging.BinaryLogReplayEventSource();
 
 			replaySource.MessageRaised += (s, e) => engine.LogMessageEvent(e);
+			replaySource.WarningRaised += (s, e) => engine.LogWarningEvent(e);
+			replaySource.ErrorRaised += (s, e) => engine.LogErrorEvent(e);
 
 			replaySource.Replay(filePath);
 		}
