@@ -111,163 +111,162 @@ namespace Uno.SourceGeneration.Host
 			// properties["Platform"] = _platform;
 
 			var xmlReader = XmlReader.Create(environment.ProjectFile);
-			using (var collection = new Microsoft.Build.Evaluation.ProjectCollection())
-			{
-				// Change this logger details to troubleshoot project loading details.
-				// collection.RegisterLogger(new Microsoft.Build.Logging.ConsoleLogger() { Verbosity = LoggerVerbosity.Diagnostic });
+			details.Collection = new Microsoft.Build.Evaluation.ProjectCollection();
+
+			// Change this logger details to troubleshoot project loading details.
+			// collection.RegisterLogger(new Microsoft.Build.Logging.ConsoleLogger() { Verbosity = LoggerVerbosity.Diagnostic });
 
 #if HAS_BINLOG
-				Microsoft.Build.Logging.BinaryLogger binaryLogger = null;
+			Microsoft.Build.Logging.BinaryLogger binaryLogger = null;
 
-				if (
-					environment.BinLogOutputPath != null
-					&& environment.BinLogEnabled
-				)
-				{
-					var binLogPath = Path.Combine(
-						environment.BinLogOutputPath,
-						$"SourceGenerator-{environment.TargetFramework}-{Path.GetFileNameWithoutExtension(environment.ProjectFile)}-{Guid.NewGuid()}.binlog"
-					);
-
-					collection.RegisterLogger(
-						binaryLogger = new Microsoft.Build.Logging.BinaryLogger()
-						{
-							Verbosity = LoggerVerbosity.Diagnostic,
-							CollectProjectImports = Microsoft.Build.Logging.BinaryLogger.ProjectImportsCollectionMode.Embed,
-							Parameters = $"logfile={binLogPath}"
-						}
-					);
-
-					_log.LogInformation("Using BinaryLogger: " + binLogPath);
-				}
-#endif
-
-				collection.OnlyLogCriticalEvents = false;
-				var xml = Microsoft.Build.Construction.ProjectRootElement.Create(xmlReader, collection);
-
-				// When constructing a project from an XmlReader, MSBuild cannot determine the project file path.  Setting the
-				// path explicitly is necessary so that the reserved properties like $(MSBuildProjectDirectory) will work.
-				xml.FullPath = Path.GetFullPath(environment.ProjectFile);
-
-				var loadedProject = new Microsoft.Build.Evaluation.Project(
-					xml,
-					properties,
-					toolsVersion: null,
-					projectCollection: collection
+			if (
+				environment.BinLogOutputPath != null
+				&& environment.BinLogEnabled
+			)
+			{
+				var binLogPath = Path.Combine(
+					environment.BinLogOutputPath,
+					$"SourceGenerator-{environment.TargetFramework}-{Path.GetFileNameWithoutExtension(environment.ProjectFile)}-{Guid.NewGuid()}.binlog"
 				);
 
-				var buildTargets = new BuildTargets(loadedProject, "Compile");
-
-				// don't execute anything after CoreCompile target, since we've
-				// already done everything we need to compute compiler inputs by then.
-				buildTargets.RemoveAfter("CoreCompile", includeTargetInRemoval: true);
-
-				details.Configuration = environment.Configuration;
-				details.LoadedProject = loadedProject;
-
-				// create a project instance to be executed by build engine.
-				// The executed project will hold the final model of the project after execution via msbuild.
-				details.ExecutedProject = loadedProject.CreateProjectInstance();
-
-				var hostServices = new Microsoft.Build.Execution.HostServices();
-
-				// connect the host "callback" object with the host services, so we get called back with the exact inputs to the compiler task.
-				hostServices.RegisterHostObject(loadedProject.FullPath, "CoreCompile", "Csc", null);
-
-				var buildParameters = new Microsoft.Build.Execution.BuildParameters(loadedProject.ProjectCollection);
-
-				// This allows for the loggers to 
-				buildParameters.Loggers = collection.Loggers;
-
-				var buildRequestData = new Microsoft.Build.Execution.BuildRequestData(details.ExecutedProject, buildTargets.Targets, hostServices);
-
-				var result = BuildAsync(buildParameters, buildRequestData);
-
-				if (result.Exception == null)
-				{
-					ValidateOutputPath(details.ExecutedProject);
-
-					var projectFilePath = Path.GetFullPath(Path.GetDirectoryName(environment.ProjectFile));
-
-					details.References = details.ExecutedProject.GetItems("ReferencePath").Select(r => r.EvaluatedInclude).ToArray();
-
-					if(!details.References.Any())
+				details.Collection.RegisterLogger(
+					binaryLogger = new Microsoft.Build.Logging.BinaryLogger()
 					{
-						if (_log.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Error))
-						{
-							_log.LogError($"Project has no references.");
-						}
-
-						LogFailedTargets(environment.ProjectFile, result);
-						details.Generators = new (Type, Func<SourceGenerator>)[0];
-						return details;
+						Verbosity = LoggerVerbosity.Diagnostic,
+						CollectProjectImports = Microsoft.Build.Logging.BinaryLogger.ProjectImportsCollectionMode.Embed,
+						Parameters = $"logfile={binLogPath}"
 					}
-					// else
-					// {
-					//     if (_log.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
-					//     {
-					//         _log.LogDebug($"Project references: {string.Join("; ", details.References)}");
-					//     }
-					// }
+				);
 
-					details.IntermediatePath = Path.Combine(projectFilePath, details.ExecutedProject.GetPropertyValue("IntermediateOutputPath"));
+				_log.LogInformation("Using BinaryLogger: " + binLogPath);
+			}
+#endif
 
-					// This is the legacy way of looking for source generators, based on the defunct "Roslyn 2.0 Source Generator" proposal.
-					// This causes issues with the VS IDE, where roslyn tries to load our source generators to 
-					// find analyzers, but does not find any and reports it in the errors window.
-					//
-					// The SourceGenerator ItemGroup should now be used instead.
-					var analyzerFiles = details.ExecutedProject
-						.GetItems("Analyzer")
-						.Select(r => Path.Combine(projectFilePath, r.EvaluatedInclude))
-						.Select(Path.GetFullPath);
+			details.Collection.OnlyLogCriticalEvents = false;
+			var xml = Microsoft.Build.Construction.ProjectRootElement.Create(xmlReader, details.Collection);
 
-					var sourceGeneratorFiles = details.ExecutedProject
-						.GetItems("SourceGenerator")
-						.Select(r => Path.Combine(projectFilePath, r.EvaluatedInclude))
-						.Select(Path.GetFullPath);
+			// When constructing a project from an XmlReader, MSBuild cannot determine the project file path.  Setting the
+			// path explicitly is necessary so that the reserved properties like $(MSBuildProjectDirectory) will work.
+			xml.FullPath = Path.GetFullPath(environment.ProjectFile);
 
-					var sourceGeneratorAdditionalDependencies = details.ExecutedProject
-						.GetItems("SourceGeneratorAdditionalDependency")
-						.Select(e => Path.GetFullPath(e.EvaluatedInclude));
+			var loadedProject = new Microsoft.Build.Evaluation.Project(
+				xml,
+				properties,
+				toolsVersion: null,
+				projectCollection: details.Collection
+			);
 
-					foreach(var dependency in sourceGeneratorAdditionalDependencies)
-					{
-						if(File.Exists(dependency))
-						{
-							var asm = Assembly.LoadFile(dependency);
-						}
-					}
+			var buildTargets = new BuildTargets(loadedProject, "Compile");
 
-					details.Generators = LoadAnalyzers(analyzerFiles.Concat(sourceGeneratorFiles).Distinct());
+			// don't execute anything after CoreCompile target, since we've
+			// already done everything we need to compute compiler inputs by then.
+			buildTargets.RemoveAfter("CoreCompile", includeTargetInRemoval: true);
 
-					if (_log.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
-					{
-						var allGenerators = details.Generators.Select(g => g.generatorType.FullName).JoinBy("; ");
+			details.Configuration = environment.Configuration;
+			details.LoadedProject = loadedProject;
 
-						_log.LogDebug($"Found {details.Generators.Length} Source Generators. ({allGenerators}");
-					}
-				}
-				else
+			// create a project instance to be executed by build engine.
+			// The executed project will hold the final model of the project after execution via msbuild.
+			details.ExecutedProject = loadedProject.CreateProjectInstance();
+
+			var hostServices = new Microsoft.Build.Execution.HostServices();
+
+			// connect the host "callback" object with the host services, so we get called back with the exact inputs to the compiler task.
+			hostServices.RegisterHostObject(loadedProject.FullPath, "CoreCompile", "Csc", null);
+
+			var buildParameters = new Microsoft.Build.Execution.BuildParameters(loadedProject.ProjectCollection);
+
+			// This allows for the loggers to 
+			buildParameters.Loggers = details.Collection.Loggers;
+
+			var buildRequestData = new Microsoft.Build.Execution.BuildRequestData(details.ExecutedProject, buildTargets.Targets, hostServices);
+
+			var result = BuildAsync(buildParameters, buildRequestData);
+
+			if (result.Exception == null)
+			{
+				ValidateOutputPath(details.ExecutedProject);
+
+				var projectFilePath = Path.GetFullPath(Path.GetDirectoryName(environment.ProjectFile));
+
+				details.References = details.ExecutedProject.GetItems("ReferencePath").Select(r => r.EvaluatedInclude).ToArray();
+
+				if (!details.References.Any())
 				{
 					if (_log.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Error))
 					{
-						_log.LogError($"Project analysis failed ({result.Exception}");
+						_log.LogError($"Project has no references.");
 					}
 
 					LogFailedTargets(environment.ProjectFile, result);
-
 					details.Generators = new (Type, Func<SourceGenerator>)[0];
+					return details;
+				}
+				// else
+				// {
+				//     if (_log.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
+				//     {
+				//         _log.LogDebug($"Project references: {string.Join("; ", details.References)}");
+				//     }
+				// }
+
+				details.IntermediatePath = Path.Combine(projectFilePath, details.ExecutedProject.GetPropertyValue("IntermediateOutputPath"));
+
+				// This is the legacy way of looking for source generators, based on the defunct "Roslyn 2.0 Source Generator" proposal.
+				// This causes issues with the VS IDE, where roslyn tries to load our source generators to 
+				// find analyzers, but does not find any and reports it in the errors window.
+				//
+				// The SourceGenerator ItemGroup should now be used instead.
+				var analyzerFiles = details.ExecutedProject
+					.GetItems("Analyzer")
+					.Select(r => Path.Combine(projectFilePath, r.EvaluatedInclude))
+					.Select(Path.GetFullPath);
+
+				var sourceGeneratorFiles = details.ExecutedProject
+					.GetItems("SourceGenerator")
+					.Select(r => Path.Combine(projectFilePath, r.EvaluatedInclude))
+					.Select(Path.GetFullPath);
+
+				var sourceGeneratorAdditionalDependencies = details.ExecutedProject
+					.GetItems("SourceGeneratorAdditionalDependency")
+					.Select(e => Path.GetFullPath(e.EvaluatedInclude));
+
+				foreach (var dependency in sourceGeneratorAdditionalDependencies)
+				{
+					if (File.Exists(dependency))
+					{
+						var asm = Assembly.LoadFile(dependency);
+					}
 				}
 
-				_allProjects.TryAdd(key, details);
+				details.Generators = LoadAnalyzers(analyzerFiles.Concat(sourceGeneratorFiles).Distinct());
 
-				details.BuildImportsMap();
+				if (_log.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
+				{
+					var allGenerators = details.Generators.Select(g => g.generatorType.FullName).JoinBy("; ");
+
+					_log.LogDebug($"Found {details.Generators.Length} Source Generators. ({allGenerators}");
+				}
+			}
+			else
+			{
+				if (_log.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Error))
+				{
+					_log.LogError($"Project analysis failed ({result.Exception}");
+				}
+
+				LogFailedTargets(environment.ProjectFile, result);
+
+				details.Generators = new (Type, Func<SourceGenerator>)[0];
+			}
+
+			_allProjects.TryAdd(key, details);
+
+			details.BuildImportsMap();
 
 #if HAS_BINLOG
-				binaryLogger?.Shutdown();
+			binaryLogger?.Shutdown();
 #endif
-			}
 
 			return details;
 		}
