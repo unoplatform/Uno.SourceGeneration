@@ -11,6 +11,8 @@ namespace Uno.SourceGeneration.Host
 {
 	public class AssemblyResolver
 	{
+		private static bool _additionalAssembliesPreloaded;
+
 		public static void RegisterAssemblyLoader(BuildEnvironment environment)
 		{
 			// Force assembly loader to consider siblings, when running in a separate appdomain.
@@ -118,16 +120,21 @@ namespace Uno.SourceGeneration.Host
 
 		private static void TryLoadAdditionalAssemblies(BuildEnvironment environment)
 		{
-			foreach (var assemblyPath in environment.AdditionalAssemblies ?? new string[0])
+			if (!_additionalAssembliesPreloaded)
 			{
-				try
+				_additionalAssembliesPreloaded = true;
+
+				foreach (var assemblyPath in environment.AdditionalAssemblies ?? new string[0])
 				{
-					var assembly = Assembly.LoadFrom(assemblyPath);
-					typeof(AssemblyResolver).Log().Debug($"Preloaded additional assembly [{assembly.FullName}] from [{assemblyPath}]");
-				}
-				catch (Exception e)
-				{
-					typeof(AssemblyResolver).Log().Debug($"Failed to load additional assembly from [{assemblyPath}]", e);
+					try
+					{
+						var assembly = Assembly.LoadFrom(assemblyPath);
+						typeof(AssemblyResolver).Log().Debug($"Preloaded additional assembly [{assembly.FullName}] from [{assemblyPath}]");
+					}
+					catch (Exception e)
+					{
+						typeof(AssemblyResolver).Log().Debug($"Failed to load additional assembly from [{assemblyPath}]", e);
+					}
 				}
 			}
 		}
