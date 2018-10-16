@@ -71,7 +71,7 @@ namespace Uno.SourceGeneration.Host
 				}
 				catch (Exception e)
 				{
-					typeof(Program).Log().Error("Generation failed " + e.Message, e);
+					typeof(Program).Log().Error("Generation failed: " + e.ToString());
 					return 3;
 				}
 			}
