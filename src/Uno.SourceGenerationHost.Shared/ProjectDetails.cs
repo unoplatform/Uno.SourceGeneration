@@ -22,7 +22,7 @@ using Microsoft.Build.Evaluation;
 
 namespace Uno.SourceGeneration.Host
 {
-	public class ProjectDetails
+	public class ProjectDetails : IDisposable
 	{
 		private Tuple<string, DateTime>[] _timeStamps;
 
@@ -32,7 +32,7 @@ namespace Uno.SourceGeneration.Host
 		public string IntermediatePath { get; internal set; }
 		public Project LoadedProject { get; internal set; }
 		public string[] References { get; internal set; }
-
+		public ProjectCollection Collection { get; internal set; }
 
 		public void BuildImportsMap()
 		{
@@ -42,6 +42,11 @@ namespace Uno.SourceGeneration.Host
 				.Concat(new[] { new Tuple<string, DateTime>(ExecutedProject.FullPath, File.GetLastWriteTime(ExecutedProject.FullPath)) })
 				.OrderBy(t => t.Item1)
 				.ToArray();
+		}
+
+		public void Dispose()
+		{
+			Collection?.Dispose();
 		}
 
 		public bool HasChanged()
