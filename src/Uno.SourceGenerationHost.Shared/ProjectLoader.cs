@@ -98,11 +98,12 @@ namespace Uno.SourceGeneration.Host
 				properties["TargetFramework"] = environment.TargetFramework;
 			}
 
-			// TargetFrameworkRootPath is used by VS4Mac to determine the
-			// location of frameworks like Xamarin.iOS.
-			if (environment.TargetFrameworkRootPath.HasValue())
+			if (Environment.GetEnvironmentVariable("Platform") is string envPlatform && !string.IsNullOrEmpty(envPlatform))
 			{
-				properties["TargetFrameworkRootPath"] = environment.TargetFrameworkRootPath;
+				throw new InvalidOperationException(
+					$"Your system has the Platform environment variable set to [{envPlatform}], which " +
+					"is known to break some msbuild projects. Visit https://github.com/nventive/Uno.SourceGeneration/issues/48 for more details."
+				);
 			}
 
 			// Platform is intentionally kept as not defined, to avoid having 
@@ -110,10 +111,10 @@ namespace Uno.SourceGeneration.Host
 			// properties["Platform"] = _platform;
 
 			var xmlReader = XmlReader.Create(environment.ProjectFile);
-			var collection = new Microsoft.Build.Evaluation.ProjectCollection();
+			details.Collection = new Microsoft.Build.Evaluation.ProjectCollection();
 
 			// Change this logger details to troubleshoot project loading details.
-			collection.RegisterLogger(new Microsoft.Build.Logging.ConsoleLogger() { Verbosity = LoggerVerbosity.Minimal });
+			// collection.RegisterLogger(new Microsoft.Build.Logging.ConsoleLogger() { Verbosity = LoggerVerbosity.Diagnostic });
 
 #if HAS_BINLOG
 			Microsoft.Build.Logging.BinaryLogger binaryLogger = null;
@@ -128,7 +129,7 @@ namespace Uno.SourceGeneration.Host
 					$"SourceGenerator-{environment.TargetFramework}-{Path.GetFileNameWithoutExtension(environment.ProjectFile)}-{Guid.NewGuid()}.binlog"
 				);
 
-				collection.RegisterLogger(
+				details.Collection.RegisterLogger(
 					binaryLogger = new Microsoft.Build.Logging.BinaryLogger()
 					{
 						Verbosity = LoggerVerbosity.Diagnostic,
@@ -141,8 +142,8 @@ namespace Uno.SourceGeneration.Host
 			}
 #endif
 
-			collection.OnlyLogCriticalEvents = false;
-			var xml = Microsoft.Build.Construction.ProjectRootElement.Create(xmlReader, collection);
+			details.Collection.OnlyLogCriticalEvents = false;
+			var xml = Microsoft.Build.Construction.ProjectRootElement.Create(xmlReader, details.Collection);
 
 			// When constructing a project from an XmlReader, MSBuild cannot determine the project file path.  Setting the
 			// path explicitly is necessary so that the reserved properties like $(MSBuildProjectDirectory) will work.
@@ -152,7 +153,7 @@ namespace Uno.SourceGeneration.Host
 				xml,
 				properties,
 				toolsVersion: null,
-				projectCollection: collection
+				projectCollection: details.Collection
 			);
 
 			var buildTargets = new BuildTargets(loadedProject, "Compile");
@@ -174,9 +175,9 @@ namespace Uno.SourceGeneration.Host
 			hostServices.RegisterHostObject(loadedProject.FullPath, "CoreCompile", "Csc", null);
 
 			var buildParameters = new Microsoft.Build.Execution.BuildParameters(loadedProject.ProjectCollection);
-			
+
 			// This allows for the loggers to 
-			buildParameters.Loggers = collection.Loggers;
+			buildParameters.Loggers = details.Collection.Loggers;
 
 			var buildRequestData = new Microsoft.Build.Execution.BuildRequestData(details.ExecutedProject, buildTargets.Targets, hostServices);
 
@@ -187,10 +188,10 @@ namespace Uno.SourceGeneration.Host
 				ValidateOutputPath(details.ExecutedProject);
 
 				var projectFilePath = Path.GetFullPath(Path.GetDirectoryName(environment.ProjectFile));
-				
+
 				details.References = details.ExecutedProject.GetItems("ReferencePath").Select(r => r.EvaluatedInclude).ToArray();
 
-				if(!details.References.Any())
+				if (!details.References.Any())
 				{
 					if (_log.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Error))
 					{
@@ -230,9 +231,9 @@ namespace Uno.SourceGeneration.Host
 					.GetItems("SourceGeneratorAdditionalDependency")
 					.Select(e => Path.GetFullPath(e.EvaluatedInclude));
 
-				foreach(var dependency in sourceGeneratorAdditionalDependencies)
+				foreach (var dependency in sourceGeneratorAdditionalDependencies)
 				{
-					if(File.Exists(dependency))
+					if (File.Exists(dependency))
 					{
 						var asm = Assembly.LoadFile(dependency);
 					}
