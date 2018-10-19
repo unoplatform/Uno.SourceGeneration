@@ -195,7 +195,7 @@ namespace Uno.SourceGeneratorTasks
 
 					if (captureHostOutput)
 					{
-
+						startInfo.Arguments += " -console";
 						startInfo.RedirectStandardOutput = true;
 						startInfo.RedirectStandardError = true;
 

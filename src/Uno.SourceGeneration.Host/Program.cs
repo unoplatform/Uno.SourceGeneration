@@ -24,11 +24,14 @@ namespace Uno.SourceGeneration.Host
 				// Uncomment this for easier debugging
 				// Debugger.Launch();
 
-				LogExtensionPoint.AmbientLoggerFactory.AddProvider(new ConsoleLoggerProvider((t, l) => true, true));
-
-				if (args.Length != 3)
+				if (args.Length < 3 || args.Length > 4)
 				{
 					throw new Exception($"Response file, output path and binlog path are required.");
+				}
+
+				if (args.Length == 4 && args[3].Equals("-console", StringComparison.OrdinalIgnoreCase))
+				{
+					LogExtensionPoint.AmbientLoggerFactory.AddProvider(new ConsoleLoggerProvider((t, l) => true, true));
 				}
 
 				var responseFilePath = args[0];
