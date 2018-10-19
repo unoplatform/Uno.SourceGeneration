@@ -19,18 +19,18 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Uno.SourceGeneratorTasks.Helpers;
+using Uno.SourceGeneratorTasks.Shared.Helpers;
 
 namespace Uno.SourceGeneratorTasks.Logger
 {
-    public class RemoteLogger : MarshalByRefObject, Microsoft.Extensions.Logging.ILogger
-    {
-        private RemotableLogger2 _taskLog;
-        private string _loggerName;
+	public class RemoteLogger : MarshalByRefObject, Microsoft.Extensions.Logging.ILogger
+	{
+		private string _loggerName;
 
-        public RemoteLogger(string loggerName)
-        {
-            _loggerName = loggerName;
-        }
+		public RemoteLogger(string loggerName)
+		{
+			_loggerName = loggerName;
+		}
 
 		public override object InitializeLifetimeService()
 		{
@@ -39,42 +39,33 @@ namespace Uno.SourceGeneratorTasks.Logger
 			return null;
 		}
 
-		public RemotableLogger2 TaskLog
-        {
-            get
-            {
-                return _taskLog;
-            }
-            set
-            {
-                _taskLog = value;
-            }
-        }
+		public RemotableLogger2 TaskLog { get; set; }
 
-        public IDisposable BeginScope<TState>(TState state) => new DisposableAction(() => { });
+		public IDisposable BeginScope<TState>(TState state) => new DisposableAction(() => { });
 
-        public bool IsEnabled(LogLevel logLevel) => logLevel >= LogLevel.Debug;
+		public bool IsEnabled(LogLevel logLevel) => logLevel >= LogLevel.Debug;
 
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception, Func<TState, Exception, string> formatter)
-        {
-            if (!IsEnabled(logLevel))
-            {
-                return;
-            }
+		public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
+			Func<TState, Exception, string> formatter)
+		{
+			if (!IsEnabled(logLevel))
+			{
+				return;
+			}
 
-            if (formatter == null)
-            {
-                throw new ArgumentNullException(nameof(formatter));
-            }
+			if (formatter == null)
+			{
+				throw new ArgumentNullException(nameof(formatter));
+			}
 
-            var message = formatter(state, exception);
+			var message = formatter(state, exception);
 
-            if (string.IsNullOrEmpty(message))
-            {
-                return;
-            }
+			if (string.IsNullOrEmpty(message))
+			{
+				return;
+			}
 
-            _taskLog?.WriteLog((int)logLevel, message);
-        }
-    }
+			TaskLog?.WriteLog((int)logLevel, message, state as CodeSpan);
+		}
+	}
 }

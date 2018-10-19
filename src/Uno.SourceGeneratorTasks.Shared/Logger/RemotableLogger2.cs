@@ -18,17 +18,18 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.Logging;
+using Uno.SourceGeneratorTasks.Shared.Helpers;
 
 namespace Uno.SourceGeneratorTasks.Logger
 {
-    public class RemotableLogger2 : MarshalByRefObject
-    {
-        private readonly Microsoft.Extensions.Logging.ILogger _log;
+	public class RemotableLogger2 : MarshalByRefObject
+	{
+		private readonly Microsoft.Extensions.Logging.ILogger _log;
 
-        public RemotableLogger2(Microsoft.Extensions.Logging.ILogger log)
-        {
-            _log = log;
-        }
+		public RemotableLogger2(Microsoft.Extensions.Logging.ILogger log)
+		{
+			_log = log;
+		}
 
 		public override object InitializeLifetimeService()
 		{
@@ -37,18 +38,18 @@ namespace Uno.SourceGeneratorTasks.Logger
 			return null;
 		}
 
-		public void WriteLog(int logLevel, string message)
-        {
+		public void WriteLog(int logLevel, string message, CodeSpan span)
+		{
 			try
 			{
-				_log.Log<object>((Microsoft.Extensions.Logging.LogLevel)logLevel, 0, null, null, (_, __) => message);
+				_log.Log((Microsoft.Extensions.Logging.LogLevel)logLevel, 0, span, null, (_, __) => message);
 			}
-			catch(Exception /*e*/)
+			catch (Exception /*e*/)
 			{
 				// This may happen under MacOS, where mono's remoting fails when calling _log methods.
 				// We can fallback on console logging until it's fixed.
 				System.Console.WriteLine(message);
 			}
-        }
-    }
+		}
+	}
 }

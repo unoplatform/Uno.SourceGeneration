@@ -12,6 +12,7 @@
     <None Include="$(MSBuildThisFileDirectory)Content\Uno.SourceGenerationTasks.targets" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\CodeSpan.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\DisposableAction.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\LogExtensionPoint.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\LogExtensions.cs" />

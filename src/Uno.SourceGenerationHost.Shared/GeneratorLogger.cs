@@ -15,8 +15,11 @@
 //
 // ******************************************************************
 using System;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.Extensions.Logging;
 using Uno.SourceGeneratorTasks.Helpers;
+using Uno.SourceGeneratorTasks.Shared.Helpers;
 
 namespace Uno.SourceGeneration.Host
 {
@@ -35,10 +38,20 @@ namespace Uno.SourceGeneration.Host
 			_logger.Debug(() => message?.ToString(), exception);
 		}
 
+		public void Debug(IFormattable message, Location location, Exception exception = null)
+		{
+			_logger.Debug(() => message?.ToString(), exception, CodeSpan.FromLocation(location));
+		}
+
 		/// <inheritdoc />
 		public void Debug(string message, Exception exception = null)
 		{
 			_logger.Debug(message, exception);
+		}
+
+		public void Debug(string message, Location location, Exception exception = null)
+		{
+			_logger.Debug(message, exception, CodeSpan.FromLocation(location));
 		}
 
 		/// <inheritdoc />
@@ -47,10 +60,20 @@ namespace Uno.SourceGeneration.Host
 			_logger.Info(() => message?.ToString(), exception);
 		}
 
+		public void Info(IFormattable message, Location location, Exception exception = null)
+		{
+			_logger.Info(() => message?.ToString(), exception, CodeSpan.FromLocation(location));
+		}
+
 		/// <inheritdoc />
 		public void Info(string message, Exception exception = null)
 		{
 			_logger.Info(message, exception);
+		}
+
+		public void Info(string message, Location location, Exception exception = null)
+		{
+			_logger.Info(message, exception, CodeSpan.FromLocation(location));
 		}
 
 		/// <inheritdoc />
@@ -59,10 +82,20 @@ namespace Uno.SourceGeneration.Host
 			_logger.Warn(() => message?.ToString(), exception);
 		}
 
+		public void Warn(IFormattable message, Location location, Exception exception = null)
+		{
+			_logger.Warn(() => message?.ToString(), exception, CodeSpan.FromLocation(location));
+		}
+
 		/// <inheritdoc />
 		public void Warn(string message, Exception exception = null)
 		{
 			_logger.Warn(message, exception);
+		}
+
+		public void Warn(string message, Location location, Exception exception = null)
+		{
+			_logger.Warn(message, exception, CodeSpan.FromLocation(location));
 		}
 
 		/// <inheritdoc />
@@ -71,10 +104,20 @@ namespace Uno.SourceGeneration.Host
 			_logger.Error(() => message?.ToString(), exception);
 		}
 
+		public void Error(IFormattable message, Location location, Exception exception = null)
+		{
+			_logger.Error(() => message?.ToString(), exception, CodeSpan.FromLocation(location));
+		}
+
 		/// <inheritdoc />
 		public void Error(string message, Exception exception = null)
 		{
 			_logger.Error(message, exception);
+		}
+
+		public void Error(string message, Location location, Exception exception = null)
+		{
+			_logger.Error(message, exception, CodeSpan.FromLocation(location));
 		}
 	}
 }

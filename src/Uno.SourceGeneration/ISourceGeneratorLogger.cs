@@ -14,7 +14,11 @@
 // limitations under the License.
 //
 // ******************************************************************
+
 using System;
+using System.Linq;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
 
 namespace Uno.SourceGeneration
 {
@@ -30,6 +34,18 @@ namespace Uno.SourceGeneration
 		/// logger.Debug($"The count is {count}.");
 		/// </example>
 		void Debug(IFormattable message, Exception exception = null);
+
+		/// <summary>
+		/// Log a debugging information.
+		/// </summary>
+		/// <remarks>
+		/// Will appear in build output when the level is set to _normal_.
+		/// </remarks>
+		/// <example>
+		/// logger.Debug($"The count is {count}.");
+		/// </example>
+		void Debug(IFormattable message, Location location, Exception exception = null);
+
 		/// <summary>
 		/// Log a debugging information.
 		/// </summary>
@@ -40,6 +56,17 @@ namespace Uno.SourceGeneration
 		/// logger.Debug($"The count is {count}.");
 		/// </example>
 		void Debug(string message, Exception exception = null);
+
+		/// <summary>
+		/// Log a debugging information.
+		/// </summary>
+		/// <remarks>
+		/// Will appear in build output when the level is set to _normal_.
+		/// </remarks>
+		/// <example>
+		/// logger.Debug($"The count is {count}.");
+		/// </example>
+		void Debug(string message, Location location, Exception exception = null);
 
 		/// <summary>
 		/// Log a useful information to build output.
@@ -61,7 +88,29 @@ namespace Uno.SourceGeneration
 		/// <example>
 		/// logger.Info($"The count is {count}.");
 		/// </example>
+		void Info(IFormattable message, Location location, Exception exception = null);
+
+		/// <summary>
+		/// Log a useful information to build output.
+		/// </summary>
+		/// <remarks>
+		/// Will appear in build output when the level is set to _detailed_.
+		/// </remarks>
+		/// <example>
+		/// logger.Info($"The count is {count}.");
+		/// </example>
 		void Info(string message, Exception exception = null);
+
+		/// <summary>
+		/// Log a useful information to build output.
+		/// </summary>
+		/// <remarks>
+		/// Will appear in build output when the level is set to _detailed_.
+		/// </remarks>
+		/// <example>
+		/// logger.Info($"The count is {count}.");
+		/// </example>
+		void Info(string message, Location location, Exception exception = null);
 
 		/// <summary>
 		/// Log a WARNING information to build output.
@@ -83,7 +132,29 @@ namespace Uno.SourceGeneration
 		/// <example>
 		/// logger.Warn($"The count is {count}.");
 		/// </example>
+		void Warn(IFormattable message, Location location, Exception exception = null);
+
+		/// <summary>
+		/// Log a WARNING information to build output.
+		/// </summary>
+		/// <remarks>
+		/// Will be reported as a _warning_ in the build result.
+		/// </remarks>
+		/// <example>
+		/// logger.Warn($"The count is {count}.");
+		/// </example>
 		void Warn(string message, Exception exception = null);
+
+		/// <summary>
+		/// Log a WARNING information to build output.
+		/// </summary>
+		/// <remarks>
+		/// Will be reported as a _warning_ in the build result.
+		/// </remarks>
+		/// <example>
+		/// logger.Warn($"The count is {count}.");
+		/// </example>
+		void Warn(string message, Location location, Exception exception = null);
 
 		/// <summary>
 		/// Log an ERROR information to build output.
@@ -105,6 +176,103 @@ namespace Uno.SourceGeneration
 		/// <example>
 		/// logger.Error($"The count is {count}.", exception);
 		/// </example>
+		void Error(IFormattable message, Location location, Exception exception = null);
+
+		/// <summary>
+		/// Log an ERROR information to build output.
+		/// </summary>
+		/// <remarks>
+		/// Will be reported as an _error_ in the build result.
+		/// </remarks>
+		/// <example>
+		/// logger.Error($"The count is {count}.", exception);
+		/// </example>
 		void Error(string message, Exception exception = null);
+
+		/// <summary>
+		/// Log an ERROR information to build output.
+		/// </summary>
+		/// <remarks>
+		/// Will be reported as an _error_ in the build result.
+		/// </remarks>
+		/// <example>
+		/// logger.Error($"The count is {count}.", exception);
+		/// </example>
+		void Error(string message, Location location, Exception exception = null);
+	}
+
+	public static class SourceGeneratorLoggerExtensions
+	{
+		public static void Debug(
+			this ISourceGeneratorLogger logger,
+			IFormattable message,
+			ISymbol symbol,
+			Exception exception = null)
+		{
+			logger.Debug(message, symbol?.Locations.FirstOrDefault(loc => loc.IsInSource), exception);
+		}
+
+		public static void Debug(
+			this ISourceGeneratorLogger logger,
+			string message,
+			ISymbol symbol,
+			Exception exception = null)
+		{
+			logger.Debug(message, symbol?.Locations.FirstOrDefault(loc => loc.IsInSource), exception);
+		}
+
+		public static void Info(
+			this ISourceGeneratorLogger logger,
+			IFormattable message,
+			ISymbol symbol,
+			Exception exception = null)
+		{
+			logger.Info(message, symbol?.Locations.FirstOrDefault(loc => loc.IsInSource), exception);
+		}
+
+		public static void Info(
+			this ISourceGeneratorLogger logger,
+			string message,
+			ISymbol symbol,
+			Exception exception = null)
+		{
+			logger.Info(message, symbol?.Locations.FirstOrDefault(loc => loc.IsInSource), exception);
+		}
+
+		public static void Warn(
+			this ISourceGeneratorLogger logger,
+			IFormattable message,
+			ISymbol symbol,
+			Exception exception = null)
+		{
+			logger.Warn(message, symbol?.Locations.FirstOrDefault(loc => loc.IsInSource), exception);
+		}
+
+		public static void Warn(
+			this ISourceGeneratorLogger logger,
+			string message,
+			ISymbol symbol,
+			Exception exception = null)
+		{
+			logger.Warn(message, symbol?.Locations.FirstOrDefault(loc => loc.IsInSource), exception);
+		}
+
+		public static void Error(
+			this ISourceGeneratorLogger logger,
+			IFormattable message,
+			ISymbol symbol,
+			Exception exception = null)
+		{
+			logger.Error(message, symbol?.Locations.FirstOrDefault(loc => loc.IsInSource), exception);
+		}
+
+		public static void Error(
+			this ISourceGeneratorLogger logger,
+			string message,
+			ISymbol symbol,
+			Exception exception = null)
+		{
+			logger.Error(message, symbol?.Locations.FirstOrDefault(loc => loc.IsInSource), exception);
+		}
 	}
 }

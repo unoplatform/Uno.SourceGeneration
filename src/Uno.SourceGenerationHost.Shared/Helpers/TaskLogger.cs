@@ -18,6 +18,7 @@ using System;
 using Microsoft.Build.Utilities;
 using Microsoft.Extensions.Logging;
 using Microsoft.Build.Framework;
+using Uno.SourceGeneratorTasks.Shared.Helpers;
 
 namespace Uno.SourceGeneratorTasks.Helpers
 {
@@ -55,26 +56,31 @@ namespace Uno.SourceGeneratorTasks.Helpers
 				return;
 			}
 
+			var span = state as CodeSpan ?? CodeSpan.Empty;
+
 			switch (logLevel)
 			{
 				case LogLevel.Error:
-					TaskLog?.LogError(message);
+					TaskLog?.LogError(null, null, null, span.FileName, span.StartLineNumber, span.StartColumn, span.EndLineNumber, span.EndColumn, message);
 					break;
 
 				case LogLevel.Warning:
-					TaskLog?.LogWarning(message);
+					TaskLog?.LogWarning(null, null, null, span.FileName, span.StartLineNumber, span.StartColumn, span.EndLineNumber, span.EndColumn, message);
 					break;
 
 				case LogLevel.Information:
-					TaskLog?.LogMessage(MessageImportance.Normal, message);
+					TaskLog?.LogMessage(null, null, null, span.FileName, span.StartLineNumber, span.StartColumn, span.EndLineNumber, span.EndColumn, MessageImportance.Normal, message);
 					break;
 
 				case LogLevel.Debug:
-					TaskLog?.LogMessage(MessageImportance.Low, message);
+					TaskLog?.LogMessage(null, null, null, span.FileName, span.StartLineNumber, span.StartColumn, span.EndLineNumber, span.EndColumn, MessageImportance.Low, message);
+					break;
+
+				case LogLevel.None:
 					break;
 
 				default:
-					TaskLog?.LogMessage(message);
+					TaskLog?.LogMessage(null, null, null, span.FileName, span.StartLineNumber, span.StartColumn, span.EndLineNumber, span.EndColumn, MessageImportance.High, message);
 					break;
 			}
 		}

@@ -21,37 +21,37 @@ using System.Text;
 
 namespace Uno.SourceGeneratorTasks.Logger
 {
-    public class RemoteLoggerProvider : ILoggerProvider
-    {
-        private List<RemoteLogger> _loggers = new List<RemoteLogger>();
-        private RemotableLogger2 _taskLog;
+	public class RemoteLoggerProvider : ILoggerProvider
+	{
+		private List<RemoteLogger> _loggers = new List<RemoteLogger>();
+		private RemotableLogger2 _taskLog;
 
-        public RemotableLogger2 TaskLog
-        {
-            get { return _taskLog; }
-            set
-            {
-                _taskLog = value;
+		public RemotableLogger2 TaskLog
+		{
+			get => _taskLog;
+			set
+			{
+				_taskLog = value;
 
-                foreach(var logger in _loggers)
-                {
-                    logger.TaskLog = value;
-                }
-            }
-        }
+				foreach (var logger in _loggers)
+				{
+					logger.TaskLog = value;
+				}
+			}
+		}
 
-        public ILogger CreateLogger(string categoryName)
-        {
-            var logger = new RemoteLogger(categoryName) {  TaskLog = _taskLog };
+		public ILogger CreateLogger(string categoryName)
+		{
+			var logger = new RemoteLogger(categoryName) {TaskLog = _taskLog};
 
-            _loggers.Add(logger);
+			_loggers.Add(logger);
 
-            return logger;
-        }
+			return logger;
+		}
 
-        public void Dispose()
-        {
+		public void Dispose()
+		{
 
-        }
-    }
+		}
+	}
 }

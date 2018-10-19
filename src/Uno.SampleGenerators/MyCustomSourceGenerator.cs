@@ -14,6 +14,9 @@
 // limitations under the License.
 //
 // ******************************************************************
+
+using System.Linq;
+using Microsoft.CodeAnalysis;
 using Uno.SourceGeneration;
 
 namespace Uno.SampleGenerators
@@ -28,9 +31,13 @@ namespace Uno.SampleGenerators
 			context.GetLogger().Info($"{nameof(MyCustomSourceGenerator)}: This is an INFO logging");
 
 #if DEBUG // Only in DEBUG to prevent breaking the CI build.
-			context.GetLogger().Warn($"{nameof(MyCustomSourceGenerator)}: This is a WARN logging");
-			context.GetLogger().Error($"{nameof(MyCustomSourceGenerator)}: This is an ERROR logging");
+			context.GetLogger().Warn($"{nameof(MyCustomSourceGenerator)}: This is a WARN logging - visible only while building in DEBUG");
+			context.GetLogger().Error($"{nameof(MyCustomSourceGenerator)}: This is an ERROR logging - visible only while building in DEBUG");
 #endif
+
+			var firstCompiledType = context.Compilation.SourceModule.GlobalNamespace.GetTypeMembers().First();
+
+			context.GetLogger().Info($"Double-Click on that should bring you to type {firstCompiledType?.Name} in code.", firstCompiledType);
 
 			context.AddCompilationUnit(
 				"Test",
