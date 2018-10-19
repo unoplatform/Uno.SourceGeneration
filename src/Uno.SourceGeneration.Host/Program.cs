@@ -6,6 +6,9 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Options;
 using Uno.SourceGeneration.Helpers;
 using Uno.SourceGeneratorTasks;
 using Uno.SourceGeneratorTasks.Helpers;
@@ -21,9 +24,11 @@ namespace Uno.SourceGeneration.Host
 				// Uncomment this for easier debugging
 				// Debugger.Launch();
 
+				LogExtensionPoint.AmbientLoggerFactory.AddProvider(new ConsoleLoggerProvider((t, l) => true, true));
+
 				if (args.Length != 3)
 				{
-					throw new Exception($"Response file, output path and binlog path are required");
+					throw new Exception($"Response file, output path and binlog path are required.");
 				}
 
 				var responseFilePath = args[0];
@@ -59,6 +64,8 @@ namespace Uno.SourceGeneration.Host
 		{
 			using (var logger = new BinaryLoggerForwarderProvider(binlogOutputPath))
 			{
+				typeof(Program).Log().Info($"Generating files to path {generatedFilesOutputPath}, logoutput={binlogOutputPath}");
+
 				try
 				{
 					var host = new SourceGeneratorHost(environment);
