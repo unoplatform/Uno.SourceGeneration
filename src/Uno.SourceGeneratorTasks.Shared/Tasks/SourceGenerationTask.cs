@@ -60,6 +60,12 @@ namespace Uno.SourceGeneratorTasks
 		public string UseGenerationHost { get; set; }
 
 		/// <summary>
+		/// Capture the generation host standard output for debug purposes.
+		/// (used when UseGenerationHost is set)
+		/// </summary>
+		public string CaptureGenerationHostOutput { get; set; }
+
+		/// <summary>
 		/// Provides a list of assemblies to be loaded in the SourceGenerator
 		/// secondary app domains. This is a backward compatibility feature related
 		/// to the use of external libraries in previous versions of the SourceGeneration task.
@@ -137,6 +143,16 @@ namespace Uno.SourceGeneratorTasks
 
 		private void GenerateWithHost()
 		{
+			var captureHostOutput = false;
+			if (!bool.TryParse(this.CaptureGenerationHostOutput, out captureHostOutput))
+			{
+#if DEBUG
+				captureHostOutput = true; // default to true in DEBUG
+#else
+				captureHostOutput = false; // default to false in RELEASE
+#endif
+			}
+
 			var hostPath = GetHostPath();
 
 			var responseFile = Path.GetTempFileName();
@@ -173,19 +189,47 @@ namespace Uno.SourceGeneratorTasks
 					}
 				}
 
-				var p = Process.Start(buildInfo());
-
-				p.WaitForExit();
-
-				BinaryLoggerReplayHelper.Replay(BuildEngine, binlogFile);
-
-				if (p.ExitCode == 0)
+				using (var process = new Process())
 				{
-					GenereratedFiles = File.ReadAllText(outputFile).Split(';');
-				}
-				else
-				{
-					throw new InvalidOperationException($"Generation failed");
+					var startInfo = buildInfo();
+
+					if (captureHostOutput)
+					{
+						startInfo.Arguments += " -console";
+						startInfo.RedirectStandardOutput = true;
+						startInfo.RedirectStandardError = true;
+
+						process.StartInfo = startInfo;
+						process.Start();
+
+						var output = process.StandardOutput.ReadToEnd();
+						var error = process.StandardError.ReadToEnd();
+						process.WaitForExit();
+
+						this.Log().Info(
+							$"Executing {startInfo.FileName} {startInfo.Arguments}:\n" +
+							$"result: {process.ExitCode}\n" +
+							$"\n---begin host output---\n{output}\n" +
+							$"---begin host ERROR output---\n{error}\n" +
+							"---end host output---\n");
+					}
+					else
+					{
+						process.StartInfo = startInfo;
+						process.Start();
+						process.WaitForExit();
+					}
+
+					BinaryLoggerReplayHelper.Replay(BuildEngine, binlogFile);
+
+					if (process.ExitCode == 0)
+					{
+						GenereratedFiles = File.ReadAllText(outputFile).Split(';');
+					}
+					else
+					{
+						throw new InvalidOperationException($"Generation failed");
+					}
 				}
 			}
 			finally
