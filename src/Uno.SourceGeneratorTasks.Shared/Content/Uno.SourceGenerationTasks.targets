@@ -109,6 +109,7 @@
 								BinLogOutputPath="$(UnoSourceGeneratorBinLogOutputPath)"
 								BinLogEnabled="$(UnoSourceGeneratorUnsecureBinLogEnabled)"
 								UseGenerationHost="$(UnoSourceGeneratorUseGenerationHost)"
+								CaptureGenerationHostOutput="$(UnoCaptureGenerationHostOutput)"
 								Condition="$(_hasSourceGenerators)">
 			<Output TaskParameter="GenereratedFiles" ItemName="UnoGeneratedFiles" />
 		</SourceGenerationTask_v0>
