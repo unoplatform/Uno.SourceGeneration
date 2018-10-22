@@ -60,6 +60,12 @@ namespace Uno.SourceGeneratorTasks
 		public string UseGenerationHost { get; set; }
 
 		/// <summary>
+		/// Capture the generation host standard output for debug purposes.
+		/// (used when UseGenerationHost is set)
+		/// </summary>
+		public string CaptureGenerationHostOutput { get; set; }
+
+		/// <summary>
 		/// Provides a list of assemblies to be loaded in the SourceGenerator
 		/// secondary app domains. This is a backward compatibility feature related
 		/// to the use of external libraries in previous versions of the SourceGeneration task.
@@ -137,6 +143,16 @@ namespace Uno.SourceGeneratorTasks
 
 		private void GenerateWithHost()
 		{
+			var captureHostOutput = false;
+			if (!bool.TryParse(this.CaptureGenerationHostOutput, out captureHostOutput))
+			{
+#if DEBUG
+				captureHostOutput = true; // default to true in DEBUG
+#else
+				captureHostOutput = false; // default to false in RELEASE
+#endif
+			}
+
 			var hostPath = GetHostPath();
 
 			var responseFile = Path.GetTempFileName();
@@ -173,19 +189,47 @@ namespace Uno.SourceGeneratorTasks
 					}
 				}
 
-				var p = Process.Start(buildInfo());
-
-				p.WaitForExit();
-
-				BinaryLoggerReplayHelper.Replay(BuildEngine, binlogFile);
-
-				if (p.ExitCode == 0)
+				using (var process = new Process())
 				{
-					GenereratedFiles = File.ReadAllText(outputFile).Split(';');
-				}
-				else
-				{
-					throw new InvalidOperationException($"Generation failed");
+					var startInfo = buildInfo();
+
+					if (captureHostOutput)
+					{
+						startInfo.Arguments += " -console";
+						startInfo.RedirectStandardOutput = true;
+						startInfo.RedirectStandardError = true;
+
+						process.StartInfo = startInfo;
+						process.Start();
+
+						var output = process.StandardOutput.ReadToEnd();
+						var error = process.StandardError.ReadToEnd();
+						process.WaitForExit();
+
+						this.Log().Info(
+							$"Executing {startInfo.FileName} {startInfo.Arguments}:\n" +
+							$"result: {process.ExitCode}\n" +
+							$"\n---begin host output---\n{output}\n" +
+							$"---begin host ERROR output---\n{error}\n" +
+							"---end host output---\n");
+					}
+					else
+					{
+						process.StartInfo = startInfo;
+						process.Start();
+						process.WaitForExit();
+					}
+
+					BinaryLoggerReplayHelper.Replay(BuildEngine, binlogFile);
+
+					if (process.ExitCode == 0)
+					{
+						GenereratedFiles = File.ReadAllText(outputFile).Split(';');
+					}
+					else
+					{
+						throw new InvalidOperationException($"Generation failed, error code {process.ExitCode}");
+					}
 				}
 			}
 			finally
@@ -199,8 +243,29 @@ namespace Uno.SourceGeneratorTasks
 
 		public bool NeedsGenerationHost
 			=> (bool.TryParse(UseGenerationHost, out var result) && result)
-			|| RuntimeHelpers.IsMono
+			|| (RuntimeHelpers.IsMono && IsMonoMSBuildCompatible)
 			|| RuntimeHelpers.IsNetCore;
+
+		public bool IsMonoMSBuildCompatible =>
+			// Starting from vs16.0 the following errors does not happen. Below this version, we continue to use
+			// the current process to run the generators.
+			// 
+			// System.TypeInitializationException: The type initializer for 'Microsoft.Build.Collections.MSBuildNameIgnoreCaseComparer' threw an exception. ---> System.EntryPointNotFoundException: GetSystemInfo
+			//   at(wrapper managed-to-native) Microsoft.Build.Shared.NativeMethodsShared.GetSystemInfo(Microsoft.Build.Shared.NativeMethodsShared/SYSTEM_INFO&)
+			//   at Microsoft.Build.Shared.NativeMethodsShared+SystemInformationData..ctor ()[0x00023] in <61115f75067146fab35b10183e6ee379>:0 
+			//   at Microsoft.Build.Shared.NativeMethodsShared.get_SystemInformation ()[0x0001e] in <61115f75067146fab35b10183e6ee379>:0 
+			//   at Microsoft.Build.Shared.NativeMethodsShared.get_ProcessorArchitecture ()[0x00000] in <61115f75067146fab35b10183e6ee379>:0 
+			//   at Microsoft.Build.Collections.MSBuildNameIgnoreCaseComparer..cctor ()[0x00010] in <61115f75067146fab35b10183e6ee379>:0 
+			//    --- End of inner exception stack trace ---
+			//   at Microsoft.Build.Collections.PropertyDictionary`1[T]..ctor ()[0x00006] in <61115f75067146fab35b10183e6ee379>:0 
+			//   at Microsoft.Build.Evaluation.ProjectCollection..ctor (System.Collections.Generic.IDictionary`2[TKey, TValue] globalProperties, System.Collections.Generic.IEnumerable`1[T] loggers, System.Collections.Generic.IEnumerable`1[T] remoteLoggers, Microsoft.Build.Evaluation.ToolsetDefinitionLocations toolsetDefinitionLocations, System.Int32 maxNodeCount, System.Boolean onlyLogCriticalEvents) [0x00112] in <61115f75067146fab35b10183e6ee379>:0 
+			//   at Microsoft.Build.Evaluation.ProjectCollection..ctor(System.Collections.Generic.IDictionary`2[TKey, TValue] globalProperties, System.Collections.Generic.IEnumerable`1[T] loggers, Microsoft.Build.Evaluation.ToolsetDefinitionLocations toolsetDefinitionLocations) [0x00000] in <61115f75067146fab35b10183e6ee379>:0 
+			//   at Microsoft.Build.Evaluation.ProjectCollection..ctor(System.Collections.Generic.IDictionary`2[TKey, TValue] globalProperties) [0x00000] in <61115f75067146fab35b10183e6ee379>:0 
+			//   at Microsoft.Build.Evaluation.ProjectCollection..ctor() [0x00000] in <61115f75067146fab35b10183e6ee379>:0 
+			//   at Uno.SourceGeneration.Host.ProjectLoader.LoadProjectDetails(Uno.SourceGeneratorTasks.BuildEnvironment environment) [0x00216] in <b845ad5dce324939bc8243d198321524>:0 
+			//   at Uno.SourceGeneration.Host.SourceGeneratorHost.Generate() [0x00014] in <b845ad5dce324939bc8243d198321524>:0 
+
+			string.Compare(FileVersionInfo.GetVersionInfo(new Uri(this.GetType().Assembly.Location).LocalPath).FileVersion, "16.0") >= 0;
 
 		private string GetHostPath()
 		{

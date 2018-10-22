@@ -6,6 +6,9 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
+using Microsoft.Extensions.Options;
 using Uno.SourceGeneration.Helpers;
 using Uno.SourceGeneratorTasks;
 using Uno.SourceGeneratorTasks.Helpers;
@@ -21,14 +24,20 @@ namespace Uno.SourceGeneration.Host
 				// Uncomment this for easier debugging
 				// Debugger.Launch();
 
-				if (args.Length != 3)
+				if (args.Length < 3 || args.Length > 4)
 				{
-					throw new Exception($"Response file, output path and binlog path are required");
+					throw new Exception($"Response file, output path and binlog path are required.");
 				}
 
 				var responseFilePath = args[0];
 				var generatedFilesOutputPath = args[1];
 				var binlogOutputPath = args[2];
+				var enableConsole = args.ElementAtOrDefault(3)?.Equals("-console", StringComparison.OrdinalIgnoreCase) ?? false;
+
+				if (enableConsole)
+				{
+					LogExtensionPoint.AmbientLoggerFactory.AddProvider(new ConsoleLoggerProvider((t, l) => true, true));
+				}
 
 				using (var responseFile = File.OpenRead(responseFilePath))
 				{
@@ -38,7 +47,7 @@ namespace Uno.SourceGeneration.Host
 					{
 						AssemblyResolver.RegisterAssemblyLoader(environment);
 
-						return RunGeneration(generatedFilesOutputPath, binlogOutputPath, environment);
+						return RunGeneration(generatedFilesOutputPath, binlogOutputPath, environment, enableConsole);
 					}
 
 					return 1;
@@ -55,10 +64,12 @@ namespace Uno.SourceGeneration.Host
 		/// Runs the source generation. This code has to be in a method so the AssemblyResolver
 		/// can resolve the dependencies in a proper order.
 		/// </summary>
-		private static int RunGeneration(string generatedFilesOutputPath, string binlogOutputPath, BuildEnvironment environment)
+		private static int RunGeneration(string generatedFilesOutputPath, string binlogOutputPath, BuildEnvironment environment, bool enableConsole)
 		{
 			using (var logger = new BinaryLoggerForwarderProvider(binlogOutputPath))
 			{
+				typeof(Program).Log().Info($"Generating files to path {generatedFilesOutputPath}, logoutput={binlogOutputPath}");
+
 				try
 				{
 					var host = new SourceGeneratorHost(environment);
@@ -71,7 +82,13 @@ namespace Uno.SourceGeneration.Host
 				}
 				catch (Exception e)
 				{
+					if (enableConsole)
+					{
+						Console.WriteLine(e.ToString());
+					}
+
 					typeof(Program).Log().Error("Generation failed: " + e.ToString());
+
 					return 3;
 				}
 			}
