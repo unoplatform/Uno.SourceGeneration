@@ -42,4 +42,4 @@ jobs:
       checkLatest: false
 
   - bash: msbuild /p:Configuration=Release ./src/Uno.SourceGenerator.sln
-    displayName: Build 
+    displayName: Build
