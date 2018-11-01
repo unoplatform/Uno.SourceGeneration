@@ -287,8 +287,9 @@ namespace Uno.SourceGeneration.Host
 
 					throw new InvalidOperationException(
 						$"The project(s) {metadataLessProjects.Select(p => p.Name).JoinBy(",")} did not provide any metadata reference. " +
-						"This may be due to an invalid path, such as $(SolutionDir) being used in the csproj; try using relative paths instead." +
-						"This may also be related to a missing default configuration directive. Refer to the Uno.SourceGenerator Readme.md file for more details."
+						"This may be due to an invalid path, such as $(SolutionDir) being used in the csproj; try using relative paths instead, " +
+						$"or a missing default configuration directive, or that [{_environment.TargetFramework}] " +
+						$"is missing in the TargetFrameworks list (see https://github.com/nventive/Uno.SourceGeneration/issues/2 for details)."
 					);
 				}
 
