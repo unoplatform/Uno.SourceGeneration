@@ -244,6 +244,7 @@ namespace Uno.SourceGeneratorTasks
 		public bool NeedsGenerationHost
 			=> (bool.TryParse(UseGenerationHost, out var result) && result)
 			|| (RuntimeHelpers.IsMono && IsMonoMSBuildCompatible)
+			|| RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
 			|| RuntimeHelpers.IsNetCore;
 
 		public bool IsMonoMSBuildCompatible =>
