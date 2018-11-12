@@ -219,3 +219,7 @@ created inside the application domain used to generate the code. The path for th
 allows for an improved diagnostics experience. Set the `UnoSourceGeneratorUnsecureBinLogEnabled` property to true to enabled binary logging.
 
 > **Important**: The binary logger may leak secret environment variables, it is a best practice to never enable this feature as part of normal build.
+
+# Have questions? Feature requests? Issues?
+
+Make sure to visit our [StackOverflow](https://stackoverflow.com/questions/tagged/uno-platform), [create an issue](https://github.com/nventive/Uno.SourceGeneration/issues) or [visit our gitter](https://gitter.im/uno-platform/Lobby).
