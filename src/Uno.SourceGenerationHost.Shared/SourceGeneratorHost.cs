@@ -258,7 +258,19 @@ namespace Uno.SourceGeneration.Host
 				ws.LoadMetadataForReferencedProjects = true;
 
 				ws.WorkspaceFailed +=
-					(s, e) => this.Log().Error(e.Diagnostic.ToString());
+					(s, e) =>
+					{
+						switch (e.Diagnostic.Kind)
+						{
+							case WorkspaceDiagnosticKind.Warning:
+								this.Log().Warn(e.Diagnostic.Message);
+								break;
+
+							case WorkspaceDiagnosticKind.Failure:
+								this.Log().Error(e.Diagnostic.Message);
+								break;
+						}
+					};
 
 				var project = await ws.OpenProjectAsync(_environment.ProjectFile);
 
