@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-		<PackageReference Include="Uno.SourceGeneration" Version="1.27.0-dev.117" PrivateAssets="All" />
-		<PackageReference Include="Uno.SourceGenerationTasks" Version="1.27.0-dev.117" PrivateAssets="None" />
+		<PackageReference Include="Uno.SourceGeneration" Version="1.28.0-dev.145" PrivateAssets="All" />
+		<PackageReference Include="Uno.SourceGenerationTasks" Version="1.28.0-dev.145" PrivateAssets="None" />
 	</ItemGroup>
 
   <ItemGroup>
