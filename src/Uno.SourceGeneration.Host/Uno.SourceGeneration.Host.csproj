@@ -6,6 +6,7 @@
 	<DefineConstants>$(DefineConstants);HAS_BINLOG</DefineConstants>
 	<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 	<GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net462'">
