@@ -26,5 +26,7 @@
 	<file src="..\src\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" target="build\MonoAndroid" />
 	<file src="..\src\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" target="build\Xamarin.iOS10" />
 	<file src="..\src\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" target="build\Xamarin.Mac20" />
+	
+	<file src="_._"  target="lib/netstandard2.0" />
   </files>
 </package>

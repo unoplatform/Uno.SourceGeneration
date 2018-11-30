@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Uno.SourceGeneratorTasks</RootNamespace>
     <AssemblyName>Uno.SourceGeneratorTasks.v0</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <CopyNuGetImplementations>true</CopyNuGetImplementations>
     <TargetFrameworkProfile />
@@ -111,7 +111,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Build\AssemblyVersion.cs">
+    <Compile Include="..\..\build\AssemblyVersion.cs">
       <Link>AssemblyVersion.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

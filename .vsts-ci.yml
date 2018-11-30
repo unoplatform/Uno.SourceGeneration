@@ -1,5 +1,8 @@
-phases:
-- phase: VS_Latest
+jobs:
+- job: Windows
+
+  pool:
+    vmImage: 'vs2017-win2016'
 
   steps:
   - task: NuGetToolInstaller@0
@@ -24,3 +27,37 @@ phases:
       PathtoPublish: $(build.artifactstagingdirectory)
       ArtifactName: unosourcegenerator-drop
       ArtifactType: Container
+
+- job: Linux
+
+  variables:
+    NUGET_PACKAGES: $(Agent.WorkFolder)\.nuget
+
+  pool:
+    vmImage: 'ubuntu-16.04'
+
+  steps:
+  - task: NuGetToolInstaller@0
+    inputs:
+      versionSpec: 4.7.0
+      checkLatest: false
+
+  - bash: msbuild /r /p:Configuration=Release /p:AddSyntheticProjectReferencesForSolutionDependencies=false ./src/Uno.SourceGenerator.Linux.sln
+    displayName: Build
+
+- job: macOS
+
+  variables:
+    NUGET_PACKAGES: $(Agent.WorkFolder)\.nuget
+
+  pool:
+    vmImage: 'macOS-10.13'
+
+  steps:
+  - task: NuGetToolInstaller@0
+    inputs:
+      versionSpec: 4.7.0
+      checkLatest: false
+
+  - bash: msbuild /r /p:Configuration=Release /p:AddSyntheticProjectReferencesForSolutionDependencies=false ./src/Uno.SourceGenerator.Linux.sln
+    displayName: Build
