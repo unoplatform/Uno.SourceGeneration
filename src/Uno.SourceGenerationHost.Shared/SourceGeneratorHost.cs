@@ -52,7 +52,14 @@ namespace Uno.SourceGeneration.Host
 		{
 			var globalExecution = Stopwatch.StartNew();
 
-			using (var details = ProjectLoader.LoadProjectDetails(_environment))
+			var compilationResult = GetCompilation().Result;
+
+			if (this.Log().IsEnabled(LogLevel.Debug))
+			{
+				this.Log().Debug($"Got compilation after {globalExecution.Elapsed}");
+			}
+
+			using (var details = ProjectLoader.LoadProjectDetails(_environment, BuildGlobalMSBuildProperties()))
 			{
 				if (this.Log().IsEnabled(LogLevel.Debug))
 				{
@@ -63,13 +70,6 @@ namespace Uno.SourceGeneration.Host
 				{
 					this.Log().Info($"No generators were found.");
 					return new string[0];
-				}
-
-				var compilationResult = GetCompilation().Result;
-
-				if (this.Log().IsEnabled(LogLevel.Debug))
-				{
-					this.Log().Debug($"Got compilation after {globalExecution.Elapsed}");
 				}
 
 				// Build dependencies graph
@@ -243,41 +243,15 @@ namespace Uno.SourceGeneration.Host
 		{
 			try
 			{
-				var globalProperties = new Dictionary<string, string> {
-							{ "Configuration", _environment.Configuration },
-							{ "BuildingInsideVisualStudio", "true" },
-							{ "BuildingInsideUnoSourceGenerator", "true" },
-							{ "DesignTimeBuild", "true" },
-							{ "UseHostCompilerIfAvailable", "false" },
-							{ "UseSharedCompilation", "false" },
-							{ "IntermediateOutputPath", Path.Combine(_environment.OutputPath, "obj") + Path.DirectorySeparatorChar },
-							{ "VisualStudioVersion", _environment.VisualStudioVersion },
+				var globalProperties = BuildGlobalMSBuildProperties();
 
-							// The Platform is intentionally not set here
-							// as for now, Roslyn applies the properties to all 
-							// loaded projects, directly or indirectly.
-							// So for now, we rely on the fact that all projects
-							// have a default platform directive, and that most projects
-							// don't rely on the platform to adjust the generated code.
-							// (e.g. _platform may be iPhoneSimulator, but all projects may not
-							// support this target, and therefore will fail to load.
-							//{ "Platform", _platform },
-						};
-
-				if (_environment.TargetFramework.HasValue())
-				{
-					// Target framework is required for the MSBuild 15.0 Cross Compilation.
-					// Loading a project without the target framework results in an empty project, which interatively
-					// sets the TargetFramework property.
-					globalProperties.Add("TargetFramework", _environment.TargetFramework);
-				}
-
-				// TargetFrameworkRootPath is used by VS4Mac to determine the
-				// location of frameworks like Xamarin.iOS.
-				if (_environment.TargetFrameworkRootPath.HasValue())
-				{
-					globalProperties["TargetFrameworkRootPath"] = _environment.TargetFrameworkRootPath;
-				}
+				//globalProperties.Remove("DesignTimeBuild");
+				//globalProperties.Remove("BuildingInsideVisualStudio");
+				//globalProperties.Remove("BuildProjectReferences");
+				//globalProperties.Remove("BuildingProject");
+				//globalProperties.Remove("ProvideCommandLineArgs");
+				//globalProperties.Remove("SkipCompilerExecution");
+				//globalProperties.Remove("ContinueOnError");
 
 				var ws = MSBuildWorkspace.Create(globalProperties);
 
@@ -296,7 +270,7 @@ namespace Uno.SourceGeneration.Host
 
 				if (metadataLessProjects.Any())
 				{
-					foreach(var diag in ws.Diagnostics)
+					foreach (var diag in ws.Diagnostics)
 					{
 						this.Log().Debug($"[{diag.Kind}] {diag.Message}");
 					}
@@ -344,6 +318,59 @@ namespace Uno.SourceGeneration.Host
 					throw new InvalidOperationException(e.ToString());
 				}
 			}
+		}
+
+		private Dictionary<string, string> BuildGlobalMSBuildProperties()
+		{
+			var globalProperties = new Dictionary<string, string> {
+				// Default global properties defined in Microsoft.CodeAnalysis.MSBuild.Build.ProjectBuildManager
+				// https://github.com/dotnet/roslyn/blob/b9fb1610c87cccc8ceb74a770dba261a58e39c4a/src/Workspaces/Core/MSBuild/MSBuild/Build/ProjectBuildManager.cs#L24
+				{ "BuildingInsideVisualStudio", bool.TrueString },
+				{ "BuildProjectReferences", bool.FalseString },
+				// this will tell msbuild to not build the dependent projects
+				{ "DesignTimeBuild", bool.TrueString },
+				// don't actually run the compiler
+				{ "SkipCompilerExecution", bool.TrueString },
+
+				{ "UseHostCompilerIfAvailable", bool.FalseString },
+				{ "UseSharedCompilation", bool.FalseString },
+
+				// Prevent the generator to recursively execute
+				{ "BuildingInsideUnoSourceGenerator", bool.TrueString },
+				{ "Configuration", _environment.Configuration },
+
+				// Override the output path so custom compilation lists do not override the
+				// main compilation caches, which can invalidate incremental compilation.
+				{ "IntermediateOutputPath", Path.Combine(_environment.OutputPath, "obj") + Path.DirectorySeparatorChar },
+				{ "VisualStudioVersion", _environment.VisualStudioVersion },
+
+				// The Platform is intentionally not set here
+				// as for now, Roslyn applies the properties to all 
+				// loaded projects, directly or indirectly.
+				// So for now, we rely on the fact that all projects
+				// have a default platform directive, and that most projects
+				// don't rely on the platform to adjust the generated code.
+				// (e.g. _platform may be iPhoneSimulator, but all projects may not
+				// support this target, and therefore will fail to load.
+				//{ "Platform", _platform },
+			};
+
+			if (_environment.TargetFramework.HasValue())
+			{
+				// Target framework is required for the MSBuild 15.0 Cross Compilation.
+				// Loading a project without the target framework results in an empty project, which interatively
+				// sets the TargetFramework property.
+				globalProperties.Add("TargetFramework", _environment.TargetFramework);
+			}
+
+			// TargetFrameworkRootPath is used by VS4Mac to determine the
+			// location of frameworks like Xamarin.iOS.
+			if (_environment.TargetFrameworkRootPath.HasValue())
+			{
+				globalProperties["TargetFrameworkRootPath"] = _environment.TargetFrameworkRootPath;
+			}
+
+			return globalProperties;
 		}
 
 		private async Task<(Compilation compilation, Project project)> AddToCompilation(
