@@ -41,5 +41,5 @@ jobs:
       versionSpec: 4.7.0
       checkLatest: false
 
-  - bash: msbuild /r /p:Configuration=Release /p:AddSyntheticProjectReferencesForSolutionDependencies=false ./src/Uno.SourceGenerator.sln
+  - bash: msbuild /r /p:Configuration=Release /p:AddSyntheticProjectReferencesForSolutionDependencies=false ./src/Uno.SourceGenerator.Linux.sln
     displayName: Build
