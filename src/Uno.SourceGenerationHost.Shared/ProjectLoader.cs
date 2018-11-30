@@ -44,7 +44,7 @@ namespace Uno.SourceGeneration.Host
 		private static ConcurrentDictionary<(string projectFile, string configuration, string targetFramework), ProjectDetails> _allProjects
 			= new ConcurrentDictionary<(string projectFile, string configuration, string targetFramework), ProjectDetails>();
 
-		public static ProjectDetails LoadProjectDetails(BuildEnvironment environment)
+		public static ProjectDetails LoadProjectDetails(BuildEnvironment environment, Dictionary<string, string> globalProperties)
 		{
 			var key = (environment.ProjectFile, environment.Configuration, environment.TargetFramework);
 
@@ -74,29 +74,6 @@ namespace Uno.SourceGeneration.Host
 			}
 
 			details = new ProjectDetails();
-
-			var properties = new Dictionary<string, string>(ImmutableDictionary<string, string>.Empty)
-			{
-				["DesignTimeBuild"] = "true", // this will tell msbuild to not build the dependent projects
-				["BuildingInsideVisualStudio"] = "true", // this will force CoreCompile task to execute even if all inputs and outputs are up to date
-				["BuildingInsideUnoSourceGenerator"] = "true", // this will force prevent the task to run recursively
-				["Configuration"] = environment.Configuration,
-				["UseHostCompilerIfAvailable"] = "true",
-				["UseSharedCompilation"] = "true",
-				["VisualStudioVersion"] = environment.VisualStudioVersion,
-
-				// Force the intermediate path to be different from the VS default path
-				// so that the generated files don't mess up the file count for incremental builds.
-				["IntermediateOutputPath"] = Path.Combine(environment.OutputPath, "obj") + Path.DirectorySeparatorChar
-			};
-
-			// Target framework is required for the MSBuild 15.0 Cross Compilation.
-			// Loading a project without the target framework results in an empty project, which interatively
-			// sets the TargetFramework property.
-			if (environment.TargetFramework.HasValue())
-			{
-				properties["TargetFramework"] = environment.TargetFramework;
-			}
 
 			if (Environment.GetEnvironmentVariable("Platform") is string envPlatform && !string.IsNullOrEmpty(envPlatform))
 			{
@@ -151,7 +128,7 @@ namespace Uno.SourceGeneration.Host
 
 			var loadedProject = new Microsoft.Build.Evaluation.Project(
 				xml,
-				properties,
+				globalProperties,
 				toolsVersion: null,
 				projectCollection: details.Collection
 			);

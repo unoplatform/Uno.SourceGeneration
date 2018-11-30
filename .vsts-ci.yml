@@ -1,7 +1,5 @@
 phases:
 - phase: VS_Latest
-  variables:
-    NUGET_PACKAGES: $(Agent.WorkFolder)\.nuget
 
   steps:
   - task: NuGetToolInstaller@0
