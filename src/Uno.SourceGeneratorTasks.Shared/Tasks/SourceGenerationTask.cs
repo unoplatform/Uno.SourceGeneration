@@ -280,7 +280,7 @@ namespace Uno.SourceGeneratorTasks
 		private string GetHostPath()
 		{
 			var currentPath = Path.GetDirectoryName(new Uri(GetType().Assembly.CodeBase).LocalPath);
-			var hostPlatform = RuntimeHelpers.IsNetCore ? "netcoreapp2.1" : "net462";
+			var hostPlatform = RuntimeHelpers.IsNetCore ? "netcoreapp2.1" : "net461";
 			var installedPath = Path.Combine(currentPath, "..", "host", hostPlatform);
 #if DEBUG
 			var configuration = "Debug";

@@ -2,14 +2,14 @@
 
   <PropertyGroup>
 	<OutputType>Exe</OutputType>
-	<TargetFrameworks>netcoreapp2.1;net462</TargetFrameworks>
+	<TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
 	<DefineConstants>$(DefineConstants);HAS_BINLOG</DefineConstants>
 	<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 	<GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
 	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'=='net462'">
+  <ItemGroup Condition="'$(TargetFramework)'=='net461'">
 	<PackageReference Include="ManagedEsent">
 	  <Version>1.9.4</Version>
 	</PackageReference>
