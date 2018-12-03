@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Uno.SampleGenerators</RootNamespace>
     <AssemblyName>Uno.SampleGenerators</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <StartAction>Program</StartAction>
     <StartProgram>$(DevEnvDir)..\..\MSBuild\15.0\Bin\MSBuild.exe</StartProgram>
