@@ -14,9 +14,19 @@ $appSettings = "$currentDirectory\SignClient.json"
 $nupgks = Get-ChildItem -Recurse $Env:ArtifactDirectory\*.nupkg | Select-Object -ExpandProperty FullName
 
 foreach ($nupkg in $nupgks) {
-    Write-Host "Submitting $nupkg for signing"
-    .\SignClient 'sign' -c $appSettings -i $nupkg -r $env:SignClientUser -s $env:SignClientSecret -n "$env:SignPackageName" -d "$env:SignPackageDescription" -u "$env:build_repository_uri"
-    Write-Host "Finished signing $nupkg"
+
+    $fileList = "";
+
+    if($nupkg.Contains("Uno.SourceGenerationTasks")) {
+        Write-Host "Submitting $nupkg for signing"
+        .\SignClient 'sign' -c $appSettings -i $nupkg -r $env:SignClientUser -s $env:SignClientSecret -n "$env:SignPackageName" -d "$env:SignPackageDescription" -u "$env:build_repository_uri" -f $currentDirectory\NugetSignedFiles.txt
+        Write-Host "Finished signing $nupkg"
+    }
+    else {
+        Write-Host "Submitting $nupkg for signing"
+        .\SignClient 'sign' -c $appSettings -i $nupkg -r $env:SignClientUser -s $env:SignClientSecret -n "$env:SignPackageName" -d "$env:SignPackageDescription" -u "$env:build_repository_uri"
+        Write-Host "Finished signing $nupkg"
+    }
 }
 
 Write-Host "Sign-package complete"

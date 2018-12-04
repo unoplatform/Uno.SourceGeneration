@@ -1,0 +1,6 @@
+build\host\net461\Uno.SourceGeneration.dll
+build\host\net461\Uno.SourceGeneration.Host.exe
+build\host\netcoreapp2.1\Uno.SourceGeneration.dll
+build\host\netcoreapp2.1\Uno.SourceGeneration.Host.dll
+build\Dev15.0\Uno.SampleGenerators.dll
+build\Dev15.0\Uno.SourceGeneration.dll
