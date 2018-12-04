@@ -11,7 +11,7 @@ dotnet tool install --tool-path . SignClient
 # Setup Variables we need to pass into the sign client tool
 $appSettings = "$currentDirectory\SignClient.json"
 
-$nupgks = Get-ChildItem $Env:ArtifactDirectory\*.nupkg | Select-Object -ExpandProperty FullName
+$nupgks = Get-ChildItem -Recurse $Env:ArtifactDirectory\*.nupkg | Select-Object -ExpandProperty FullName
 
 foreach ($nupkg in $nupgks) {
     Write-Host "Submitting $nupkg for signing"
