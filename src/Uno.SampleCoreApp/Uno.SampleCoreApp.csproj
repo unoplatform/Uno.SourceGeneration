@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-	<UnoSourceGeneratorTasksPath>..\..\Uno.SourceGeneratorTasks.Dev$(MSBuildToolsVersion)\bin\$(Configuration)</UnoSourceGeneratorTasksPath>
+	<UnoSourceGeneratorTasksPath>..\..\Uno.SourceGeneratorTasks.Dev15.0\bin\$(Configuration)</UnoSourceGeneratorTasksPath>
 	<UnoSourceGeneratorOutputPath>GeneratedFiles</UnoSourceGeneratorOutputPath>
   </PropertyGroup>
   <Import Project="..\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" />
