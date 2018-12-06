@@ -33,7 +33,7 @@
 
 	<Target Name="_InjectGeneratedFiles"
 					BeforeTargets="ResolveNuGetPackageAssets;BeforeCompile"
-					Condition="('$(BuildingProject)' == 'false' or '$(DesignTimeBuild)' == 'true') and '$(BuildingInsideUnoSourceGenerator)' == ''">
+					Condition="('$(BuildingProject)' == 'false' or '$(DesignTimeBuild)' == 'true') and '$(BuildingInsideUnoSourceGenerator)' == '' and '$(MSBuildProjectExtension)'=='.csproj'">
 
 		<!-- 
 		This target is used to temporarily include generated files to help intellisense 
@@ -56,7 +56,7 @@
 	</Target>
 
 	<Target Name="_UnoSourceGenerator"
-					Condition="'$(BuildingProject)' == 'true' and '$(BuildingInsideUnoSourceGenerator)' == '' and '$(DesignTimeBuild)' != 'true'"
+					Condition="'$(BuildingProject)' == 'true' and '$(BuildingInsideUnoSourceGenerator)' == '' and '$(DesignTimeBuild)' != 'true' and '$(MSBuildProjectExtension)'=='.csproj'"
 					BeforeTargets="@(UnoSourceGeneratorBeforeTarget)"
 					Inputs="@(SourceGeneratorInput)" Outputs="$(_UnoSourceGeneratorCacheFile)">
 		<!-- 
