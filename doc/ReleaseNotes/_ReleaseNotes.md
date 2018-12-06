@@ -12,3 +12,4 @@
 ### Breaking changes
 
 ### Bug fixes
+- Added workaround for missing designer file error with Xamarin.Android projects

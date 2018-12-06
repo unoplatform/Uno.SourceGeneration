@@ -148,4 +148,20 @@
 		</ItemGroup>
 	</Target>
 
+  <Target Name="InvalidAndroidDesignerWorkaround"
+          AfterTargets="UpdateGeneratedFiles"
+          Condition=" '$(BuildingInsideUnoSourceGenerator)' != '' and ('$(_UnoSourceGeneratorProjectType)'=='android' or '$(TargetFrameworkIdentifier)'=='MonoAndroid')">
+
+	<!--
+	During the loading of a Xamarin.Android project, when AndroidUseIntermediateDesignerFile is set to true, the
+	designer file is added to the compilation list, even though it's not present. This makes the msbuild roslyn workspace
+	try to build this file, raising a error that is not significant as the result of the build is not used.
+
+	This target removes that file from the compilation list when the project is loaded inside the source generators
+	-->
+	<ItemGroup>
+	  <Compile Remove="$(_AndroidResourceDesignerFile)" />
+	</ItemGroup>
+  </Target>
+
 </Project>
