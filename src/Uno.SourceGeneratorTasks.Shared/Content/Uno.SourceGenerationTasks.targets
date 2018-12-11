@@ -1,8 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<PropertyGroup>
-		<UnoSourceGeneratorTasksPath Condition="'$(UnoSourceGeneratorTasksPath)'=='' and '$(MSBuildToolsVersion)'=='14.0'">..\Dev14.0</UnoSourceGeneratorTasksPath>
-		<UnoSourceGeneratorTasksPath Condition="'$(UnoSourceGeneratorTasksPath)'=='' and '$(MSBuildToolsVersion)'=='15.0'">..\Dev15.0</UnoSourceGeneratorTasksPath>
+		<UnoSourceGeneratorTasksPath Condition="'$(UnoSourceGeneratorTasksPath)'==''">..\Dev15.0</UnoSourceGeneratorTasksPath>
 		<UnoSourceGeneration_FixIntellisense Condition="'$(UnoSourceGeneration_FixIntellisense)'==''">true</UnoSourceGeneration_FixIntellisense>
 	  
 		<_UnoSourceGeneratorOutputPath Condition="'$(UnoSourceGeneratorOutputPath)'==''">$(IntermediateOutputPath)</_UnoSourceGeneratorOutputPath>
@@ -34,7 +33,7 @@
 
 	<Target Name="_InjectGeneratedFiles"
 					BeforeTargets="ResolveNuGetPackageAssets;BeforeCompile"
-					Condition="('$(BuildingProject)' == 'false' or '$(DesignTimeBuild)' == 'true') and '$(BuildingInsideUnoSourceGenerator)' == ''">
+					Condition="('$(BuildingProject)' == 'false' or '$(DesignTimeBuild)' == 'true') and '$(BuildingInsideUnoSourceGenerator)' == '' and '$(MSBuildProjectExtension)'=='.csproj'">
 
 		<!-- 
 		This target is used to temporarily include generated files to help intellisense 
@@ -57,7 +56,7 @@
 	</Target>
 
 	<Target Name="_UnoSourceGenerator"
-					Condition="'$(BuildingProject)' == 'true' and '$(BuildingInsideUnoSourceGenerator)' == '' and '$(DesignTimeBuild)' != 'true'"
+					Condition="'$(BuildingProject)' == 'true' and '$(BuildingInsideUnoSourceGenerator)' == '' and '$(DesignTimeBuild)' != 'true' and '$(MSBuildProjectExtension)'=='.csproj'"
 					BeforeTargets="@(UnoSourceGeneratorBeforeTarget)"
 					Inputs="@(SourceGeneratorInput)" Outputs="$(_UnoSourceGeneratorCacheFile)">
 		<!-- 
@@ -148,5 +147,21 @@
 			<SourceGeneratorInput Include="@(ProjectReference)" />
 		</ItemGroup>
 	</Target>
+
+  <Target Name="InvalidAndroidDesignerWorkaround"
+          AfterTargets="UpdateGeneratedFiles"
+          Condition=" '$(BuildingInsideUnoSourceGenerator)' != '' and ('$(_UnoSourceGeneratorProjectType)'=='android' or '$(TargetFrameworkIdentifier)'=='MonoAndroid')">
+
+	<!--
+	During the loading of a Xamarin.Android project, when AndroidUseIntermediateDesignerFile is set to true, the
+	designer file is added to the compilation list, even though it's not present. This makes the msbuild roslyn workspace
+	try to build this file, raising a error that is not significant as the result of the build is not used.
+
+	This target removes that file from the compilation list when the project is loaded inside the source generators
+	-->
+	<ItemGroup>
+	  <Compile Remove="$(_AndroidResourceDesignerFile)" />
+	</ItemGroup>
+  </Target>
 
 </Project>

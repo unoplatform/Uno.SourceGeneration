@@ -27,6 +27,6 @@
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="..\src\Uno.SourceGeneration\Bin\Release\Uno.SourceGeneration.dll" target="lib/net46/Uno.SourceGeneration.dll" />
+		<file src="..\src\Uno.SourceGeneration\Bin\Release\net461\Uno.SourceGeneration.dll" target="lib/net461/Uno.SourceGeneration.dll" />
 	</files>
 </package>

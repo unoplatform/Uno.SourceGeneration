@@ -173,8 +173,12 @@ namespace Uno.SourceGeneratorTasks
 					{
 						var hostBinPath = Path.Combine(hostPath, "Uno.SourceGeneration.Host.dll");
 						string arguments = $"\"{hostBinPath}\" \"{responseFile}\" \"{outputFile}\" \"{binlogFile}\"";
-						var pi = new ProcessStartInfo("dotnet", arguments);
-						pi.UseShellExecute = false;
+						var pi = new ProcessStartInfo("dotnet", arguments)
+						{
+							UseShellExecute = false,
+							CreateNoWindow = true,
+							WindowStyle = ProcessWindowStyle.Hidden,
+						};
 
 						return pi;
 					}
@@ -182,8 +186,13 @@ namespace Uno.SourceGeneratorTasks
 					{
 						var hostBinPath = Path.Combine(hostPath, "Uno.SourceGeneration.Host.exe");
 						string arguments = $"\"{responseFile}\" \"{outputFile}\" \"{binlogFile}\"";
-						var pi = new ProcessStartInfo(hostBinPath, arguments);
-						pi.UseShellExecute = false;
+
+						var pi = new ProcessStartInfo(hostBinPath, arguments)
+						{
+							UseShellExecute = false,
+							CreateNoWindow = true,
+							WindowStyle = ProcessWindowStyle.Hidden,
+						};
 
 						return pi;
 					}
@@ -244,6 +253,7 @@ namespace Uno.SourceGeneratorTasks
 		public bool NeedsGenerationHost
 			=> (bool.TryParse(UseGenerationHost, out var result) && result)
 			|| (RuntimeHelpers.IsMono && IsMonoMSBuildCompatible)
+			|| RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
 			|| RuntimeHelpers.IsNetCore;
 
 		public bool IsMonoMSBuildCompatible =>
@@ -270,7 +280,7 @@ namespace Uno.SourceGeneratorTasks
 		private string GetHostPath()
 		{
 			var currentPath = Path.GetDirectoryName(new Uri(GetType().Assembly.CodeBase).LocalPath);
-			var hostPlatform = RuntimeHelpers.IsNetCore ? "netcoreapp2.1" : "net462";
+			var hostPlatform = RuntimeHelpers.IsNetCore ? "netcoreapp2.1" : "net461";
 			var installedPath = Path.Combine(currentPath, "..", "host", hostPlatform);
 #if DEBUG
 			var configuration = "Debug";

@@ -13,7 +13,7 @@ The `Uno.SourceGeneratorTasks` support updating generators on the fly, making it
 The `Uno.SourceGeneratorTasks` support any target framework for code generation, though there are limitations when [using a mixed targetframeworks graph](https://github.com/dotnet/roslyn/issues/23114), such as generating code
 in a `net47` project that references a `netstandard2.0` project. In such cases, prefer adding a `net47` target instead of targeting `netstandard2.0`.
 
-Visual Studio 2017 15.3+ for Windows and macOS are supported.
+Visual Studio 2017 15.3+ for Windows, macOS and Linux builds are supported.
 
 ## Build status
 
@@ -32,15 +32,15 @@ Visual Studio 2017 15.3+ for Windows and macOS are supported.
 ## Creating a Source Generator
 
 1. In Visual Studio 2017, create a **.NET Standard Class Library** project named `MyGenerator`
-1. In the csproj file
-    2. Change the TargetFramework to `net46`
+2. In the csproj file
+    1. Change the TargetFramework to `net46`
     2. Add a package reference to `Uno.SourceGeneration` (take the latest version)
     ```xml
     <ItemGroup>
         <PackageReference Include="Uno.SourceGeneration" Version="1.5.0" />
     </ItemGroup>
     ```
-1. Add a new source file containing this code :
+3. Add a new source file containing this code :
     ```csharp
     using System;
     using Uno.SourceGeneration;
@@ -60,7 +60,7 @@ Visual Studio 2017 15.3+ for Windows and macOS are supported.
     ```
     Note that the GetProjectInstance is a helper method that provides access to the msbuild project currently being built. It provides access to the msbuild properties and item groups of the project, allowing for fine configuration of the source generator.
 
-1. Create a file named `MyGenerator.props` (should be the name of your project + `.props`) in a folder named
+4. Create a file named `MyGenerator.props` (should be the name of your project + `.props`) in a folder named
    `build` and set its _Build Action_ to `Content`. Put the following content:
     ```xml
     <Project>

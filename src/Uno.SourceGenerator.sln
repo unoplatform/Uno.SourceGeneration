@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28315.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uno.SampleProject", "Uno.SampleProject\Uno.SampleProject.csproj", "{0D439289-B6AC-454C-AB10-FA54F08B22EC}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uno.SampleProject", "Uno.Sa
 		{D45247E2-A279-472C-8D8B-CBCB83F37FB1} = {D45247E2-A279-472C-8D8B-CBCB83F37FB1}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uno.SourceGeneration", "Uno.SourceGeneration\Uno.SourceGeneration.csproj", "{B59FA47D-B3D2-4309-AE28-F5150AB02D46}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Uno.SourceGeneration", "Uno.SourceGeneration\Uno.SourceGeneration.csproj", "{B59FA47D-B3D2-4309-AE28-F5150AB02D46}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uno.SampleGenerators", "Uno.SampleGenerators\Uno.SampleGenerators.csproj", "{D45247E2-A279-472C-8D8B-CBCB83F37FB1}"
 EndProject
@@ -49,7 +49,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{5850FEDD
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Uno.SourceGeneration.Host", "Uno.SourceGeneration.Host\Uno.SourceGeneration.Host.csproj", "{1D32B614-7FE4-4235-A4AF-E33EA9829863}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uno.SampleCoreApp", "Uno.SampleCoreApp\Uno.SampleCoreApp.csproj", "{613832ED-7BF4-43BC-B8D3-2ACC4370237F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Uno.SampleCoreApp", "Uno.SampleCoreApp\Uno.SampleCoreApp.csproj", "{613832ED-7BF4-43BC-B8D3-2ACC4370237F}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Uno.FSSampleProject", "Uno.FSSampleProject\Uno.FSSampleProject.fsproj", "{6012BF2A-31B0-48AB-8564-F49F9C57FD32}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -181,6 +183,22 @@ Global
 		{613832ED-7BF4-43BC-B8D3-2ACC4370237F}.Release|x64.Build.0 = Release|Any CPU
 		{613832ED-7BF4-43BC-B8D3-2ACC4370237F}.Release|x86.ActiveCfg = Release|Any CPU
 		{613832ED-7BF4-43BC-B8D3-2ACC4370237F}.Release|x86.Build.0 = Release|Any CPU
+		{6012BF2A-31B0-48AB-8564-F49F9C57FD32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6012BF2A-31B0-48AB-8564-F49F9C57FD32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6012BF2A-31B0-48AB-8564-F49F9C57FD32}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{6012BF2A-31B0-48AB-8564-F49F9C57FD32}.Debug|ARM.Build.0 = Debug|Any CPU
+		{6012BF2A-31B0-48AB-8564-F49F9C57FD32}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{6012BF2A-31B0-48AB-8564-F49F9C57FD32}.Debug|x64.Build.0 = Debug|Any CPU
+		{6012BF2A-31B0-48AB-8564-F49F9C57FD32}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6012BF2A-31B0-48AB-8564-F49F9C57FD32}.Debug|x86.Build.0 = Debug|Any CPU
+		{6012BF2A-31B0-48AB-8564-F49F9C57FD32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6012BF2A-31B0-48AB-8564-F49F9C57FD32}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6012BF2A-31B0-48AB-8564-F49F9C57FD32}.Release|ARM.ActiveCfg = Release|Any CPU
+		{6012BF2A-31B0-48AB-8564-F49F9C57FD32}.Release|ARM.Build.0 = Release|Any CPU
+		{6012BF2A-31B0-48AB-8564-F49F9C57FD32}.Release|x64.ActiveCfg = Release|Any CPU
+		{6012BF2A-31B0-48AB-8564-F49F9C57FD32}.Release|x64.Build.0 = Release|Any CPU
+		{6012BF2A-31B0-48AB-8564-F49F9C57FD32}.Release|x86.ActiveCfg = Release|Any CPU
+		{6012BF2A-31B0-48AB-8564-F49F9C57FD32}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

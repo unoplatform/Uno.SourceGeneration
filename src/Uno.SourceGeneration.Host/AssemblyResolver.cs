@@ -108,7 +108,7 @@ namespace Uno.SourceGeneration.Host
 					.FirstOrDefault();
 			};
 
-#if NET462
+#if NET461
 			AppDomain.CurrentDomain.AssemblyResolve += (s, e) => localResolve(new AssemblyName(e.Name));
 			AppDomain.CurrentDomain.TypeResolve += (s, e) => localResolve(new AssemblyName(e.Name));
 #elif NETCOREAPP

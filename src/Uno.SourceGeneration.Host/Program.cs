@@ -8,7 +8,6 @@ using Microsoft.Build.Framework;
 using Microsoft.Build.Logging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
-using Microsoft.Extensions.Options;
 using Uno.SourceGeneration.Helpers;
 using Uno.SourceGeneratorTasks;
 using Uno.SourceGeneratorTasks.Helpers;

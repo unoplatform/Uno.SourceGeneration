@@ -1,0 +1,5 @@
+build\host\net461\Uno.*.dll
+build\host\net461\Uno.*.exe
+build\host\netcoreapp2.1\Uno.*.dll
+build\host\netcoreapp2.1\Uno.*.dll
+build\Dev15.0\Uno.*.dll
