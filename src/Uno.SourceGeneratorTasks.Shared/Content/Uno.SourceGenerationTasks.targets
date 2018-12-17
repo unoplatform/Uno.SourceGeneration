@@ -71,7 +71,7 @@
 			  "Legacy" projects required that the TargetFramework property to be set for 
 			  references to be resolved properly.
 			 -->
-			<SourceGeneratorTargetFramework Condition="'$(_UnoSourceGeneratorProjectType)'=='uap'">uap10.0</SourceGeneratorTargetFramework>
+			<SourceGeneratorTargetFramework Condition="'$(_UnoSourceGeneratorProjectType)'=='uap'">uap10.0$(NuGetTargetMoniker.Substring($(NuGetTargetMoniker.LastIndexOf('.'))))</SourceGeneratorTargetFramework>
 			<SourceGeneratorTargetFramework Condition="'$(_UnoSourceGeneratorProjectType)'=='ios'">xamarinios10</SourceGeneratorTargetFramework>
 			<SourceGeneratorTargetFramework Condition="'$(_UnoSourceGeneratorProjectType)'=='mac'">xamarinmac20</SourceGeneratorTargetFramework>
 			<SourceGeneratorTargetFramework Condition="'$(_UnoSourceGeneratorProjectType)'=='android'">monoandroid$(TargetFrameworkVersion.Trim('v').Replace('.', ''))</SourceGeneratorTargetFramework>
