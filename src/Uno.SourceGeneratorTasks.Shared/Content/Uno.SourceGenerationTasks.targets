@@ -96,8 +96,6 @@
 			<SourceGeneratorTargetFrameworkRootPath Condition="'$(SourceGeneratorTargetFrameworkRootPath)'==''">$(TargetFrameworkRootPathSearchPathsOSX)</SourceGeneratorTargetFrameworkRootPath>
 		</PropertyGroup>
 
-	  <Message Text="SourceGeneratorTargetFramework: $(SourceGeneratorTargetFramework) / $(_UnoSourceGeneratorProjectType) / $(ProjectTypeGuids)" Importance="high" />
-
 	  <SourceGenerationTask_v0 ProjectFile="$(MSBuildProjectFullPath)"
 								OutputPath="$(_UnoSourceGeneratorOutputPath)\g"
 								Configuration="$(Configuration)"
