@@ -64,7 +64,7 @@ namespace Uno.SourceGeneration.Host
 
 					return loadedAsm[0];
 				}
-				else if (loadedAsm.Length == 1 && loadedAsm.First().GetName().Version == assembly.Version)
+				else if (loadedAsm.FirstOrDefault()?.GetName().Version == assembly.Version)
 				{
 					return loadedAsm[0];
 				}
