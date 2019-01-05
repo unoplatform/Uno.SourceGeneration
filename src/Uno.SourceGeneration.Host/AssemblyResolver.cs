@@ -13,11 +13,10 @@ namespace Uno.SourceGeneration.Host
 	{
 		private static bool _additionalAssembliesPreloaded;
 
-		public static void RegisterAssemblyLoader(BuildEnvironment environment)
+		public static IDisposable RegisterAssemblyLoader(BuildEnvironment environment)
 		{
 			// Force assembly loader to consider siblings, when running in a separate appdomain.
-
-			Func<AssemblyName, Assembly> localResolve = e =>
+			Assembly localResolve(AssemblyName e)
 			{
 				if (e.Name == "Mono.Runtime")
 				{
@@ -106,18 +105,31 @@ namespace Uno.SourceGeneration.Host
 					.Select(LoadAssembly)
 					.Where(p => p != null)
 					.FirstOrDefault();
-			};
+			}
 
 #if NET461
-			AppDomain.CurrentDomain.AssemblyResolve += (s, e) => localResolve(new AssemblyName(e.Name));
-			AppDomain.CurrentDomain.TypeResolve += (s, e) => localResolve(new AssemblyName(e.Name));
+			Assembly appDomainResolve(object s, ResolveEventArgs e)
+				=> localResolve(new AssemblyName(e.Name));
+
+			AppDomain.CurrentDomain.AssemblyResolve += appDomainResolve;
+			AppDomain.CurrentDomain.TypeResolve += appDomainResolve;
+
+			return new Disposable(() => {
+				AppDomain.CurrentDomain.AssemblyResolve -= appDomainResolve;
+				AppDomain.CurrentDomain.TypeResolve -= appDomainResolve;
+			});
 #elif NETCOREAPP
 			var ctx = System.Runtime.Loader.AssemblyLoadContext.GetLoadContext(typeof(Program).Assembly);
 
-			ctx.Resolving += (s, e) => localResolve(e);
+			Assembly contextResolve(object s, AssemblyName e)
+				=> localResolve(e);
+
+			ctx.Resolving += contextResolve;
+
+			return new Disposable(() => ctx.Resolving -= contextResolve);
 #endif
 		}
-
+		
 		private static void TryLoadAdditionalAssemblies(BuildEnvironment environment)
 		{
 			if (!_additionalAssembliesPreloaded)
@@ -139,5 +151,13 @@ namespace Uno.SourceGeneration.Host
 			}
 		}
 
+		private class Disposable : IDisposable
+		{
+			private readonly Action _action;
+
+			public Disposable(Action action) => _action = action;
+
+			public void Dispose() => _action();
+		}
 	}
 }

@@ -26,6 +26,7 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <LangVersion>7.3</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -88,6 +89,9 @@
     <PackageReference Include="Mono.Cecil">
       <Version>0.9.6.4</Version>
     </PackageReference>
+    <PackageReference Include="System.Memory">
+      <Version>4.5.1</Version>
+    </PackageReference>
     <PackageReference Include="System.Reflection.Metadata">
       <Version>1.4.2</Version>
     </PackageReference>
@@ -115,6 +119,8 @@
       <Link>AssemblyVersion.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tasks\HostCollection.cs" />
+    <Compile Include="Tasks\SourceGenerationTask.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Uno.SampleGenerators\Uno.SampleGenerators.csproj">
@@ -130,9 +136,10 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Content\Uno.SourceGenerationTasks.targets" />
+    <None Include="Uno.SourceGenerationTasks.targets" />
   </ItemGroup>
-  <Import Project="..\Uno.SourceGenerationHost.Shared\Uno.SourceGenerationHost.Shared.projitems" Label="Shared" />
-  <Import Project="..\Uno.SourceGeneratorTasks.Shared\Uno.SourceGeneratorTasks.Shared.projitems" Label="Shared" />
+  <Import Project="..\Uno.SourceGeneration.Protocol\Uno.SourceGeneration.Protocol.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
   </PropertyGroup>
