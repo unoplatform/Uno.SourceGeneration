@@ -7,6 +7,7 @@
 	<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 	<GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
 	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+	<LangVersion>7.3</LangVersion>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net461'">
@@ -83,7 +84,8 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
-	<PackageReference Include="Microsoft.Build">
+    <PackageReference Include="System.IO.Pipes.AccessControl" Version="4.3.0" />
+    <PackageReference Include="Microsoft.Build">
 	  <Version>15.4.8</Version>
 	  <ExcludeAssets>runtime</ExcludeAssets>
 	</PackageReference>
@@ -142,6 +144,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Memory" Version="4.5.0" />
+    <PackageReference Include="System.Security.AccessControl" Version="4.5.0" />
+    <PackageReference Include="System.Security.Principal.Windows" Version="4.5.1" />
+  </ItemGroup>
+
+  <ItemGroup>
 	<Reference Include="System.Runtime.Serialization" />
   </ItemGroup>
 
@@ -150,4 +158,6 @@
   </ItemGroup>
 
   <Import Project="..\Uno.SourceGenerationHost.Shared\Uno.SourceGenerationHost.Shared.projitems" Label="Shared" />
+
+  <Import Project="..\Uno.SourceGeneration.Protocol\Uno.SourceGeneration.Protocol.projitems" Label="Shared" />
 </Project>

@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>76548c37-4928-45e7-8db1-63a85a7f65d6</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Uno.SourceGeneration.Host</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)GenerationClient\BuildEnvironment.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\BinaryLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\BinaryLoggerEventSource.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\BinaryLoggerForwarderProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\BinaryLoggerReplayHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\BuildTargets.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\DisposableAction.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\LogExtensionPoint.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\LogExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\RuntimeHelpers.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\StringExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\TaskLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\TaskLoggerProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\TopologicalSorting.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\TypeExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\CompletedGenerationResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GenerationClient\BuildServerConnection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GenerationClient\GenerationsPathsInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\GenerationProtocolConstants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\GenerationRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\GenerationResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\CommitHashAttribute.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ConcurrentLruCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\CoreClrShim.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\FileKey.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\FileNameUtilities.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\FileUtilities.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\Hash.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\MemoryHelper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\PathKind.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\PathUtilities.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\PlatformInformation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\ReflectionUtilities.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\IncorrectHashGenerationResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logger\RemotableLogger2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logger\RemoteLogger.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Logger\RemoteLoggerProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\MismatchedVersionGenerationResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Helpers\NativeMethods.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\RejectedGenerationResponse.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Messages\ShutdownGenerationResponse.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Messages\" />
+  </ItemGroup>
+</Project>
