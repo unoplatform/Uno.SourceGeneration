@@ -148,7 +148,7 @@ Task("Version")
 	var files = new[] {
 		@"..\src\Uno.SourceGeneratorTasks.Dev15.0\Content\Uno.SourceGenerationTasks.targets",
 		@"..\src\Uno.SourceGeneratorTasks.Dev15.0\Uno.SourceGeneratorTasks.Dev15.0.csproj",
-		@"..\src\Uno.SourceGeneratorTasks.Shared\Tasks\SourceGenerationTask.cs"
+		@"..\src\Uno.SourceGeneratorTasks.Dev15.0\Tasks\SourceGenerationTask.cs"
 	};
 	
 	foreach(var file in files)
