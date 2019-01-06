@@ -10,7 +10,7 @@
 	<UnoSourceGeneratorTasksPath>..\..\Uno.SourceGeneratorTasks.Dev15.0\bin\$(Configuration)</UnoSourceGeneratorTasksPath>
 	<UnoSourceGeneratorOutputPath>GeneratedFiles</UnoSourceGeneratorOutputPath>
   </PropertyGroup>
-  <Import Project="..\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" />
+  <Import Project="..\Uno.SourceGeneratorTasks.Dev15.0\Content\Uno.SourceGenerationTasks.targets" />
   <ItemGroup>
     <Compile Remove="GeneratedFiles\**" />
     <EmbeddedResource Remove="GeneratedFiles\**" />
