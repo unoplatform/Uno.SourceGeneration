@@ -26,6 +26,8 @@ using System.Threading;
 using Uno.SourceGeneration.Host.Helpers;
 using Uno.SourceGeneration.Host.GenerationClient;
 using Uno.SourceGeneration.Host.Messages;
+using Uno.SourceGeneratorTasks.Helpers;
+using System.Runtime.InteropServices;
 
 [assembly: CommitHashAttribute("<developer build>")]
 
@@ -50,9 +52,14 @@ namespace Uno.SourceGeneratorTasks
 
 		/// <summary>
 		/// Capture the generation host standard output for debug purposes.
-		/// (used when UseGenerationHost is set)
+		/// (used when <see cref="UseGenerationController"/> is set to false)
 		/// </summary>
 		public string CaptureGenerationHostOutput { get; set; }
+
+		/// <summary>
+		/// Enables the use of the GenerationController mode.
+		/// </summary>
+		public string UseGenerationController { get; set; } = bool.TrueString;
 
 		/// <summary>
 		/// Provides a list of assemblies to be loaded in the SourceGenerator
@@ -94,7 +101,14 @@ namespace Uno.SourceGeneratorTasks
 					return true;
 				}
 
-				GenerateWithHost();
+				if (SupportsGenerationController)
+				{
+					GenerateWithHostController();
+				}
+				else
+				{
+					GenerateWithHost();
+				}
 
 				return true;
 			}
@@ -123,9 +137,22 @@ namespace Uno.SourceGeneratorTasks
 				}
 			}
 		}
+		public bool SupportsGenerationController
+			=> (bool.TryParse(UseGenerationController, out var result) && result)
+			&& (
+				!RuntimeHelpers.IsMono
+				|| RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
+				|| RuntimeHelpers.IsNetCore
+			);
 
-		private void GenerateWithHost()
+
+		private void GenerateWithHostController()
 		{
+			Log.LogMessage(MessageImportance.Low, "Using host controller generation mode");
+
+			var taskLogger = new TaskLoggerProvider() { TaskLog = Log };
+			LogExtensionPoint.AmbientLoggerFactory.AddProvider(taskLogger);
+
 			using (_sharedCompileCts = new CancellationTokenSource())
 			{
 				var responseFile = Path.GetTempFileName();
@@ -186,6 +213,116 @@ namespace Uno.SourceGeneratorTasks
 					string.Join(",", buildEnvironment.SourceGenerators)
 				)
 			);
+		}
+
+		private void GenerateWithHost()
+		{
+			Log.LogMessage(MessageImportance.Low, $"Using single-use host generation mode");
+
+var captureHostOutput = false;
+			if (!bool.TryParse(this.CaptureGenerationHostOutput, out captureHostOutput))
+			{
+#if DEBUG
+				captureHostOutput = true; // default to true in DEBUG
+#else
+				captureHostOutput = false; // default to false in RELEASE
+#endif
+			}
+
+			var hostPath = GetHostPath();
+
+			var responseFile = Path.GetTempFileName();
+			var outputFile = Path.GetTempFileName();
+			var binlogFile = Path.GetTempFileName() + ".binlog";
+
+			try
+			{
+				using (var responseStream = File.OpenWrite(responseFile))
+				{
+					var serializer = new DataContractSerializer(typeof(BuildEnvironment));
+					serializer.WriteObject(responseStream, CreateBuildEnvironment());
+				}
+
+				ProcessStartInfo buildInfo()
+				{
+					if (RuntimeHelpers.IsNetCore)
+					{
+						var hostBinPath = Path.Combine(hostPath, "Uno.SourceGeneration.Host.dll");
+						string arguments = $"\"{hostBinPath}\" \"{responseFile}\" \"{outputFile}\" \"{binlogFile}\"";
+						var pi = new ProcessStartInfo("dotnet", arguments)
+						{
+							UseShellExecute = false,
+							CreateNoWindow = true,
+							WindowStyle = ProcessWindowStyle.Hidden,
+						};
+
+						return pi;
+					}
+					else
+					{
+						var hostBinPath = Path.Combine(hostPath, "Uno.SourceGeneration.Host.exe");
+						string arguments = $"\"{responseFile}\" \"{outputFile}\" \"{binlogFile}\"";
+
+						var pi = new ProcessStartInfo(hostBinPath, arguments)
+						{
+							UseShellExecute = false,
+							CreateNoWindow = true,
+							WindowStyle = ProcessWindowStyle.Hidden,
+						};
+
+						return pi;
+					}
+				}
+
+				using (var process = new Process())
+				{
+					var startInfo = buildInfo();
+
+					if (captureHostOutput)
+					{
+						startInfo.Arguments += " -console";
+						startInfo.RedirectStandardOutput = true;
+						startInfo.RedirectStandardError = true;
+
+						process.StartInfo = startInfo;
+						process.Start();
+
+						var output = process.StandardOutput.ReadToEnd();
+						var error = process.StandardError.ReadToEnd();
+						process.WaitForExit();
+
+						this.Log().Info(
+							$"Executing {startInfo.FileName} {startInfo.Arguments}:\n" +
+							$"result: {process.ExitCode}\n" +
+							$"\n---begin host output---\n{output}\n" +
+							$"---begin host ERROR output---\n{error}\n" +
+							"---end host output---\n");
+					}
+					else
+					{
+						process.StartInfo = startInfo;
+						process.Start();
+						process.WaitForExit();
+					}
+
+					BinaryLoggerReplayHelper.Replay(BuildEngine, binlogFile);
+
+					if (process.ExitCode == 0)
+					{
+						GenereratedFiles = File.ReadAllText(outputFile).Split(';');
+					}
+					else
+					{
+						throw new InvalidOperationException($"Generation failed, error code {process.ExitCode}");
+					}
+				}
+			}
+			finally
+			{
+				File.Delete(responseFile);
+				File.Delete(outputFile);
+				File.Delete(binlogFile);
+			}
 		}
 
 		private string GetHostPath()
