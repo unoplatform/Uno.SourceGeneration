@@ -64,7 +64,7 @@ namespace Uno.SourceGeneration.Host.Server
 			setup.ShadowCopyFiles = "true";
 			setup.ShadowCopyDirectories = string.Join(";", generatorLocations) + ";" + wrapperBasePath;
 			setup.PrivateBinPath = setup.ShadowCopyDirectories;
-			setup.ConfigurationFile = Path.Combine(wrapperBasePath, typeof(RemoteSourceGeneratorEngine).Assembly.GetName().Name + ".dll.config");
+			setup.ConfigurationFile = Path.Combine(wrapperBasePath, typeof(RemoteSourceGeneratorEngine).Assembly.GetName().Name + ".exe.config");
 
 			// Loader optimization must not use MultiDomainHost, otherwise MSBuild assemblies may
 			// be shared incorrectly when multiple versions are loaded in different domains.
