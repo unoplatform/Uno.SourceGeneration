@@ -146,7 +146,7 @@ Task("Version")
 	Information($"FullSemVer: {versionInfo.FullSemVer} Sha: {versionInfo.Sha}");
 
 	var files = new[] {
-		@"..\src\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets",
+		@"..\src\Uno.SourceGeneratorTasks.Dev15.0\Content\Uno.SourceGenerationTasks.targets",
 		@"..\src\Uno.SourceGeneratorTasks.Dev15.0\Uno.SourceGeneratorTasks.Dev15.0.csproj",
 		@"..\src\Uno.SourceGeneratorTasks.Shared\Tasks\SourceGenerationTask.cs"
 	};
