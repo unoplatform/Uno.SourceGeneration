@@ -195,7 +195,7 @@ namespace Uno.SourceGeneration.Host.GenerationClient
                 }
                 catch (Exception e)
                 {
-					_log.Error("Error writing build request.", e);
+					_log.Error($"Error writing build request. {e.Message}", e);
                     return new RejectedGenerationResponse();
                 }
 
@@ -393,8 +393,6 @@ namespace Uno.SourceGeneration.Host.GenerationClient
 
                 _log.Debug($"Attempting to create process '{expectedPath}'");
 
-				Console.WriteLine("starting host...");
-
                 var builder = new StringBuilder($@"""{expectedPath}"" {processArguments}");
 
                 bool success = CreateProcess(
@@ -424,8 +422,10 @@ namespace Uno.SourceGeneration.Host.GenerationClient
             else
             {
                 try
-                {
-                    var startInfo = new ProcessStartInfo()
+				{
+					_log.Debug($"Attempting to create process '{expectedPath}' '{processArguments}'");
+
+					var startInfo = new ProcessStartInfo()
                     {
                         FileName = expectedPath,
                         Arguments = processArguments,
@@ -437,12 +437,16 @@ namespace Uno.SourceGeneration.Host.GenerationClient
                         CreateNoWindow = true
                     };
 
-                    Process.Start(startInfo);
-                    return true;
+                    var process = Process.Start(startInfo);
+
+					_log.Debug($"Successfully created process with process id {process.Id}");
+
+					return true;
                 }
-                catch
+                catch(Exception ex)
                 {
-                    return false;
+					_log.Error($"Failed to create process.", ex);
+					return false;
                 }
             }
         }
@@ -476,12 +480,12 @@ namespace Uno.SourceGeneration.Host.GenerationClient
             }
             catch (Exception ex)
             {
-				_log.Error("Checking pipe connection", ex);
+				_log.Error($"Error checking pipe connection {ex.Message}", ex);
                 return false;
             }
         }
 
-#if NET472
+#if NET461
         internal static bool CheckIdentityUnix(PipeStream stream)
         {
             // Identity verification is unavailable in the MSBuild task,
@@ -508,7 +512,9 @@ namespace Uno.SourceGeneration.Host.GenerationClient
                 throw new Win32Exception(Marshal.GetLastWin32Error());
             }
 
-            return myID == peerID;
+			_log.Debug($"Checking pipe id (mine: {myID} peer:{peerID}");
+
+			return myID == peerID;
         }
 #endif
 
