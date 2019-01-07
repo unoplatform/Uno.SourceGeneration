@@ -175,7 +175,11 @@ namespace Uno.SourceGeneratorTasks
 					var responseTask = GenerationServerConnection.RunServerGeneration(
 						GenerateServerId(buildEnvironment),
 						new List<string> { responseFile, outputFile, binlogFile },
-						new GenerationsPathsInfo(GetHostPath(), OutputPath, Path.GetTempPath()),
+						new GenerationsPathsInfo(
+							GetHostPath(),
+							Path.GetDirectoryName(ProjectFile), // This is required by many msbuild tasks, particularly when using globbing patterns
+							Path.GetTempPath()
+						),
 						keepAlive: null,
 						cancellationToken: _sharedCompileCts.Token);
 
@@ -209,7 +213,8 @@ namespace Uno.SourceGeneratorTasks
 					// Don't include the process ID since the server only processes one client at a time.
 					// Process.GetCurrentProcess().Id.ToString(),
 					buildEnvironment.ProjectFile,
-					buildEnvironment.Platform,
+					buildEnvironment.Configuration,
+					buildEnvironment.TargetFramework,
 					string.Join(",", buildEnvironment.SourceGenerators)
 				)
 			);
