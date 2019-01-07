@@ -38,6 +38,11 @@ namespace Uno.SourceGeneration.Host.Server
 				Log($"Argument[{i}] = '{request.Arguments[i]}'");
 			}
 
+			// We're only processing one request at a time, so we can change this path
+			// This is required as many msbuild tasks assume that the current work folder
+			// is the project being built.
+			Environment.CurrentDirectory = request.CurrentDirectory;
+
 			// Compiler server must be provided with a valid temporary directory in order to correctly
 			// isolate signing between compilations.
 			if (string.IsNullOrEmpty(request.TempDirectory))
