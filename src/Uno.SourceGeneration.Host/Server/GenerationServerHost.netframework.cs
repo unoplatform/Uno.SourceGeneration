@@ -16,13 +16,18 @@ namespace Uno.SourceGeneration.Host.Server
 {
 	internal abstract partial class GenerationServerHost : IGenerationServerHost
 	{
-		RemoteSourceGeneratorEngine _remoteEngine;
+		EnvironmentDefinition _currentDefinition;
 
 		private string[] Generate(BuildEnvironment environment)
 		{
-			if (_remoteEngine == null)
+			if (
+				_currentDefinition == null
+				|| (_currentDefinition?.IsInvalid ?? false)
+			)
 			{
-				_remoteEngine = CreateDomain(environment);
+				UnloadDomain();
+
+				CreateDomain(environment);
 			}
 			else
 			{
@@ -30,7 +35,7 @@ namespace Uno.SourceGeneration.Host.Server
 				// Error : Object '/b612ce25_b538_486d_882a_28a019c782ed/p6lmd0em_mrlqpchbk5gh2mk_10.rem' has been disconnected or does not exist at the server.
 				try
 				{
-					if (_remoteEngine.Ping())
+					if (_currentDefinition.Engine.Ping())
 					{
 						this.Log().Debug($"Reusing generation host ({environment.ProjectFile}, {string.Join(", ", environment.SourceGenerators)})");
 					}
@@ -39,16 +44,32 @@ namespace Uno.SourceGeneration.Host.Server
 				{
 					this.Log().Debug($"Discarding disconnected generation host for ({environment.ProjectFile}, {string.Join(", ", environment.SourceGenerators)})");
 
-					_remoteEngine = CreateDomain(environment);
+					CreateDomain(environment);
 				}
 			}
 
 			RemotableLogger2 remotableLogger = new RemotableLogger2(this.Log());
 
-			return _remoteEngine.Generate(remotableLogger, environment);
+			return _currentDefinition.Engine.Generate(remotableLogger, environment);
 		}
 
-		private RemoteSourceGeneratorEngine CreateDomain(BuildEnvironment environment)
+		private void UnloadDomain()
+		{
+			if (_currentDefinition != null)
+			{
+				try
+				{
+					this.Log().Debug($"Unloading generation host {_currentDefinition.Domain.FriendlyName}");
+					AppDomain.Unload(_currentDefinition.Domain);
+				}
+				catch (Exception /*e*/)
+				{
+					this.Log().Debug($"Failed to unload generation host {_currentDefinition.Domain.FriendlyName}");
+				}
+			}
+		}
+
+		private void CreateDomain(BuildEnvironment environment)
 		{
 			var generatorLocations = environment.SourceGenerators.Select(Path.GetFullPath).Select(Path.GetDirectoryName).Distinct();
 			var wrapperBasePath = Path.GetDirectoryName(new Uri(typeof(RemoteSourceGeneratorEngine).Assembly.CodeBase).LocalPath);
@@ -66,28 +87,44 @@ namespace Uno.SourceGeneration.Host.Server
 			setup.PrivateBinPath = setup.ShadowCopyDirectories;
 			setup.ConfigurationFile = Path.Combine(wrapperBasePath, typeof(RemoteSourceGeneratorEngine).Assembly.GetName().Name + ".exe.config");
 
-			// Loader optimization must not use MultiDomainHost, otherwise MSBuild assemblies may
-			// be shared incorrectly when multiple versions are loaded in different domains.
-			// The loader must specify SingleDomain, otherwise in contexts where devenv.exe is the
-			// current process, the default optimization is "MultiDomain" and assemblies are 
-			// incorrectly reused.
-			setup.LoaderOptimization = LoaderOptimization.SingleDomain;
-
 			var domain = AppDomain.CreateDomain("Generators-" + Guid.NewGuid(), null, setup);
 
-			var newHost = domain.CreateInstanceFromAndUnwrap(
+			var newEngine = domain.CreateInstanceFromAndUnwrap(
 				typeof(RemoteSourceGeneratorEngine).Assembly.CodeBase,
 				typeof(RemoteSourceGeneratorEngine).FullName
 			) as RemoteSourceGeneratorEngine;
 
 			var msbuildBasePath = Path.GetDirectoryName(new Uri(typeof(Microsoft.Build.Logging.ConsoleLogger).Assembly.CodeBase).LocalPath);
 
-			newHost.MSBuildBasePath = msbuildBasePath;
-			newHost.AdditionalAssemblies = environment.AdditionalAssemblies;
+			newEngine.MSBuildBasePath = msbuildBasePath;
+			newEngine.AdditionalAssemblies = environment.AdditionalAssemblies;
 
-			newHost.Initialize();
+			newEngine.Initialize();
 
-			return newHost;
+			_currentDefinition = new EnvironmentDefinition(environment, domain, newEngine);
+		}
+
+		private class EnvironmentDefinition
+		{
+			private readonly BuildEnvironment _environment;
+			private readonly DateTime _hostOwnerFileTimeStamp;
+			private readonly DateTime[] _analyzersTimeStamps;
+
+			public AppDomain Domain { get; }
+			public RemoteSourceGeneratorEngine Engine { get; }
+
+			public EnvironmentDefinition(BuildEnvironment environment, AppDomain domain, RemoteSourceGeneratorEngine engine)
+			{
+				Domain = domain;
+				Engine = engine;
+				_environment = environment;
+				_hostOwnerFileTimeStamp = File.GetLastWriteTime(environment.ProjectFile);
+				_analyzersTimeStamps = environment.SourceGenerators.Select(e => File.GetLastWriteTime(e)).ToArray();
+			}
+
+			public bool IsInvalid =>
+				File.GetLastWriteTime(_environment.ProjectFile) != _hostOwnerFileTimeStamp
+				|| !_environment.SourceGenerators.Select(e => File.GetLastWriteTime(e)).SequenceEqual(_analyzersTimeStamps);
 		}
 	}
 }
