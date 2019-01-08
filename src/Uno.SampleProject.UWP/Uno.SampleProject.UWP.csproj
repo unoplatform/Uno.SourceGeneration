@@ -124,7 +124,10 @@
     <SourceGenerator Include="..\Uno.SampleGenerators\bin\$(Configuration)\Uno.SampleGenerators.dll" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Uno.SampleDependency\Uno.SampleDependency.csproj" />
+    <ProjectReference Include="..\Uno.SampleDependency\Uno.SampleDependency.csproj">
+      <Project>{D02FBC83-F9DD-4710-AEBF-0BA2F8AE85B2}</Project>
+      <Name>Uno.SampleDependency</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
@@ -134,16 +137,10 @@
       <Version>4.3.0</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <SDKReference Include="WindowsMobile, Version=10.0.16299.0">
-      <Name>Windows Mobile Extensions for the UWP</Name>
-    </SDKReference>
-  </ItemGroup>
-  <Import Project="..\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" />
+  <Import Project="..\Uno.SourceGeneratorTasks.Dev15.0\Content\Uno.SourceGenerationTasks.targets" />
   <PropertyGroup>
     <UnoSourceGeneratorTasksPath>..\..\Uno.SourceGeneratorTasks.Dev15.0\bin\$(Configuration)</UnoSourceGeneratorTasksPath>
     <UnoSourceGeneratorOutputPath>GeneratedFiles</UnoSourceGeneratorOutputPath>
     <RuntimeIdentifiers>win10-arm;win10-arm-aot;win10-x86;win10-x86-aot;win10-x64;win10-x64-aot</RuntimeIdentifiers>
   </PropertyGroup>
-  <Import Project="..\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets" />
 </Project>

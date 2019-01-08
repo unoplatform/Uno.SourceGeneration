@@ -8,26 +8,4 @@
   <PropertyGroup Label="Configuration">
     <Import_RootNamespace>Uno.SourceGeneration</Import_RootNamespace>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)BuildEnvironment.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GeneratorLogger.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\BinaryLogger.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\BinaryLoggerEventSource.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\BinaryLoggerForwarderProvider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\BinaryLoggerReplayHelper.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\BuildTargets.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\DisposableAction.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\LogExtensionPoint.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\LogExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\RuntimeHelpers.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\StringExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\TaskLogger.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\TaskLoggerProvider.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\TopologicalSorting.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\TypeExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)InternalSourceGeneratorContext.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ProjectDetails.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)ProjectLoader.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)SourceGeneratorHost.cs" />
-  </ItemGroup>
 </Project>
