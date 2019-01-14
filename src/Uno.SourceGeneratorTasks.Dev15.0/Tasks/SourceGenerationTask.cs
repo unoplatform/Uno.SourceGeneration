@@ -224,6 +224,9 @@ namespace Uno.SourceGeneratorTasks
 		{
 			Log.LogMessage(MessageImportance.Low, $"Using single-use host generation mode");
 
+			var taskLogger = new TaskLoggerProvider() { TaskLog = Log };
+			LogExtensionPoint.AmbientLoggerFactory.AddProvider(taskLogger);
+
 			var captureHostOutput = false;
 			if (!bool.TryParse(this.CaptureGenerationHostOutput, out captureHostOutput))
 			{
