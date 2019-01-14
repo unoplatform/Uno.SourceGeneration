@@ -106,6 +106,7 @@
 								TargetFrameworkRootPath="$(TargetFrameworkRootPath)"
 								AdditionalAssemblies="@(SourceGeneratorAdditionalAssemblies)"
 								UseGenerationController="$(UnoSourceGeneratorUseGenerationController)"
+								CaptureGenerationHostOutput="$(UnoSourceGeneratorCaptureGenerationHostOutput)"
 								BinLogOutputPath="$(UnoSourceGeneratorBinLogOutputPath)"
 								BinLogEnabled="$(UnoSourceGeneratorUnsecureBinLogEnabled)"
 								Condition="$(_hasSourceGenerators)">
