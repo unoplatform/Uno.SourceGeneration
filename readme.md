@@ -228,6 +228,17 @@ allows for an improved diagnostics experience. Set the `UnoSourceGeneratorUnsecu
 
 > **Important**: The binary logger may leak secret environment variables, it is a best practice to never enable this feature as part of normal build.
 
+### My build ends with error code 3
+
+By default, in some cases, the source generation host will run into an internal error, and will exit without providing details about the generation error.
+
+To enable the logging of these errors, add the following property to your project:
+```xml
+<UnoSourceGeneratorCaptureGenerationHostOutput>true</UnoSourceGeneratorCaptureGenerationHostOutput>
+```
+
+The errors will the be visible when the build logging output is set to detailed, or by [using the binary logger](https://github.com/Microsoft/msbuild/blob/master/documentation/wiki/Binary-Log.md).
+
 # Have questions? Feature requests? Issues?
 
 Make sure to visit our [StackOverflow](https://stackoverflow.com/questions/tagged/uno-platform), [create an issue](https://github.com/nventive/Uno.SourceGeneration/issues) or [visit our gitter](https://gitter.im/uno-platform/Lobby).
