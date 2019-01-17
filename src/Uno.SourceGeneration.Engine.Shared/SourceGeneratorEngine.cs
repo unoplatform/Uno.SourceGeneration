@@ -47,7 +47,11 @@ namespace Uno.SourceGeneration.Host
 		public SourceGeneratorEngine(BuildEnvironment environment, Func<string, MetadataReferenceProperties, PortableExecutableReference> assemblyReferenceProvider)
 		{
 			_environment = environment;
-			_resolver = new Resolver(assemblyReferenceProvider);
+
+			if (assemblyReferenceProvider != null)
+			{
+				_resolver = new Resolver(assemblyReferenceProvider);
+			}
 		}
 
 		public string[] Generate()
@@ -296,7 +300,11 @@ namespace Uno.SourceGeneration.Host
 					};
 
 				var project = await ws.OpenProjectAsync(_environment.ProjectFile);
-				project = project.WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, metadataReferenceResolver: _resolver));
+
+				if (_resolver != null)
+				{
+					project = project.WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, metadataReferenceResolver: _resolver));
+				}
 
 				var metadataLessProjects = ws
 					.CurrentSolution

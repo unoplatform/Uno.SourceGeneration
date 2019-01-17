@@ -28,6 +28,7 @@ using Uno.SourceGeneration.Host.GenerationClient;
 using Uno.SourceGeneration.Host.Messages;
 using Uno.SourceGeneratorTasks.Helpers;
 using System.Runtime.InteropServices;
+using Uno.SourceGeneration.Host;
 
 [assembly: CommitHashAttribute("<developer build>")]
 
@@ -83,6 +84,7 @@ namespace Uno.SourceGeneratorTasks
 		public string[] GenereratedFiles { get; set; }
 
 		private CancellationTokenSource _sharedCompileCts;
+		private TaskLoggerProvider _taskLogger;
 
 		public override bool Execute()
 		{
@@ -105,9 +107,13 @@ namespace Uno.SourceGeneratorTasks
 				{
 					GenerateWithHostController();
 				}
-				else
+				else if(IsMonoMSBuildCompatible)
 				{
 					GenerateWithHost();
+				}
+				else
+				{
+					GenerateInProcess();
 				}
 
 				return true;
@@ -137,6 +143,8 @@ namespace Uno.SourceGeneratorTasks
 				}
 			}
 		}
+
+
 		public bool SupportsGenerationController
 			=> (bool.TryParse(UseGenerationController, out var result) && result)
 			&& (
@@ -333,6 +341,7 @@ namespace Uno.SourceGeneratorTasks
 			}
 		}
 
+
 		private string GetHostPath()
 		{
 			var currentPath = Path.GetDirectoryName(new Uri(GetType().Assembly.CodeBase).LocalPath);
@@ -358,8 +367,43 @@ namespace Uno.SourceGeneratorTasks
 			{
 				throw new InvalidOperationException($"Unable to find Uno.SourceGeneration.Host.dll (in {devPath} or {installedPath})");
 			}
-			
 		}
+
+		private void GenerateInProcess()
+		{
+			Log.LogMessage(MessageImportance.Low, $"Using in-process generation mode");
+
+			var generationInfo = CreateDomain();
+
+			_taskLogger = new TaskLoggerProvider() { TaskLog = Log };
+			LogExtensionPoint.AmbientLoggerFactory.AddProvider(_taskLogger);
+
+			var remotableLogger = new Logger.RemotableLogger2(_taskLogger.CreateLogger("Logger.RemotableLogger"));
+
+			GenereratedFiles = generationInfo.Wrapper.Generate(remotableLogger, CreateBuildEnvironment());
+		}
+
+		public bool IsMonoMSBuildCompatible =>
+			// Starting from vs16.0 the following errors does not happen. Below this version, we continue to use
+			// the current process to run the generators.
+			// 
+			// System.TypeInitializationException: The type initializer for 'Microsoft.Build.Collections.MSBuildNameIgnoreCaseComparer' threw an exception. ---> System.EntryPointNotFoundException: GetSystemInfo
+			//   at(wrapper managed-to-native) Microsoft.Build.Shared.NativeMethodsShared.GetSystemInfo(Microsoft.Build.Shared.NativeMethodsShared/SYSTEM_INFO&)
+			//   at Microsoft.Build.Shared.NativeMethodsShared+SystemInformationData..ctor ()[0x00023] in <61115f75067146fab35b10183e6ee379>:0 
+			//   at Microsoft.Build.Shared.NativeMethodsShared.get_SystemInformation ()[0x0001e] in <61115f75067146fab35b10183e6ee379>:0 
+			//   at Microsoft.Build.Shared.NativeMethodsShared.get_ProcessorArchitecture ()[0x00000] in <61115f75067146fab35b10183e6ee379>:0 
+			//   at Microsoft.Build.Collections.MSBuildNameIgnoreCaseComparer..cctor ()[0x00010] in <61115f75067146fab35b10183e6ee379>:0 
+			//    --- End of inner exception stack trace ---
+			//   at Microsoft.Build.Collections.PropertyDictionary`1[T]..ctor ()[0x00006] in <61115f75067146fab35b10183e6ee379>:0 
+			//   at Microsoft.Build.Evaluation.ProjectCollection..ctor (System.Collections.Generic.IDictionary`2[TKey, TValue] globalProperties, System.Collections.Generic.IEnumerable`1[T] loggers, System.Collections.Generic.IEnumerable`1[T] remoteLoggers, Microsoft.Build.Evaluation.ToolsetDefinitionLocations toolsetDefinitionLocations, System.Int32 maxNodeCount, System.Boolean onlyLogCriticalEvents) [0x00112] in <61115f75067146fab35b10183e6ee379>:0 
+			//   at Microsoft.Build.Evaluation.ProjectCollection..ctor(System.Collections.Generic.IDictionary`2[TKey, TValue] globalProperties, System.Collections.Generic.IEnumerable`1[T] loggers, Microsoft.Build.Evaluation.ToolsetDefinitionLocations toolsetDefinitionLocations) [0x00000] in <61115f75067146fab35b10183e6ee379>:0 
+			//   at Microsoft.Build.Evaluation.ProjectCollection..ctor(System.Collections.Generic.IDictionary`2[TKey, TValue] globalProperties) [0x00000] in <61115f75067146fab35b10183e6ee379>:0 
+			//   at Microsoft.Build.Evaluation.ProjectCollection..ctor() [0x00000] in <61115f75067146fab35b10183e6ee379>:0 
+			//   at Uno.SourceGeneration.Host.ProjectLoader.LoadProjectDetails(Uno.SourceGeneratorTasks.BuildEnvironment environment) [0x00216] in <b845ad5dce324939bc8243d198321524>:0 
+			//   at Uno.SourceGeneration.Host.SourceGeneratorHost.Generate() [0x00014] in <b845ad5dce324939bc8243d198321524>:0 
+
+			string.Compare(FileVersionInfo.GetVersionInfo(new Uri(typeof(Microsoft.Build.Utilities.Task).Assembly.Location).LocalPath).FileVersion, "16.0") >= 0;
+
 
 		private BuildEnvironment CreateBuildEnvironment()
 			=> new BuildEnvironment
@@ -382,5 +426,49 @@ namespace Uno.SourceGeneratorTasks
 			Path.IsPathRooted(targetPath)
 			? targetPath
 			: Path.Combine(Path.GetDirectoryName(projectFile), targetPath);
+
+		private (RemoteSourceGeneratorEngine Wrapper, AppDomain Domain) CreateDomain()
+		{
+			var generatorLocations = SourceGenerators.Select(Path.GetFullPath).Select(Path.GetDirectoryName).Distinct();
+			var wrapperBasePath = Path.GetDirectoryName(new Uri(typeof(RemoteSourceGeneratorEngine).Assembly.CodeBase).LocalPath);
+
+			// We can create an app domain per OwnerFile and all Analyzers files
+			// so that if those change, we can spin off another one, and still avoid
+			// locking these assemblies.
+			//
+			// If the domain exists, keep it and continue generating content with it.
+
+			var setup = new AppDomainSetup();
+			setup.ApplicationBase = wrapperBasePath;
+			setup.ShadowCopyFiles = "true";
+			setup.ShadowCopyDirectories = string.Join(";", generatorLocations) + ";" + wrapperBasePath;
+			setup.PrivateBinPath = setup.ShadowCopyDirectories;
+			setup.ConfigurationFile = Path.Combine(wrapperBasePath, typeof(RemoteSourceGeneratorEngine).Assembly.GetName().Name + ".dll.config");
+
+			// Loader optimization must not use MultiDomainHost, otherwise MSBuild assemblies may
+			// be shared incorrectly when multiple versions are loaded in different domains.
+			// The loader must specify SingleDomain, otherwise in contexts where devenv.exe is the
+			// current process, the default optimization is "MultiDomain" and assemblies are 
+			// incorrectly reused.
+			setup.LoaderOptimization = LoaderOptimization.SingleDomain;
+
+			var domain = AppDomain.CreateDomain("Generators-" + Guid.NewGuid(), null, setup);
+
+			Log.LogMessage($"[{Process.GetCurrentProcess().ProcessName}] Creating object {typeof(RemoteSourceGeneratorEngine).Assembly.CodeBase} with {typeof(RemoteSourceGeneratorEngine).FullName}. wrapperBasePath {wrapperBasePath} ");
+
+			var newHost = domain.CreateInstanceFromAndUnwrap(
+				typeof(RemoteSourceGeneratorEngine).Assembly.CodeBase,
+				typeof(RemoteSourceGeneratorEngine).FullName
+			) as RemoteSourceGeneratorEngine;
+
+			var msbuildBasePath = Path.GetDirectoryName(new Uri(typeof(Microsoft.Build.Logging.ConsoleLogger).Assembly.CodeBase).LocalPath);
+
+			newHost.MSBuildBasePath = msbuildBasePath;
+			newHost.AdditionalAssemblies = AdditionalAssemblies;
+
+			newHost.Initialize();
+
+			return (newHost, domain);
+		}
 	}
 }

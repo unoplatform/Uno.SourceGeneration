@@ -120,7 +120,6 @@
       <Link>AssemblyVersion.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tasks\HostCollection.cs" />
     <Compile Include="Tasks\SourceGenerationTask.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -141,6 +140,7 @@
     <None Include="Uno.SourceGenerationTasks.targets" />
   </ItemGroup>
   <Import Project="..\Uno.SourceGeneration.Protocol\Uno.SourceGeneration.Protocol.projitems" Label="Shared" />
+  <Import Project="..\Uno.SourceGeneration.Engine.Shared\Uno.SourceGeneration.Engine.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
   </PropertyGroup>

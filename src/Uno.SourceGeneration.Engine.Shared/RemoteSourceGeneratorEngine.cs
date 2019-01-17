@@ -29,7 +29,6 @@ using Uno.SourceGeneratorTasks.Helpers;
 using Uno.SourceGeneratorTasks.Logger;
 using System.Diagnostics;
 using System.Globalization;
-using Uno.SourceGeneration.Host.Server;
 
 namespace Uno.SourceGeneratorTasks
 {
@@ -85,8 +84,12 @@ namespace Uno.SourceGeneratorTasks
 			_remoteLoggerProvider.TaskLog = logger;
 
 			return new SourceGeneratorEngine(
-				environment: environment,
-				assemblyReferenceProvider: DesktopGenerationServerHost.SharedAssemblyReferenceProvider
+				environment: environment
+#if IS_BUILD_HOST
+				, assemblyReferenceProvider: Uno.SourceGeneration.Host.Server.DesktopGenerationServerHost.SharedAssemblyReferenceProvider
+#else
+				, null
+#endif
 			).Generate();
 		}
 
