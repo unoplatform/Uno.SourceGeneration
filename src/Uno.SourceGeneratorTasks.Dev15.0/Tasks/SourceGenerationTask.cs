@@ -84,6 +84,7 @@ namespace Uno.SourceGeneratorTasks
 		public string[] GenereratedFiles { get; set; }
 
 		private CancellationTokenSource _sharedCompileCts;
+		private TaskLoggerProvider _taskLogger;
 
 		public override bool Execute()
 		{
@@ -366,12 +367,20 @@ namespace Uno.SourceGeneratorTasks
 			{
 				throw new InvalidOperationException($"Unable to find Uno.SourceGeneration.Host.dll (in {devPath} or {installedPath})");
 			}
-			
 		}
 
 		private void GenerateInProcess()
 		{
-			new SourceGeneratorEngine(CreateBuildEnvironment(), null);
+			Log.LogMessage(MessageImportance.Low, $"Using in-process generation mode");
+
+			var generationInfo = CreateDomain();
+
+			_taskLogger = new TaskLoggerProvider() { TaskLog = Log };
+			LogExtensionPoint.AmbientLoggerFactory.AddProvider(_taskLogger);
+
+			var remotableLogger = new Logger.RemotableLogger2(_taskLogger.CreateLogger("Logger.RemotableLogger"));
+
+			GenereratedFiles = generationInfo.Wrapper.Generate(remotableLogger, CreateBuildEnvironment());
 		}
 
 		public bool IsMonoMSBuildCompatible =>
@@ -417,5 +426,49 @@ namespace Uno.SourceGeneratorTasks
 			Path.IsPathRooted(targetPath)
 			? targetPath
 			: Path.Combine(Path.GetDirectoryName(projectFile), targetPath);
+
+		private (RemoteSourceGeneratorEngine Wrapper, AppDomain Domain) CreateDomain()
+		{
+			var generatorLocations = SourceGenerators.Select(Path.GetFullPath).Select(Path.GetDirectoryName).Distinct();
+			var wrapperBasePath = Path.GetDirectoryName(new Uri(typeof(RemoteSourceGeneratorEngine).Assembly.CodeBase).LocalPath);
+
+			// We can create an app domain per OwnerFile and all Analyzers files
+			// so that if those change, we can spin off another one, and still avoid
+			// locking these assemblies.
+			//
+			// If the domain exists, keep it and continue generating content with it.
+
+			var setup = new AppDomainSetup();
+			setup.ApplicationBase = wrapperBasePath;
+			setup.ShadowCopyFiles = "true";
+			setup.ShadowCopyDirectories = string.Join(";", generatorLocations) + ";" + wrapperBasePath;
+			setup.PrivateBinPath = setup.ShadowCopyDirectories;
+			setup.ConfigurationFile = Path.Combine(wrapperBasePath, typeof(RemoteSourceGeneratorEngine).Assembly.GetName().Name + ".dll.config");
+
+			// Loader optimization must not use MultiDomainHost, otherwise MSBuild assemblies may
+			// be shared incorrectly when multiple versions are loaded in different domains.
+			// The loader must specify SingleDomain, otherwise in contexts where devenv.exe is the
+			// current process, the default optimization is "MultiDomain" and assemblies are 
+			// incorrectly reused.
+			setup.LoaderOptimization = LoaderOptimization.SingleDomain;
+
+			var domain = AppDomain.CreateDomain("Generators-" + Guid.NewGuid(), null, setup);
+
+			Log.LogMessage($"[{Process.GetCurrentProcess().ProcessName}] Creating object {typeof(RemoteSourceGeneratorEngine).Assembly.CodeBase} with {typeof(RemoteSourceGeneratorEngine).FullName}. wrapperBasePath {wrapperBasePath} ");
+
+			var newHost = domain.CreateInstanceFromAndUnwrap(
+				typeof(RemoteSourceGeneratorEngine).Assembly.CodeBase,
+				typeof(RemoteSourceGeneratorEngine).FullName
+			) as RemoteSourceGeneratorEngine;
+
+			var msbuildBasePath = Path.GetDirectoryName(new Uri(typeof(Microsoft.Build.Logging.ConsoleLogger).Assembly.CodeBase).LocalPath);
+
+			newHost.MSBuildBasePath = msbuildBasePath;
+			newHost.AdditionalAssemblies = AdditionalAssemblies;
+
+			newHost.Initialize();
+
+			return (newHost, domain);
+		}
 	}
 }

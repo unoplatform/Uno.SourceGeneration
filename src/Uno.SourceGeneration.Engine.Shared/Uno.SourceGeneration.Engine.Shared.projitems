@@ -13,6 +13,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)InternalSourceGeneratorContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ProjectDetails.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ProjectLoader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RemoteSourceGeneratorEngine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SourceGeneratorEngine.cs" />
   </ItemGroup>
 </Project>
