@@ -162,6 +162,6 @@
   </ItemGroup>
 
   <Import Project="..\Uno.SourceGenerationHost.Shared\Uno.SourceGenerationHost.Shared.projitems" Label="Shared" />
-
+  <Import Project="..\Uno.SourceGeneration.Engine.Shared\Uno.SourceGeneration.Engine.Shared.projitems" Label="Shared" />
   <Import Project="..\Uno.SourceGeneration.Protocol\Uno.SourceGeneration.Protocol.projitems" Label="Shared" />
 </Project>
