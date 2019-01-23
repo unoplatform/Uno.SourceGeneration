@@ -114,6 +114,15 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug">
       <Version>1.1.1</Version>
     </PackageReference>
+    <PackageReference Include="SQLitePCL.raw">
+      <Version>0.9.3</Version>
+    </PackageReference>
+    <PackageReference Include="SQLitePCLRaw.core">
+      <Version>1.1.11</Version>
+    </PackageReference>
+    <PackageReference Include="SQLitePCL.bundle_green">
+      <Version>0.9.3</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\build\AssemblyVersion.cs">

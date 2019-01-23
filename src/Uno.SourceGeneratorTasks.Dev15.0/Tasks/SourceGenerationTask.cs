@@ -402,7 +402,8 @@ namespace Uno.SourceGeneratorTasks
 			//   at Uno.SourceGeneration.Host.ProjectLoader.LoadProjectDetails(Uno.SourceGeneratorTasks.BuildEnvironment environment) [0x00216] in <b845ad5dce324939bc8243d198321524>:0 
 			//   at Uno.SourceGeneration.Host.SourceGeneratorHost.Generate() [0x00014] in <b845ad5dce324939bc8243d198321524>:0 
 
-			string.Compare(FileVersionInfo.GetVersionInfo(new Uri(typeof(Microsoft.Build.Utilities.Task).Assembly.Location).LocalPath).FileVersion, "16.0") >= 0;
+			string.Compare(FileVersionInfo.GetVersionInfo(new Uri(typeof(Microsoft.Build.Utilities.Task).Assembly.Location).LocalPath).FileVersion, "16.0") >= 0
+			|| RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
 
 
 		private BuildEnvironment CreateBuildEnvironment()
