@@ -251,9 +251,11 @@ namespace Uno.SourceGeneratorTasks
 
 			try
 			{
-				var asm = Assembly.Load("Microsoft.Build");
+				var path = Path.Combine(MSBuildBasePath, "Microsoft.Build.dll");
 
-				if (Type.GetType("Microsoft.Build.Shared.FileUtilities, Microsoft.Build", false) is Type fileUtilitiesType)
+				var asm = Assembly.LoadFrom(path);
+
+				if (asm.GetType("Microsoft.Build.Shared.FileUtilities", false) is Type fileUtilitiesType)
 				{
 					if (fileUtilitiesType.GetField("cacheDirectory", BindingFlags.NonPublic | BindingFlags.Static) is FieldInfo field)
 					{
@@ -264,13 +266,27 @@ namespace Uno.SourceGeneratorTasks
 							var cacheDirectory = Path.Combine(Path.GetTempPath(), String.Format(CultureInfo.CurrentUICulture, "MSBuild{0}-SourceGeneration", Process.GetCurrentProcess().Id));
 
 							field.SetValue(null, cacheDirectory);
+
+							System.Console.WriteLine("Applied MSBuild cache path workaround for VS15.9 and below");
+						}
+						else
+						{
+							System.Console.WriteLine($"Failed to override internal msbuild cache directory, cacheDirectory is already set to [{existingcacheDirectory}]");
 						}
 					}
+					else
+					{
+						System.Console.WriteLine($"Failed to override internal msbuild cache directory, could not find cacheDirectory field");
+					}
+				}
+				else
+				{
+					System.Console.WriteLine($"Failed to override internal msbuild cache directory, could not find Microsoft.Build.Shared.FileUtilities");
 				}
 			}
-			catch (Exception)
+			catch (Exception e)
 			{
-				System.Console.WriteLine("Failed to override internal msbuild cache directory");
+				System.Console.WriteLine($"Failed to override internal msbuild cache directory {e.Message}");
 			}
 		}
 
