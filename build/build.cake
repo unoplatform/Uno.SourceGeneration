@@ -146,15 +146,27 @@ Task("Version")
 	Information($"FullSemVer: {versionInfo.FullSemVer} Sha: {versionInfo.Sha}");
 
 	var files = new[] {
-		@"..\src\Uno.SourceGeneratorTasks.Shared\Content\Uno.SourceGenerationTasks.targets",
+		@"..\src\Uno.SourceGeneratorTasks.Dev15.0\Content\Uno.SourceGenerationTasks.targets",
 		@"..\src\Uno.SourceGeneratorTasks.Dev15.0\Uno.SourceGeneratorTasks.Dev15.0.csproj",
-		@"..\src\Uno.SourceGeneratorTasks.Shared\Tasks\SourceGenerationTask.cs"
+		@"..\src\Uno.SourceGeneratorTasks.Dev15.0\Tasks\SourceGenerationTask.cs"
 	};
 	
 	foreach(var file in files)
 	{
 		var text = System.IO.File.ReadAllText(file);
 		System.IO.File.WriteAllText(file, text.Replace("v0", "v" + versionInfo.Sha));
+	}
+
+	// Update the commit hash for client/server sync validation
+	var serverFiles = new[] {
+		@"..\src\Uno.SourceGeneratorTasks.Dev15.0\Tasks\SourceGenerationTask.cs",
+		@"..\src\Uno.SourceGeneration.Host\Program.cs",
+	};
+	
+	foreach(var file in serverFiles)
+	{
+		var text = System.IO.File.ReadAllText(file);
+		System.IO.File.WriteAllText(file, text.Replace("<developer build>", "v" + versionInfo.Sha));
 	}
 
 });

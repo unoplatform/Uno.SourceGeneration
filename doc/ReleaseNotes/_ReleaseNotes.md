@@ -10,6 +10,7 @@
 - Pass-through support for F# and VB.NET projects
 
 ### Breaking changes
+- `uap10.0` projects must be updated to use the `uap10.0.xxx` target framework format
 
 ### Bug fixes
 - Added workaround for missing designer file error with Xamarin.Android projects
