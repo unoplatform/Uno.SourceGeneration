@@ -13,14 +13,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Uno.SourceGeneration", "Uno
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uno.SampleGenerators", "Uno.SampleGenerators\Uno.SampleGenerators.csproj", "{D45247E2-A279-472C-8D8B-CBCB83F37FB1}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Uno.SourceGeneratorTasks.Shared", "Uno.SourceGeneratorTasks.Shared\Uno.SourceGeneratorTasks.Shared.shproj", "{A564F304-6F1C-4C25-87D2-4D0BC7BE3114}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uno.SourceGeneratorTasks.Dev15.0", "Uno.SourceGeneratorTasks.Dev15.0\Uno.SourceGeneratorTasks.Dev15.0.csproj", "{0A1CC471-6080-415F-8947-E41D8534395E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1D32B614-7FE4-4235-A4AF-E33EA9829863} = {1D32B614-7FE4-4235-A4AF-E33EA9829863}
 	EndProjectSection
-EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Uno.SourceGenerationHost.Shared", "Uno.SourceGenerationHost.Shared\Uno.SourceGenerationHost.Shared.shproj", "{6C9997ED-DE72-4EE4-8B8E-6F5BF1CF2C71}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uno.SampleProject.UWP", "Uno.SampleProject.UWP\Uno.SampleProject.UWP.csproj", "{0A1A822E-729E-4C2D-9C32-871A22B65B87}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -31,7 +27,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uno.SampleProject.UWP", "Un
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Doc", "Doc", "{DEB6C3E9-CC58-4925-B635-083634263ABC}"
 	ProjectSection(SolutionItems) = preProject
-		..\.appveyor.yml = ..\.appveyor.yml
 		..\readme.md = ..\readme.md
 		..\doc\using sourcegenerators.md = ..\doc\using sourcegenerators.md
 	EndProjectSection
@@ -51,14 +46,22 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Uno.SourceGeneration.Host",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Uno.SampleCoreApp", "Uno.SampleCoreApp\Uno.SampleCoreApp.csproj", "{613832ED-7BF4-43BC-B8D3-2ACC4370237F}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Uno.FSSampleProject", "Uno.FSSampleProject\Uno.FSSampleProject.fsproj", "{6012BF2A-31B0-48AB-8564-F49F9C57FD32}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "Uno.FSSampleProject", "Uno.FSSampleProject\Uno.FSSampleProject.fsproj", "{6012BF2A-31B0-48AB-8564-F49F9C57FD32}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Uno.SampleDependency", "Uno.SampleDependency\Uno.SampleDependency.csproj", "{D02FBC83-F9DD-4710-AEBF-0BA2F8AE85B2}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Uno.SourceGeneration.Host.Shared", "Uno.SourceGeneration.Protocol\Uno.SourceGeneration.Host.Shared.shproj", "{76548C37-4928-45E7-8DB1-63A85A7F65D6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{67EB84F7-DAA3-4657-B6D0-D7FA9FD23C45}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Uno.SourceGeneration.Engine.Shared", "Uno.SourceGeneration.Engine.Shared\Uno.SourceGeneration.Engine.Shared.shproj", "{08631D97-B757-4226-897F-9839B1205AB5}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Uno.SourceGenerationHost.Shared\Uno.SourceGenerationHost.Shared.projitems*{0a1cc471-6080-415f-8947-e41d8534395e}*SharedItemsImports = 4
-		Uno.SourceGeneratorTasks.Shared\Uno.SourceGeneratorTasks.Shared.projitems*{0a1cc471-6080-415f-8947-e41d8534395e}*SharedItemsImports = 4
-		Uno.SourceGenerationHost.Shared\Uno.SourceGenerationHost.Shared.projitems*{6c9997ed-de72-4ee4-8b8e-6f5bf1cf2c71}*SharedItemsImports = 13
-		Uno.SourceGeneratorTasks.Shared\Uno.SourceGeneratorTasks.Shared.projitems*{a564f304-6f1c-4c25-87d2-4d0bc7be3114}*SharedItemsImports = 13
+		Uno.SourceGeneration.Engine.Shared\Uno.SourceGeneration.Engine.Shared.projitems*{08631d97-b757-4226-897f-9839b1205ab5}*SharedItemsImports = 13
+		Uno.SourceGeneration.Engine.Shared\Uno.SourceGeneration.Engine.Shared.projitems*{0a1cc471-6080-415f-8947-e41d8534395e}*SharedItemsImports = 4
+		Uno.SourceGeneration.Protocol\Uno.SourceGeneration.Protocol.projitems*{0a1cc471-6080-415f-8947-e41d8534395e}*SharedItemsImports = 4
+		Uno.SourceGeneration.Protocol\Uno.SourceGeneration.Protocol.projitems*{76548c37-4928-45e7-8db1-63a85a7f65d6}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -199,9 +202,33 @@ Global
 		{6012BF2A-31B0-48AB-8564-F49F9C57FD32}.Release|x64.Build.0 = Release|Any CPU
 		{6012BF2A-31B0-48AB-8564-F49F9C57FD32}.Release|x86.ActiveCfg = Release|Any CPU
 		{6012BF2A-31B0-48AB-8564-F49F9C57FD32}.Release|x86.Build.0 = Release|Any CPU
+		{D02FBC83-F9DD-4710-AEBF-0BA2F8AE85B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D02FBC83-F9DD-4710-AEBF-0BA2F8AE85B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D02FBC83-F9DD-4710-AEBF-0BA2F8AE85B2}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{D02FBC83-F9DD-4710-AEBF-0BA2F8AE85B2}.Debug|ARM.Build.0 = Debug|Any CPU
+		{D02FBC83-F9DD-4710-AEBF-0BA2F8AE85B2}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D02FBC83-F9DD-4710-AEBF-0BA2F8AE85B2}.Debug|x64.Build.0 = Debug|Any CPU
+		{D02FBC83-F9DD-4710-AEBF-0BA2F8AE85B2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D02FBC83-F9DD-4710-AEBF-0BA2F8AE85B2}.Debug|x86.Build.0 = Debug|Any CPU
+		{D02FBC83-F9DD-4710-AEBF-0BA2F8AE85B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D02FBC83-F9DD-4710-AEBF-0BA2F8AE85B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D02FBC83-F9DD-4710-AEBF-0BA2F8AE85B2}.Release|ARM.ActiveCfg = Release|Any CPU
+		{D02FBC83-F9DD-4710-AEBF-0BA2F8AE85B2}.Release|ARM.Build.0 = Release|Any CPU
+		{D02FBC83-F9DD-4710-AEBF-0BA2F8AE85B2}.Release|x64.ActiveCfg = Release|Any CPU
+		{D02FBC83-F9DD-4710-AEBF-0BA2F8AE85B2}.Release|x64.Build.0 = Release|Any CPU
+		{D02FBC83-F9DD-4710-AEBF-0BA2F8AE85B2}.Release|x86.ActiveCfg = Release|Any CPU
+		{D02FBC83-F9DD-4710-AEBF-0BA2F8AE85B2}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{0D439289-B6AC-454C-AB10-FA54F08B22EC} = {67EB84F7-DAA3-4657-B6D0-D7FA9FD23C45}
+		{D45247E2-A279-472C-8D8B-CBCB83F37FB1} = {67EB84F7-DAA3-4657-B6D0-D7FA9FD23C45}
+		{0A1A822E-729E-4C2D-9C32-871A22B65B87} = {67EB84F7-DAA3-4657-B6D0-D7FA9FD23C45}
+		{613832ED-7BF4-43BC-B8D3-2ACC4370237F} = {67EB84F7-DAA3-4657-B6D0-D7FA9FD23C45}
+		{6012BF2A-31B0-48AB-8564-F49F9C57FD32} = {67EB84F7-DAA3-4657-B6D0-D7FA9FD23C45}
+		{D02FBC83-F9DD-4710-AEBF-0BA2F8AE85B2} = {67EB84F7-DAA3-4657-B6D0-D7FA9FD23C45}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {77C35D15-0462-4BB9-A731-D88AC37A3937}

@@ -205,6 +205,14 @@ You can write to build output using the following code:
 
 ## Troubleshooting
 
+## Error: `Failed to analyze project file ..., the targets ... failed to execute.`
+
+This is issue is caused by a [open Roslyn issue](https://github.com/nventive/Uno.SourceGeneration/issues/2)
+for which all projects of the solution must have all the possible "head" projects configuration.
+
+For instance, if you are building a UWP application, all the projects in the solution must
+have the `10.0.xxx` target framework defined, even if `netstandard2.0` would have been enough.
+
 ### Generation output
 
 The source generator provides additional details when building, when running the `_UnoSourceGenerator` msbuild target.
@@ -220,6 +228,26 @@ allows for an improved diagnostics experience. Set the `UnoSourceGeneratorUnsecu
 
 > **Important**: The binary logger may leak secret environment variables, it is a best practice to never enable this feature as part of normal build.
 
+### My build ends with error code 3
+
+By default, in some cases, the source generation host will run into an internal error, and will exit without providing details about the generation error.
+
+To enable the logging of these errors, add the following property to your project:
+```xml
+<UnoSourceGeneratorCaptureGenerationHostOutput>true</UnoSourceGeneratorCaptureGenerationHostOutput>
+```
+
+The errors will the be visible when the build logging output is set to detailed, or by [using the binary logger](https://github.com/Microsoft/msbuild/blob/master/documentation/wiki/Binary-Log.md).
+
 # Have questions? Feature requests? Issues?
 
 Make sure to visit our [StackOverflow](https://stackoverflow.com/questions/tagged/uno-platform), [create an issue](https://github.com/nventive/Uno.SourceGeneration/issues) or [visit our gitter](https://gitter.im/uno-platform/Lobby).
+
+
+## Upgrade notes
+
+### earlier versions to 1.29
+A breaking change has been introduced to support proper UWP head projects, and when upgrading to Uno.SourceGenerationTasks `1.29` or later
+you will have to search for projects that contain the `uap10.0` target framework and do the following:
+- Update to the MSBuild.Sdk.Extras 1.6.65 or later
+- Choose an UWP sdk version, and use the appropriate target framework (e.g. `uap10.0` to `uap10.0.16299`)
