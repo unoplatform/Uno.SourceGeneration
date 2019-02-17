@@ -21,8 +21,8 @@ namespace Uno.SourceGeneration.Host.Server
 		private string[] Generate(BuildEnvironment environment)
 		{
 			if (
-				_currentDefinition == null
-				|| (_currentDefinition?.IsInvalid ?? false)
+				_currentDefinition == null ||
+				true // || (_currentDefinition?.IsInvalid ?? false)
 			)
 			{
 				UnloadDomain();
@@ -84,6 +84,7 @@ namespace Uno.SourceGeneration.Host.Server
 			setup.ApplicationBase = wrapperBasePath;
 			setup.ShadowCopyFiles = "true";
 			setup.ShadowCopyDirectories = string.Join(";", generatorLocations) + ";" + wrapperBasePath;
+			setup.LoaderOptimization = LoaderOptimization.MultiDomainHost;
 			setup.PrivateBinPath = setup.ShadowCopyDirectories;
 			setup.ConfigurationFile = Path.Combine(wrapperBasePath, typeof(RemoteSourceGeneratorEngine).Assembly.GetName().Name + ".exe.config");
 

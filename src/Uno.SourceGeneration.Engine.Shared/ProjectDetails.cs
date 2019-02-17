@@ -19,12 +19,13 @@ using System.IO;
 using Microsoft.Build.Execution;
 using System.Linq;
 using Microsoft.Build.Evaluation;
+using Uno.SourceGeneration.Host.Helpers;
 
 namespace Uno.SourceGeneration.Host
 {
 	public class ProjectDetails : IDisposable
 	{
-		private Tuple<string, DateTime>[] _timeStamps;
+		private (string, DateTime)[] _timeStamps;
 
 		public string Configuration { get; internal set; }
 		public ProjectInstance ExecutedProject { get; internal set; }
@@ -38,11 +39,19 @@ namespace Uno.SourceGeneration.Host
 		{
 			_timeStamps = LoadedProject
 				.Imports
-				.Select(i => Tuple.Create(i.ImportedProject.FullPath, File.GetLastWriteTime(i.ImportedProject.FullPath)))
-				.Concat(new[] { new Tuple<string, DateTime>(ExecutedProject.FullPath, File.GetLastWriteTime(ExecutedProject.FullPath)) })
-				.OrderBy(t => t.Item1)
+				.Select(i => i.ImportedProject.FullPath)
+				.Concat(new[] { ExecutedProject.FullPath })
+				.Concat(ExecutedProject.GetItems("Compile").Select(GetItemFullPath))
+				.Concat(ExecutedProject.GetItems("EmbeddedResources").Select(GetItemFullPath))
+				.Concat(ExecutedProject.GetItems("UpToDateCheckInput").Select(GetItemFullPath))
+				.Where(p => p != null)
+				.Distinct()
+				.Select(p => (p, File.GetLastWriteTime(p)))
 				.ToArray();
 		}
+
+		private string GetItemFullPath(ProjectItemInstance item)
+			=> FileUtilities.ResolveRelativePath(item.EvaluatedInclude, ExecutedProject.Directory) ?? item.EvaluatedInclude;
 
 		public void Dispose()
 		{

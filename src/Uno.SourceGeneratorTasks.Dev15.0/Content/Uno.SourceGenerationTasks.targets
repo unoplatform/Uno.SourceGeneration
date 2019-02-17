@@ -89,6 +89,12 @@
 	  <UnoSourceGeneratorBinLogOutputPath Condition="'$(UnoSourceGeneratorBinLogOutputPath)'==''">$(IntermediateOutputPath)</UnoSourceGeneratorBinLogOutputPath>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <!-- Filter ReferenceCopyLocalPaths as it may contain pdbs as well -->
+	  <_AssembliesForReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths)"
+                                             Condition="'%(Extension)' == '.dll'" />
+	</ItemGroup>
+
 	<PropertyGroup Condition="'$(_UnoSourceGeneratorProjectType)'=='ios' or '$(_UnoSourceGeneratorProjectType)'=='mac'">
 	  <!-- 
 			Workaround until we can determine where the logic behind `TargetFrameworkRootPathSearchPathsOSX` 
@@ -112,6 +118,7 @@
 							  CaptureGenerationHostOutput="$(UnoSourceGeneratorCaptureGenerationHostOutput)"
 							  BinLogOutputPath="$(UnoSourceGeneratorBinLogOutputPath)"
 							  BinLogEnabled="$(UnoSourceGeneratorUnsecureBinLogEnabled)"
+							  ReferencePath="@(_AssembliesForReferenceCopyLocalPaths)"
 							  Condition="$(_hasSourceGenerators)">
 	  <Output TaskParameter="GenereratedFiles" ItemName="UnoGeneratedFiles" />
 	</SourceGenerationTask_v0>

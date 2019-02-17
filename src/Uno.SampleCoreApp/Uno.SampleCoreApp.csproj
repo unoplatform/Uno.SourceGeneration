@@ -17,6 +17,9 @@
     <None Remove="GeneratedFiles\**" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Uno.SampleDependency\Uno.SampleDependency.csproj" />
+  </ItemGroup>
+  <ItemGroup>
 	<SourceGenerator Include="..\Uno.SampleGenerators\bin\$(Configuration)\Uno.SampleGenerators.dll" />
   </ItemGroup>
 
