@@ -9,11 +9,29 @@
     <Import_RootNamespace>Uno.SourceGeneration.Engine.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CachingMetadataReferenceResolver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workspace\CommandLineArgumentReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workspace\CompilerOptionParseUtilities.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workspace\Conversions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workspace\Constants\ItemNames.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workspace\Constants\MetadataNames.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workspace\Constants\PropertyNames.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workspace\CSharpCommandLineArgumentReader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workspace\DocumentFileInfo.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GeneratorLogger.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InternalSourceGeneratorContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ProjectDetails.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workspace\Extensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workspace\Extensions\IDictionaryExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workspace\IMetadataService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workspace\MetadataReferenceCache.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workspace\ProjectFileInfo.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workspace\ProjectFileReference.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ProjectLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)RemoteSourceGeneratorEngine.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SourceGeneratorEngine.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workspace\ProjectInfoBuilder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workspace\RelativePathResolver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Workspace\WorkspaceMetadataFileReferenceResolver.cs" />
   </ItemGroup>
 </Project>

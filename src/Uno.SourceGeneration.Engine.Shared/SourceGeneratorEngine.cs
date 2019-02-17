@@ -31,18 +31,18 @@ using System.Threading.Tasks;
 using System.Xml;
 using Uno.SourceGeneration;
 using Uno.SourceGeneratorTasks.Helpers;
-using MSB = Microsoft.Build;
-using MSBE = Microsoft.Build.Execution;
 using Microsoft.Extensions.Logging;
 using Uno.SourceGeneration.host.Helpers;
 using Uno.SourceGeneratorTasks;
+using Uno.SourceGeneration.Engine.Workspace;
+using System.Configuration;
 
 namespace Uno.SourceGeneration.Host
 {
-	public class SourceGeneratorEngine
+	public partial class SourceGeneratorEngine
 	{
 		private readonly BuildEnvironment _environment;
-		private readonly Resolver _resolver;
+		private readonly CachingMetadataReferenceResolver _metadataResolver;
 
 		public SourceGeneratorEngine(BuildEnvironment environment, Func<string, MetadataReferenceProperties, PortableExecutableReference> assemblyReferenceProvider)
 		{
@@ -50,20 +50,30 @@ namespace Uno.SourceGeneration.Host
 
 			if (assemblyReferenceProvider != null)
 			{
-				_resolver = new Resolver(assemblyReferenceProvider);
+				_metadataResolver = new CachingMetadataReferenceResolver(assemblyReferenceProvider);
+			}
+
+			PreInit();
+		}
+
+		private void PreInit()
+		{
+			// Used by MSB.ProjectCollection
+			ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
+			// Parallelize the initialization of the MefServices graph (Used by AdHocWorkspace)
+			Microsoft.CodeAnalysis.Host.Mef.MefHostServices.DefaultHost.ToString();
+
+			// Pre-load known references
+			foreach (var reference in _environment.ReferencePath)
+			{
+				_metadataResolver.ResolveReference(Path.GetFileName(reference), Path.GetDirectoryName(reference), new MetadataReferenceProperties());
 			}
 		}
 
 		public string[] Generate()
 		{
 			var globalExecution = Stopwatch.StartNew();
-
-			var compilationResult = GetCompilation().Result;
-
-			if (this.Log().IsEnabled(LogLevel.Debug))
-			{
-				this.Log().Debug($"Got compilation after {globalExecution.Elapsed}");
-			}
 
 			using (var details = ProjectLoader.LoadProjectDetails(_environment, BuildGlobalMSBuildProperties()))
 			{
@@ -76,6 +86,13 @@ namespace Uno.SourceGeneration.Host
 				{
 					this.Log().Info($"No generators were found.");
 					return new string[0];
+				}
+
+				var compilationResult = GetCompilation(details).Result;
+
+				if (this.Log().IsEnabled(LogLevel.Debug))
+				{
+					this.Log().Debug($"Got compilation after {globalExecution.Elapsed}");
 				}
 
 				// Build dependencies graph
@@ -173,11 +190,11 @@ namespace Uno.SourceGeneration.Host
 							}
 							catch (Exception e)
 							{
-							// Wrap the exception into a string to avoid serialization issue when 
-							// parts of the stack are coming from an assembly the msbuild task is 
-							// not able to load properly.
+								// Wrap the exception into a string to avoid serialization issue when 
+								// parts of the stack are coming from an assembly the msbuild task is 
+								// not able to load properly.
 
-							throw new InvalidOperationException($"Generation failed for {generator.GetType()}. {e}");
+								throw new InvalidOperationException($"Generation failed for {generator.GetType()}. {e}");
 							}
 						})
 						.ToArray();
@@ -245,125 +262,38 @@ namespace Uno.SourceGeneration.Host
 			return Path.Combine(generator.GetType().Name, key + $".g.cs");
 		}
 
-		private class Resolver : MetadataReferenceResolver
+		private async Task<(Compilation compilation, Project project)> GetCompilation(ProjectDetails details)
 		{
-			private readonly Func<string, MetadataReferenceProperties, PortableExecutableReference> _assemblyReferenceProvider;
+			var projectFileInfo = ProjectFileInfo.FromMSBuildProjectInstance(LanguageNames.CSharp, details.LoadedProject, details.ExecutedProject);
 
-			public Resolver(Func<string, MetadataReferenceProperties, PortableExecutableReference> assemblyReferenceProvider)
+			var pi = ProjectInfoBuilder.CreateProjectInfo(projectFileInfo);
+
+			var ws2 = new AdhocWorkspace();
+			var solution = ws2.CurrentSolution.AddProject(pi);
+			var project = solution.GetProject(pi.Id);
+
+			foreach(var reference in _environment.ReferencePath)
 			{
-				_assemblyReferenceProvider = assemblyReferenceProvider;
+				var metadataRefs = _metadataResolver.ResolveReference(Path.GetFileName(reference), Path.GetDirectoryName(reference), new MetadataReferenceProperties());
+
+				foreach (var metadataRef in metadataRefs)
+				{
+					project = project.AddMetadataReference(metadataRef);
+				}
 			}
 
-			public override bool ResolveMissingAssemblies => true;
+			project = RemoveGeneratedDocuments(project);
 
-			public override bool Equals(object other) => throw new NotImplementedException();
-			public override int GetHashCode() => throw new NotImplementedException();
+			var compilation = await project
+					.GetCompilationAsync();
 
-			public override ImmutableArray<PortableExecutableReference> ResolveReference(string reference, string baseFilePath, MetadataReferenceProperties properties)
-			{
-				var metadataReference = _assemblyReferenceProvider(Path.Combine(baseFilePath, reference), properties);
-				return ImmutableArray.Create(metadataReference);
-			}
+			// For some reason, this is required to avoid having a 
+			// unbound NRE later during the execution when calling this exact same method;
+			SyntaxFactory.ParseStatement("");
+
+			return (compilation, project);
 		}
 
-		private async Task<(Compilation compilation, Project project)> GetCompilation()
-		{
-			try
-			{
-				var globalProperties = BuildGlobalMSBuildProperties();
-
-				//globalProperties.Remove("DesignTimeBuild");
-				//globalProperties.Remove("BuildingInsideVisualStudio");
-				//globalProperties.Remove("BuildProjectReferences");
-				//globalProperties.Remove("BuildingProject");
-				//globalProperties.Remove("ProvideCommandLineArgs");
-				//globalProperties.Remove("SkipCompilerExecution");
-				//globalProperties.Remove("ContinueOnError");
-
-				var ws = MSBuildWorkspace.Create(globalProperties);
-
-				ws.LoadMetadataForReferencedProjects = true;
-
-				ws.WorkspaceFailed +=
-					(s, e) =>
-					{
-						switch (e.Diagnostic.Kind)
-						{
-							case WorkspaceDiagnosticKind.Warning:
-								this.Log().Warn(e.Diagnostic.Message);
-								break;
-
-							case WorkspaceDiagnosticKind.Failure:
-								this.Log().Error(e.Diagnostic.Message);
-								break;
-						}
-					};
-
-				var project = await ws.OpenProjectAsync(_environment.ProjectFile);
-
-				if (_resolver != null)
-				{
-					project = project.WithCompilationOptions(new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, metadataReferenceResolver: _resolver));
-				}
-
-				var metadataLessProjects = ws
-					.CurrentSolution
-					.Projects
-					.Where(p => !p.MetadataReferences.Any())
-					.ToArray();
-
-				if (metadataLessProjects.Any())
-				{
-					foreach (var diag in ws.Diagnostics)
-					{
-						this.Log().Debug($"[{diag.Kind}] {diag.Message}");
-					}
-
-					// In this case, this may mean that Rolsyn failed to execute some msbuild task that loads the
-					// references in a UWA project (or NuGet 3.0+ with project.json, more specifically). For these
-					// projects, references are materialized through a task using a output parameter that injects 
-					// "References" nodes. If this task fails, no references are loaded, and simple type resolution
-					// such "int?" may fail.
-
-					// Additionally, it may happen that projects are loaded using the callee's Configuration/Platform, which
-					// may not exist in all projects. This can happen if the project does not have a proper
-					// fallback mecanism in place.
-
-					throw new InvalidOperationException(
-						$"The project(s) {metadataLessProjects.Select(p => p.Name).JoinBy(",")} did not provide any metadata reference. " +
-						"This may be due to an invalid path, such as $(SolutionDir) being used in the csproj; try using relative paths instead, " +
-						$"or a missing default configuration directive, or that [{_environment.TargetFramework}] " +
-						$"is missing in the TargetFrameworks list (see https://github.com/nventive/Uno.SourceGeneration/issues/2 for details)."
-					);
-				}
-
-				project = RemoveGeneratedDocuments(project);
-
-				var compilation = await project
-						.GetCompilationAsync();
-
-				// For some reason, this is required to avoid having a 
-				// unbound NRE later during the execution when calling this exact same method;
-				SyntaxFactory.ParseStatement("");
-
-				return (compilation, project);
-			}
-			catch (Exception e)
-			{
-				var reflectionException = e as ReflectionTypeLoadException;
-
-				if (reflectionException != null)
-				{
-					var loaderMessages = reflectionException.LoaderExceptions.Select(ex => ex.ToString()).JoinBy("\n");
-
-					throw new InvalidOperationException(e.ToString() + "\nLoader Exceptions: " + loaderMessages);
-				}
-				else
-				{
-					throw new InvalidOperationException(e.ToString());
-				}
-			}
-		}
 
 		private Dictionary<string, string> BuildGlobalMSBuildProperties()
 		{
