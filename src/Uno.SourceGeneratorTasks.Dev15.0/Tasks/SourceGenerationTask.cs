@@ -134,7 +134,7 @@ namespace Uno.SourceGeneratorTasks
 					this.Log.LogError(e.Message);
 				}
 
-				this.Log.LogMessage(MessageImportance.Low, e.ToString());
+				this.Log.LogMessage(e.ToString());
 
 				return false;
 			}
