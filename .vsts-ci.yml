@@ -11,7 +11,7 @@ jobs:
       checkLatest: false
 
   - powershell: .\build\build.ps1 -script build\build.cake
-    displayName: Build 
+    displayName: Build
 
   - task: CopyFiles@2
     inputs:
@@ -34,12 +34,16 @@ jobs:
       ArtifactDirectory: $(build.artifactstagingdirectory)
     condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['SignClientSecret'], '')), not(eq(variables['SignClientUser'], '')))
 
+  - task: DotNetCoreInstaller@0
+    inputs:
+      version: '2.2.103'
+
   - task: DotNetCoreCLI@2
     displayName: Validate DotNetCore CLI build
     inputs:
       command: build
-      configuration: Release
-      workingDirectory: $(build.sourcesdirectory)\Uno.SampleCoreApp
+      arguments: '/p:Configuration=Release'
+      workingDirectory: $(build.sourcesdirectory)\src\Uno.SampleCoreApp
 
   - task: PublishBuildArtifacts@1
     inputs:
@@ -64,13 +68,6 @@ jobs:
   - bash: msbuild /r /p:Configuration=Release /p:AddSyntheticProjectReferencesForSolutionDependencies=false ./src/Uno.SourceGenerator.Linux.sln
     displayName: Build
 
-  - task: DotNetCoreCLI@2
-    displayName: Validate DotNetCore CLI build
-    inputs:
-      command: build
-      configuration: Release
-      workingDirectory: $(build.sourcesdirectory)/Uno.SampleCoreApp
-
 - job: macOS
 
   variables:
@@ -87,10 +84,3 @@ jobs:
 
   - bash: msbuild /r /p:Configuration=Release /p:AddSyntheticProjectReferencesForSolutionDependencies=false ./src/Uno.SourceGenerator.Linux.sln
     displayName: Build
-
-  - task: DotNetCoreCLI@2
-    displayName: Validate DotNetCore CLI build
-    inputs:
-      command: build
-      configuration: Release
-      workingDirectory: $(build.sourcesdirectory)/Uno.SampleCoreApp
