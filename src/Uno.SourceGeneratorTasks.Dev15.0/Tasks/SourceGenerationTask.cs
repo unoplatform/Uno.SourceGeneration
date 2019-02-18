@@ -93,6 +93,8 @@ namespace Uno.SourceGeneratorTasks
 		{
 			string lockFile = null;
 
+			Log.LogMessage(MessageImportance.Low, $"Running generation in {Process.GetCurrentProcess().Id}/{Process.GetCurrentProcess().ProcessName}");
+
 			// Debugger.Launch();
 
 			try
@@ -221,12 +223,7 @@ namespace Uno.SourceGeneratorTasks
 			return GenerationServerConnection.GetPipeNameForPathOpt(
 				string.Concat(
 					GetHostPath(),
-					// Don't include the process ID since the server only processes one client at a time.
-					// Process.GetCurrentProcess().Id.ToString(),
-					buildEnvironment.ProjectFile,
-					buildEnvironment.Configuration,
-					buildEnvironment.TargetFramework,
-					string.Join(",", buildEnvironment.SourceGenerators)
+					Process.GetCurrentProcess().Id.ToString()
 				)
 			);
 		}
