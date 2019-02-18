@@ -103,6 +103,9 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\LinkTest\LinkedCompileFile.cs">
+      <Link>LinkedCompileFile.cs</Link>
+    </Compile>
     <Compile Include="..\Uno.SampleProject\MyCustomSourceGenerator.cs">
       <Link>MyCustomSourceGenerator.cs</Link>
     </Compile>

@@ -17,6 +17,9 @@
     <None Remove="GeneratedFiles\**" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\LinkTest\LinkedCompileFile.cs" Link="LinkedCompileFile.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Uno.SampleDependency\Uno.SampleDependency.csproj" />
   </ItemGroup>
   <ItemGroup>
