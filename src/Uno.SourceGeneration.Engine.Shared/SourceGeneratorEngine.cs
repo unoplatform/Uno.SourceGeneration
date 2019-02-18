@@ -64,15 +64,6 @@ namespace Uno.SourceGeneration.Host
 
 			// Parallelize the initialization of the MefServices graph (Used by AdHocWorkspace)
 			Microsoft.CodeAnalysis.Host.Mef.MefHostServices.DefaultHost.ToString();
-
-			// Pre-load known references
-			if (_environment.ReferencePath != null)
-			{
-				foreach (var reference in _environment.ReferencePath)
-				{
-					_metadataResolver.ResolveReference(Path.GetFileName(reference), Path.GetDirectoryName(reference), new MetadataReferenceProperties());
-				}
-			}
 		}
 
 		public string[] Generate()
@@ -275,19 +266,6 @@ namespace Uno.SourceGeneration.Host
 			var ws2 = new AdhocWorkspace();
 			var solution = ws2.CurrentSolution.AddProject(pi);
 			var project = solution.GetProject(pi.Id);
-
-			if (_environment.ReferencePath != null)
-			{
-				foreach (var reference in _environment.ReferencePath)
-				{
-					var metadataRefs = _metadataResolver.ResolveReference(Path.GetFileName(reference), Path.GetDirectoryName(reference), new MetadataReferenceProperties());
-
-					foreach (var metadataRef in metadataRefs)
-					{
-						project = project.AddMetadataReference(metadataRef);
-					}
-				}
-			}
 
 			project = RemoveGeneratedDocuments(project);
 
