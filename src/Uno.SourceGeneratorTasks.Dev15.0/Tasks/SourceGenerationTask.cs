@@ -112,7 +112,7 @@ namespace Uno.SourceGeneratorTasks
 				{
 					GenerateWithHostController();
 				}
-				else if(IsMonoMSBuildCompatible)
+				else if(IsMonoMSBuildCompatible || RuntimeHelpers.IsNetCore)
 				{
 					GenerateWithHost();
 				}
@@ -148,7 +148,6 @@ namespace Uno.SourceGeneratorTasks
 				}
 			}
 		}
-
 
 		public bool SupportsGenerationController
 			=> (bool.TryParse(UseGenerationController, out var result) && result)
