@@ -65,9 +65,12 @@ namespace Uno.SourceGeneration.Host
 			Microsoft.CodeAnalysis.Host.Mef.MefHostServices.DefaultHost.ToString();
 
 			// Pre-load known references
-			foreach (var reference in _environment.ReferencePath)
+			if (_environment.ReferencePath != null)
 			{
-				_metadataResolver.ResolveReference(Path.GetFileName(reference), Path.GetDirectoryName(reference), new MetadataReferenceProperties());
+				foreach (var reference in _environment.ReferencePath)
+				{
+					_metadataResolver.ResolveReference(Path.GetFileName(reference), Path.GetDirectoryName(reference), new MetadataReferenceProperties());
+				}
 			}
 		}
 
@@ -272,13 +275,16 @@ namespace Uno.SourceGeneration.Host
 			var solution = ws2.CurrentSolution.AddProject(pi);
 			var project = solution.GetProject(pi.Id);
 
-			foreach(var reference in _environment.ReferencePath)
+			if (_environment.ReferencePath != null)
 			{
-				var metadataRefs = _metadataResolver.ResolveReference(Path.GetFileName(reference), Path.GetDirectoryName(reference), new MetadataReferenceProperties());
-
-				foreach (var metadataRef in metadataRefs)
+				foreach (var reference in _environment.ReferencePath)
 				{
-					project = project.AddMetadataReference(metadataRef);
+					var metadataRefs = _metadataResolver.ResolveReference(Path.GetFileName(reference), Path.GetDirectoryName(reference), new MetadataReferenceProperties());
+
+					foreach (var metadataRef in metadataRefs)
+					{
+						project = project.AddMetadataReference(metadataRef);
+					}
 				}
 			}
 
