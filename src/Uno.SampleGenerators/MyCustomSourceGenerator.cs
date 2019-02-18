@@ -38,11 +38,11 @@ namespace Uno.SampleGenerators
 
 			// This test ensures that dependent libraries are included in the compilation
 			// generated from the AdHoc workspace.
-			var dependentString = NewMethod(context, DependentTypeName, "_dependent");
+			var dependentString = BuildVariableFromType(context, DependentTypeName, "_dependent");
 
 			// This test ensures that linked files included in the project are included
 			// in the Compilation instance used by the generators.
-			var linkedString = NewMethod(context, LinkedTypeName, "_linked");
+			var linkedString = BuildVariableFromType(context, LinkedTypeName, "_linked");
 
 			context.AddCompilationUnit(
 				"Test",
@@ -60,7 +60,7 @@ namespace Test {{
 			);
 		}
 
-		private static string NewMethod(SourceGeneratorContext context, string typeName, string variable)
+		private static string BuildVariableFromType(SourceGeneratorContext context, string typeName, string variable)
 			=> context.Compilation.GetTypeByMetadataName(typeName) is INamedTypeSymbol symbol
 				? $"static {symbol} {variable};"
 				: $"#error type {typeName} is not available";
