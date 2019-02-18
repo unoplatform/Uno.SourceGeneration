@@ -307,7 +307,7 @@ namespace Uno.SourceGeneration.Host
 			var globalProperties = new Dictionary<string, string> {
 				// Default global properties defined in Microsoft.CodeAnalysis.MSBuild.Build.ProjectBuildManager
 				// https://github.com/dotnet/roslyn/blob/b9fb1610c87cccc8ceb74a770dba261a58e39c4a/src/Workspaces/Core/MSBuild/MSBuild/Build/ProjectBuildManager.cs#L24
-				{ "BuildingInsideVisualStudio", bool.TrueString },
+
 				{ "BuildProjectReferences", bool.FalseString },
 				// this will tell msbuild to not build the dependent projects
 				{ "DesignTimeBuild", bool.TrueString },
@@ -336,6 +336,15 @@ namespace Uno.SourceGeneration.Host
 				// support this target, and therefore will fail to load.
 				//{ "Platform", _platform },
 			};
+
+#if !NETCOREAPP
+			// This will force CoreCompile task to execute even if all inputs and outputs are up to date
+			// 
+			// Note that this is disabled for NETCOREAPP because of the absence of the "ResolveNonMSBuildProjectOutput"
+			// task which is only executed when running under VisualStudio.
+			// See for reference: https://github.com/Microsoft/msbuild/blob/a972ec96c3920705e4e8d03d7ac8b6c3328450bd/src/Tasks/Microsoft.Common.CurrentVersion.targets#L1548
+			globalProperties.Add("BuildingInsideVisualStudio", bool.TrueString);
+#endif
 
 			if (_environment.TargetFramework.HasValue())
 			{

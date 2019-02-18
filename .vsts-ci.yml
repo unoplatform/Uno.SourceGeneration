@@ -16,7 +16,7 @@ jobs:
   - task: CopyFiles@2
     inputs:
       SourceFolder: $(build.sourcesdirectory)
-      Contents: ' $(build.sourcesdirectory)\build\*.nupkg'
+      Contents: '$(build.sourcesdirectory)\build\*.nupkg'
       TargetFolder: $(build.artifactstagingdirectory)
       CleanTargetFolder: false
       OverWrite: false
@@ -33,6 +33,13 @@ jobs:
       SignPackageDescription: "Uno Source Generation Tasks"
       ArtifactDirectory: $(build.artifactstagingdirectory)
     condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['SignClientSecret'], '')), not(eq(variables['SignClientUser'], '')))
+
+  - task: DotNetCoreCLI@2
+    displayName: Validate DotNetCore CLI build
+    inputs:
+      command: build
+      configuration: Release
+      workingDirectory: $(build.sourcesdirectory)\Uno.SampleCoreApp
 
   - task: PublishBuildArtifacts@1
     inputs:
@@ -57,6 +64,13 @@ jobs:
   - bash: msbuild /r /p:Configuration=Release /p:AddSyntheticProjectReferencesForSolutionDependencies=false ./src/Uno.SourceGenerator.Linux.sln
     displayName: Build
 
+  - task: DotNetCoreCLI@2
+    displayName: Validate DotNetCore CLI build
+    inputs:
+      command: build
+      configuration: Release
+      workingDirectory: $(build.sourcesdirectory)/Uno.SampleCoreApp
+
 - job: macOS
 
   variables:
@@ -73,3 +87,10 @@ jobs:
 
   - bash: msbuild /r /p:Configuration=Release /p:AddSyntheticProjectReferencesForSolutionDependencies=false ./src/Uno.SourceGenerator.Linux.sln
     displayName: Build
+
+  - task: DotNetCoreCLI@2
+    displayName: Validate DotNetCore CLI build
+    inputs:
+      command: build
+      configuration: Release
+      workingDirectory: $(build.sourcesdirectory)/Uno.SampleCoreApp
