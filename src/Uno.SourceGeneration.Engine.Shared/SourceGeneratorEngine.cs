@@ -44,14 +44,15 @@ namespace Uno.SourceGeneration.Host
 		private readonly BuildEnvironment _environment;
 		private readonly CachingMetadataReferenceResolver _metadataResolver;
 
-		public SourceGeneratorEngine(BuildEnvironment environment, Func<string, MetadataReferenceProperties, PortableExecutableReference> assemblyReferenceProvider)
+		public SourceGeneratorEngine(BuildEnvironment environment, Func<string, MetadataReferenceProperties, MetadataReference> assemblyReferenceProvider)
 		{
 			_environment = environment;
 
-			if (assemblyReferenceProvider != null)
-			{
-				_metadataResolver = new CachingMetadataReferenceResolver(assemblyReferenceProvider);
-			}
+			assemblyReferenceProvider = assemblyReferenceProvider ?? MetadataReferenceCache.Default.GetReference;
+
+			_metadataResolver = new CachingMetadataReferenceResolver(
+				(path, properties) => (PortableExecutableReference)assemblyReferenceProvider(path, properties)
+			);
 
 			PreInit();
 		}

@@ -18,10 +18,15 @@ namespace Uno.SourceGeneration.Engine.Workspace
 
         private readonly Func<string, MetadataReferenceProperties, MetadataReference> _createReference;
 
-        public MetadataReferenceCache(Func<string, MetadataReferenceProperties, MetadataReference> createReference)
+		public static MetadataReferenceCache Default { get; } = new MetadataReferenceCache(null);
+
+        public MetadataReferenceCache(Func<string, MetadataReferenceProperties, MetadataReference> createReference = null)
         {
-            _createReference = createReference ?? throw new ArgumentNullException(nameof(createReference));
+            _createReference = createReference ?? DefaultCreateReference;
         }
+
+		private static MetadataReference DefaultCreateReference(string path, MetadataReferenceProperties properties)
+			=> MetadataReference.CreateFromFile(path, properties);
 
         public MetadataReference GetReference(string path, MetadataReferenceProperties properties)
         {
