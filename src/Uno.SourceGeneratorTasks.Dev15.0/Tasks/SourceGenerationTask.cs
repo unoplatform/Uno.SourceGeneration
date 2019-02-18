@@ -80,9 +80,6 @@ namespace Uno.SourceGeneratorTasks
 
 		public string SharedGenerationId { get; set; }
 
-		[Required]
-		public Microsoft.Build.Framework.ITaskItem[] ReferencePath { get; set; }
-
 		[Output]
 		public string[] GenereratedFiles { get; set; }
 
@@ -419,8 +416,7 @@ namespace Uno.SourceGeneratorTasks
 				BinLogEnabled = BinLogEnabled,
 				MSBuildBinPath = Path.GetDirectoryName(new Uri(typeof(Microsoft.Build.Logging.ConsoleLogger).Assembly.CodeBase).LocalPath),
 				AdditionalAssemblies = AdditionalAssemblies,
-				SourceGenerators = SourceGenerators,
-				ReferencePath = ReferencePath.Select(r => r.ItemSpec).ToArray()
+				SourceGenerators = SourceGenerators
 			};
 
 		private string EnsureRootedPath(string projectFile, string targetPath) =>

@@ -23,6 +23,7 @@ namespace Uno.SampleGenerators
 	{
 		private const string DependentTypeName = "Uno.SampleDependency.MyClass";
 		private const string LinkedTypeName = "Uno.SampleLinked.LinkedFileClass";
+		private readonly string SystemObject = typeof(object).FullName;
 
 		public override void Execute(SourceGeneratorContext context)
 		{
@@ -44,6 +45,9 @@ namespace Uno.SampleGenerators
 			// in the Compilation instance used by the generators.
 			var linkedString = BuildVariableFromType(context, LinkedTypeName, "_linked");
 
+			// This test validates that some duplicate files do not interfere wi
+			var objectString = BuildVariableFromType(context, SystemObject, "_object");
+
 			context.AddCompilationUnit(
 				"Test",
 				$@"
@@ -55,6 +59,7 @@ namespace Test {{
 		public const string Project = @""{ project?.FullPath}"";
 		{dependentString}
 		{linkedString}
+		{objectString}
 	}}
 }}"
 			);
