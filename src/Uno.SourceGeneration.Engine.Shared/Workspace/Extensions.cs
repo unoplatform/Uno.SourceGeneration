@@ -48,7 +48,16 @@ namespace Uno.SourceGeneration.Engine.Workspace
                 : ImmutableArray<string>.Empty;
         }
 
-        public static string ReadPropertyString(this MSB.Execution.ProjectInstance executedProject, string propertyName)
+		public static bool ReferenceOutputAssemblyIsTrue(this MSB.Framework.ITaskItem item)
+		{
+			var referenceOutputAssemblyText = item.GetMetadata(MetadataNames.ReferenceOutputAssembly);
+
+			return !string.IsNullOrWhiteSpace(referenceOutputAssemblyText)
+				? !string.Equals(referenceOutputAssemblyText, bool.FalseString, StringComparison.OrdinalIgnoreCase)
+				: true;
+		}
+
+		public static string ReadPropertyString(this MSB.Execution.ProjectInstance executedProject, string propertyName)
             => executedProject.GetProperty(propertyName)?.EvaluatedValue;
 
         public static bool ReadPropertyBool(this MSB.Execution.ProjectInstance executedProject, string propertyName)

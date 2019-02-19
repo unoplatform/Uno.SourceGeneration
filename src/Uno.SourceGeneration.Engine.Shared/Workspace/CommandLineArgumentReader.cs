@@ -236,7 +236,7 @@ namespace Uno.SourceGeneration.Engine.Workspace
             {
                 foreach (var reference in references)
                 {
-                    if (!reference.HasReferenceOutputAssemblyMetadataEqualToTrue())
+                    if (reference.ReferenceOutputAssemblyIsTrue())
                     {
                         var filePath = GetDocumentFilePath(reference);
 
