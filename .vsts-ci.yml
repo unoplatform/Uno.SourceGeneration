@@ -9,6 +9,19 @@ jobs:
     inputs:
       versionSpec: 4.7.0
       checkLatest: false
+      
+  - task: MSBuild@1
+    inputs:
+      solution: src/Uno.SourceGenerator.sln
+      msbuildLocationMethod: version
+      msbuildVersion: latest
+      msbuildArchitecture: x86
+      msbuildArguments: /r /p:Configuration=Release /nodeReuse:true /detailedsummary /m:16 /nr:false /bl:$(build.artifactstagingdirectory)\build.binlog
+      clean: false
+      maximumCpuCount: true
+      restoreNugetPackages: false
+      logProjectEvents: false
+      createLogFile: false
 
   - powershell: .\build\build.ps1 -script build\build.cake
     displayName: Build
@@ -46,6 +59,7 @@ jobs:
       workingDirectory: $(build.sourcesdirectory)\src\Uno.SampleCoreApp
 
   - task: PublishBuildArtifacts@1
+    condition: always()
     inputs:
       PathtoPublish: $(build.artifactstagingdirectory)
       ArtifactName: unosourcegenerator-drop
