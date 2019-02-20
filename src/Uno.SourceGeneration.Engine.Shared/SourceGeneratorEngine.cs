@@ -271,17 +271,29 @@ namespace Uno.SourceGeneration.Host
 
 			ws2.WorkspaceFailed += (s, e) => this.Log().Error($"Workspace {e.Diagnostic.Kind}: {e.Diagnostic.Message}");
 
-			var cts = new CancellationTokenSource();
-			cts.Token.Register(() => this.Log().Error($"Workspace canceled " + new StackTrace()));
-			
-			var compilation = await project
-					.GetCompilationAsync(cts.Token);
+			try
+			{
+				var cts = new CancellationTokenSource();
+				cts.Token.Register(() => this.Log().Error($"Workspace canceled " + new StackTrace()));
 
-			// For some reason, this is required to avoid having a 
-			// unbound NRE later during the execution when calling this exact same method;
-			SyntaxFactory.ParseStatement("");
+				var compilation = await project
+						.GetCompilationAsync(cts.Token);
 
-			return (compilation, project);
+				// For some reason, this is required to avoid having a 
+				// unbound NRE later during the execution when calling this exact same method;
+				SyntaxFactory.ParseStatement("");
+
+				return (compilation, project);
+			}
+			catch(Exception e)
+			{
+				if(e is TaskCanceledException tce)
+				{
+					this.Log().Error($"Failed to get the compilation {tce}");
+				}
+
+				throw;
+			}
 		}
 
 
