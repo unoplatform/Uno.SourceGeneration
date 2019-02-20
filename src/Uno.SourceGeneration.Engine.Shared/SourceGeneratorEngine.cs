@@ -267,33 +267,20 @@ namespace Uno.SourceGeneration.Host
 			var solution = ws2.CurrentSolution.AddProject(pi);
 			var project = solution.GetProject(pi.Id);
 
+			var refs = string.Join("; ", project.MetadataReferences.Select(r => r.Display));
+
+			this.Log().Info($"Compilation references: {refs}");
+
 			project = RemoveGeneratedDocuments(project);
 
-			ws2.WorkspaceFailed += (s, e) => this.Log().Error($"Workspace {e.Diagnostic.Kind}: {e.Diagnostic.Message}");
+			var compilation = await project
+					.GetCompilationAsync();
 
-			try
-			{
-				var cts = new CancellationTokenSource();
-				cts.Token.Register(() => this.Log().Error($"Workspace canceled " + new StackTrace()));
+			// For some reason, this is required to avoid having a 
+			// unbound NRE later during the execution when calling this exact same method;
+			SyntaxFactory.ParseStatement("");
 
-				var compilation = await project
-						.GetCompilationAsync(cts.Token);
-
-				// For some reason, this is required to avoid having a 
-				// unbound NRE later during the execution when calling this exact same method;
-				SyntaxFactory.ParseStatement("");
-
-				return (compilation, project);
-			}
-			catch(Exception e)
-			{
-				if(e is TaskCanceledException tce)
-				{
-					this.Log().Error($"Failed to get the compilation {tce}");
-				}
-
-				throw;
-			}
+			return (compilation, project);
 		}
 
 
