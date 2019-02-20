@@ -269,6 +269,8 @@ namespace Uno.SourceGeneration.Host
 
 			project = RemoveGeneratedDocuments(project);
 
+			ws2.WorkspaceFailed += (s, e) => this.Log().Error($"Workspace {e.Diagnostic.Kind}: {e.Diagnostic.Message}");
+
 			var compilation = await project
 					.GetCompilationAsync();
 
