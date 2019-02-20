@@ -42,7 +42,7 @@ jobs:
     displayName: Validate DotNetCore CLI build
     inputs:
       command: build
-      arguments: '/p:Configuration=Release'
+      arguments: "--configuration Release"
       workingDirectory: $(build.sourcesdirectory)\src\Uno.SampleCoreApp
 
   - task: PublishBuildArtifacts@1
