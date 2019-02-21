@@ -6,34 +6,47 @@
     <AssemblyName>Uno.SampleProject</AssemblyName>
     <UnoDebugGenerationHost>true</UnoDebugGenerationHost>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <Compile Include="..\LinkTest\LinkedCompileFile.cs">
       <Link>LinkedCompileFile.cs</Link>
     </Compile>
   </ItemGroup>
-  
+
   <PropertyGroup>
     <UnoSourceGeneratorTasksPath>..\..\Uno.SourceGeneratorTasks.Dev15.0\bin\$(Configuration)</UnoSourceGeneratorTasksPath>
     <UnoSourceGeneratorOutputPath>obj\$(Configuration)</UnoSourceGeneratorOutputPath>
   </PropertyGroup>
-  
+
   <Import Project="..\Uno.SourceGeneratorTasks.Dev15.0\Content\Uno.SourceGenerationTasks.targets" />
-  
+
   <ItemGroup>
     <SourceGenerator Include="..\Uno.SampleGenerators\bin\$(Configuration)\Uno.SampleGenerators.dll" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <PackageReference Include="System.ValueTuple">
       <Version>4.3.0</Version>
     </PackageReference>
   </ItemGroup>
-  
+
+  <ItemGroup>
+    <ProjectReference Include="../Uno.SourceGeneration.Host/Uno.SourceGeneration.Host.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+      <UndefineProperties>TargetFramework</UndefineProperties>
+    </ProjectReference>
+    <ProjectReference Include="../Uno.SourceGeneratorTasks.Dev15.0/Uno.SourceGeneratorTasks.Dev15.0.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+      <UndefineProperties>TargetFramework</UndefineProperties>
+    </ProjectReference>
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Uno.SampleDependency\Uno.SampleDependency.csproj" />
   </ItemGroup>
-  
+
   <Target Name="ValidateBinLog" Condition="'$(Configuration)' == 'Release'" AfterTargets="Build">
     <ItemGroup>
       <_binLogFiles Include="$(IntermediateOutputPath)\**\*.binlog" />
