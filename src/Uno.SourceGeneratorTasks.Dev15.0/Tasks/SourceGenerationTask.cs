@@ -148,10 +148,10 @@ namespace Uno.SourceGeneratorTasks
 
 		public bool SupportsGenerationController
 			=> (bool.TryParse(UseGenerationController, out var result) && result)
+			&& !RuntimeHelpers.IsNetCore
 			&& (
 				!RuntimeHelpers.IsMono
 				|| RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-				|| RuntimeHelpers.IsNetCore
 			);
 
 
