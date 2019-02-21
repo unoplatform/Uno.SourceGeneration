@@ -269,6 +269,8 @@ namespace Uno.SourceGeneration.Host
 
 			project = RemoveGeneratedDocuments(project);
 
+			// If the compilation fails with a TaskCanceledException
+			// this may be for many reasons, such as invalid MetadataReference.
 			var compilation = await project
 					.GetCompilationAsync();
 
@@ -291,6 +293,11 @@ namespace Uno.SourceGeneration.Host
 				{ "DesignTimeBuild", bool.TrueString },
 				// don't actually run the compiler
 				{ "SkipCompilerExecution", bool.TrueString },
+
+				// Prevent the Configuration and Platform properties to project
+				// references (using the the GlobalPropertiesToRemove metadata)
+				// https://github.com/Microsoft/msbuild/blob/b2db71bebaae4f54f7236ca303e2b0a14aca1a0d/src/Tasks/AssignProjectConfiguration.cs#L212
+				{ "ShouldUnsetParentConfigurationAndPlatform", "false" },
 
 				{ "UseHostCompilerIfAvailable", bool.FalseString },
 				{ "UseSharedCompilation", bool.FalseString },
