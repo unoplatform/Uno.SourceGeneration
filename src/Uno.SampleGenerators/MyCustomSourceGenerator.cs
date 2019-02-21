@@ -48,6 +48,8 @@ namespace Uno.SampleGenerators
 			// This test validates that some duplicate files do not interfere wi
 			var objectString = BuildVariableFromType(context, SystemObject, "_object");
 
+			var stringTypeString = BuildVariableFromType(context, "System.String", "_aString");
+
 			context.AddCompilationUnit(
 				"Test",
 				$@"
@@ -60,13 +62,14 @@ namespace Test {{
 		{dependentString}
 		{linkedString}
 		{objectString}
+		{stringTypeString}
 	}}
 }}"
 			);
 		}
 
 		private static string BuildVariableFromType(SourceGeneratorContext context, string typeName, string variable)
-			=> context.Compilation.GetTypeByMetadataName(typeName) is INamedTypeSymbol symbol
+			=> context.Compilation.GetTypeByMetadataName(typeName) is INamedTypeSymbol symbol && symbol.Kind != SymbolKind.ErrorType
 				? $"static {symbol} {variable};"
 				: $"#error type {typeName} is not available";
 	}
