@@ -267,6 +267,11 @@ namespace Uno.SourceGeneration.Host
 			var solution = ws2.CurrentSolution.AddProject(pi);
 			var project = solution.GetProject(pi.Id);
 
+#if DEBUG
+			var refString = string.Join("; ", project.MetadataReferences.Select(r => r.Display));
+			this.Log().Info("MetadataReferences: " + refString);
+#endif
+
 			project = RemoveGeneratedDocuments(project);
 
 			// If the compilation fails with a TaskCanceledException
