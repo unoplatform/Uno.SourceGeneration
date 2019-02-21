@@ -8,8 +8,9 @@
 	<GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
 	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	<LangVersion>7.2</LangVersion>
+    <AppConfig>$(MSBuildThisFileDirectory)app.$(TargetFramework).config</AppConfig>
   </PropertyGroup>
-
+  
   <ItemGroup Condition="'$(TargetFramework)'=='net461'">
 	<PackageReference Include="ManagedEsent">
 	  <Version>1.9.4</Version>
