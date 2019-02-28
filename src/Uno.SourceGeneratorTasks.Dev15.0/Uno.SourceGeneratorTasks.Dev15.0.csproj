@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Uno.SourceGeneratorTasks</RootNamespace>
     <AssemblyName>Uno.SourceGeneratorTasks.v0</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <CopyNuGetImplementations>true</CopyNuGetImplementations>
     <TargetFrameworkProfile />
@@ -21,21 +21,23 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;HAS_BINLOG</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;HAS_BINLOG;NET461</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE;HAS_BINLOG</DefineConstants>
+    <DefineConstants>TRACE;HAS_BINLOG;NET461</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <LangVersion>7.2</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -88,6 +90,9 @@
     <PackageReference Include="Mono.Cecil">
       <Version>0.9.6.4</Version>
     </PackageReference>
+    <PackageReference Include="System.Memory">
+      <Version>4.5.1</Version>
+    </PackageReference>
     <PackageReference Include="System.Reflection.Metadata">
       <Version>1.4.2</Version>
     </PackageReference>
@@ -109,12 +114,22 @@
     <PackageReference Include="Microsoft.Extensions.Logging.Debug">
       <Version>1.1.1</Version>
     </PackageReference>
+    <PackageReference Include="SQLitePCL.raw">
+      <Version>0.9.3</Version>
+    </PackageReference>
+    <PackageReference Include="SQLitePCLRaw.core">
+      <Version>1.1.11</Version>
+    </PackageReference>
+    <PackageReference Include="SQLitePCL.bundle_green">
+      <Version>0.9.3</Version>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\Build\AssemblyVersion.cs">
+    <Compile Include="..\..\build\AssemblyVersion.cs">
       <Link>AssemblyVersion.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tasks\SourceGenerationTask.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Uno.SampleGenerators\Uno.SampleGenerators.csproj">
@@ -127,10 +142,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Content\Uno.SourceGenerationTasks.targets" />
+    <None Include="Uno.SourceGenerationTasks.targets" />
   </ItemGroup>
-  <Import Project="..\Uno.SourceGenerationHost.Shared\Uno.SourceGenerationHost.Shared.projitems" Label="Shared" />
-  <Import Project="..\Uno.SourceGeneratorTasks.Shared\Uno.SourceGeneratorTasks.Shared.projitems" Label="Shared" />
+  <Import Project="..\Uno.SourceGeneration.Protocol\Uno.SourceGeneration.Protocol.projitems" Label="Shared" />
+  <Import Project="..\Uno.SourceGeneration.Engine.Shared\Uno.SourceGeneration.Engine.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
   </PropertyGroup>
