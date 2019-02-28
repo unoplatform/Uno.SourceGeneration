@@ -3,6 +3,15 @@
 ## Next version
 
 ### Features
+
+### Breaking changes
+
+### Bug fixes
+
+
+## Release 1.29.0
+
+### Features
 - Improve error message when a cross targeted project is misconfigured (#25)
 - Add Linux build support
 - Nuget packages are now signed with Authenticode.
