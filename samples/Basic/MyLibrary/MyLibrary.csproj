@@ -5,7 +5,7 @@
   </PropertyGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Uno.SourceGenerationTasks" Version="1.28.0-dev.145" />
+	  <PackageReference Include="Uno.SourceGenerationTasks" Version="1.29.0-dev.241" />
 	</ItemGroup>
 
 	<Import Project="..\MyGenerator\build\MyGenerator.props" />
