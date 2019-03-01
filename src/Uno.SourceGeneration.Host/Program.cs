@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging.Console;
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using Uno.SourceGeneration.Host.Helpers;
 using Uno.SourceGeneration.Host.Server;
 using Uno.SourceGeneratorTasks.Helpers;

@@ -90,6 +90,8 @@ namespace Uno.SourceGeneratorTasks
 		{
 			string lockFile = null;
 
+			Log.LogMessage(MessageImportance.Low, $"Running generation in {Process.GetCurrentProcess().Id}/{Process.GetCurrentProcess().ProcessName}");
+
 			// Debugger.Launch();
 
 			try
@@ -107,7 +109,7 @@ namespace Uno.SourceGeneratorTasks
 				{
 					GenerateWithHostController();
 				}
-				else if(IsMonoMSBuildCompatible)
+				else if(IsMonoMSBuildCompatible || RuntimeHelpers.IsNetCore)
 				{
 					GenerateWithHost();
 				}
@@ -131,7 +133,7 @@ namespace Uno.SourceGeneratorTasks
 					this.Log.LogError(e.Message);
 				}
 
-				this.Log.LogMessage(MessageImportance.Low, e.ToString());
+				this.Log.LogMessage(e.ToString());
 
 				return false;
 			}
@@ -144,13 +146,12 @@ namespace Uno.SourceGeneratorTasks
 			}
 		}
 
-
 		public bool SupportsGenerationController
 			=> (bool.TryParse(UseGenerationController, out var result) && result)
+			&& !RuntimeHelpers.IsNetCore
 			&& (
 				!RuntimeHelpers.IsMono
 				|| RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-				|| RuntimeHelpers.IsNetCore
 			);
 
 
@@ -218,12 +219,7 @@ namespace Uno.SourceGeneratorTasks
 			return GenerationServerConnection.GetPipeNameForPathOpt(
 				string.Concat(
 					GetHostPath(),
-					// Don't include the process ID since the server only processes one client at a time.
-					// Process.GetCurrentProcess().Id.ToString(),
-					buildEnvironment.ProjectFile,
-					buildEnvironment.Configuration,
-					buildEnvironment.TargetFramework,
-					string.Join(",", buildEnvironment.SourceGenerators)
+					Process.GetCurrentProcess().Id.ToString()
 				)
 			);
 		}
