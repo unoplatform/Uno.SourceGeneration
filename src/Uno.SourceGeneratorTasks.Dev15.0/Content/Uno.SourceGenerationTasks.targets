@@ -22,7 +22,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<UnoSourceGeneratorBeforeTarget Include="XamlPreCompile" />
 	<UnoSourceGeneratorBeforeTarget Include="CoreCompile" />
 
 	<SourceGeneratorInput Include="@(Compile)" />
