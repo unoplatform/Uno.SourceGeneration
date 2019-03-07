@@ -324,15 +324,7 @@ namespace Uno.SourceGeneration.Host
 				{ "IntermediateOutputPath", Path.Combine(_environment.OutputPath, "obj") + Path.DirectorySeparatorChar },
 				{ "VisualStudioVersion", _environment.VisualStudioVersion },
 
-				// The Platform is intentionally not set here
-				// as for now, Roslyn applies the properties to all 
-				// loaded projects, directly or indirectly.
-				// So for now, we rely on the fact that all projects
-				// have a default platform directive, and that most projects
-				// don't rely on the platform to adjust the generated code.
-				// (e.g. _platform may be iPhoneSimulator, but all projects may not
-				// support this target, and therefore will fail to load.
-				//{ "Platform", _platform },
+				{ "Platform", _environment.Platform },
 			};
 
 #if !NETCOREAPP
