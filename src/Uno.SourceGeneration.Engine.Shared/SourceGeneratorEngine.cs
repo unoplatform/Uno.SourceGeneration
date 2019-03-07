@@ -267,25 +267,33 @@ namespace Uno.SourceGeneration.Host
 			var solution = ws2.CurrentSolution.AddProject(pi);
 			var project = solution.GetProject(pi.Id);
 
-#if DEBUG
-			var refString = string.Join("; ", project.MetadataReferences.Select(r => r.Display));
-			this.Log().Info("MetadataReferences: " + refString);
-#endif
-
 			project = RemoveGeneratedDocuments(project);
 
-			// If the compilation fails with a TaskCanceledException
-			// this may be for many reasons, such as invalid MetadataReference.
-			var compilation = await project
-					.GetCompilationAsync();
+			try
+			{
+				// If the compilation fails with a TaskCanceledException
+				// this may be for many reasons, such as invalid MetadataReference.
+				var compilation = await project
+						.GetCompilationAsync();
 
-			// For some reason, this is required to avoid having a 
-			// unbound NRE later during the execution when calling this exact same method;
-			SyntaxFactory.ParseStatement("");
+				// For some reason, this is required to avoid having a 
+				// unbound NRE later during the execution when calling this exact same method;
+				SyntaxFactory.ParseStatement("");
 
-			return (compilation, project);
+				return (compilation, project);
+			}
+			catch(TaskCanceledException tce)
+			{
+				var refString = string.Join("; ", project.MetadataReferences.Select(r => r.Display));
+				this.Log().Debug("MetadataReferences: " + refString);
+
+				throw new InvalidOperationException(
+					$"Failed to get compilation, this may be caused by an invalid assembly reference in the project. " +
+					$"The detailed build logs may provide more information"
+					, tce
+				);
+			}
 		}
-
 
 		private Dictionary<string, string> BuildGlobalMSBuildProperties()
 		{
