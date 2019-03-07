@@ -64,6 +64,15 @@ namespace Uno.SourceGeneration.Host
 
 			// Parallelize the initialization of the MefServices graph (Used by AdHocWorkspace)
 			Microsoft.CodeAnalysis.Host.Mef.MefHostServices.DefaultHost.ToString();
+
+			// Pre-load known references
+			if (_environment.ReferencePath != null)
+			{
+				foreach (var reference in _environment.ReferencePath)
+				{
+					_metadataResolver.ResolveReference(Path.GetFileName(reference), Path.GetDirectoryName(reference), new MetadataReferenceProperties());
+				}
+			}
 		}
 
 		public string[] Generate()
@@ -267,25 +276,53 @@ namespace Uno.SourceGeneration.Host
 			var solution = ws2.CurrentSolution.AddProject(pi);
 			var project = solution.GetProject(pi.Id);
 
-#if DEBUG
-			var refString = string.Join("; ", project.MetadataReferences.Select(r => r.Display));
-			this.Log().Info("MetadataReferences: " + refString);
-#endif
+			if (_environment.ReferencePath != null)
+			{
+				// Remove all locally loaded references to replace them with
+				// the outer build process references.
+				foreach (var metadataRef in project.MetadataReferences)
+				{
+					project = project.RemoveMetadataReference(metadataRef);
+				}
+
+				foreach (var reference in _environment.ReferencePath)
+				{
+					var metadataRefs = _metadataResolver.ResolveReference(Path.GetFileName(reference), Path.GetDirectoryName(reference), new MetadataReferenceProperties());
+
+					foreach (var metadataRef in metadataRefs)
+					{
+						project = project.AddMetadataReference(metadataRef);
+					}
+				}
+			}
 
 			project = RemoveGeneratedDocuments(project);
 
-			// If the compilation fails with a TaskCanceledException
-			// this may be for many reasons, such as invalid MetadataReference.
-			var compilation = await project
-					.GetCompilationAsync();
+			try
+			{
+				// If the compilation fails with a TaskCanceledException
+				// this may be for many reasons, such as invalid MetadataReference.
+				var compilation = await project
+						.GetCompilationAsync();
 
-			// For some reason, this is required to avoid having a 
-			// unbound NRE later during the execution when calling this exact same method;
-			SyntaxFactory.ParseStatement("");
+				// For some reason, this is required to avoid having a 
+				// unbound NRE later during the execution when calling this exact same method;
+				SyntaxFactory.ParseStatement("");
 
-			return (compilation, project);
+				return (compilation, project);
+			}
+			catch(TaskCanceledException tce)
+			{
+				var refString = string.Join("; ", project.MetadataReferences.Select(r => r.Display));
+				this.Log().Debug("MetadataReferences: " + refString);
+
+				throw new InvalidOperationException(
+					$"Failed to get compilation, this may be caused by an invalid assembly reference in the project. " +
+					$"The detailed build logs may provide more information"
+					, tce
+				);
+			}
 		}
-
 
 		private Dictionary<string, string> BuildGlobalMSBuildProperties()
 		{
@@ -316,15 +353,7 @@ namespace Uno.SourceGeneration.Host
 				{ "IntermediateOutputPath", Path.Combine(_environment.OutputPath, "obj") + Path.DirectorySeparatorChar },
 				{ "VisualStudioVersion", _environment.VisualStudioVersion },
 
-				// The Platform is intentionally not set here
-				// as for now, Roslyn applies the properties to all 
-				// loaded projects, directly or indirectly.
-				// So for now, we rely on the fact that all projects
-				// have a default platform directive, and that most projects
-				// don't rely on the platform to adjust the generated code.
-				// (e.g. _platform may be iPhoneSimulator, but all projects may not
-				// support this target, and therefore will fail to load.
-				//{ "Platform", _platform },
+				{ "Platform", _environment.Platform },
 			};
 
 #if !NETCOREAPP

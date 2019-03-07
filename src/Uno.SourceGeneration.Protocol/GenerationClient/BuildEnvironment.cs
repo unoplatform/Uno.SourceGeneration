@@ -48,5 +48,8 @@ namespace Uno.SourceGeneratorTasks
 		public string[] AdditionalAssemblies { get; set; }
 		[DataMember]
 		public string[] SourceGenerators { get; set; }
+
+		[DataMember]
+		public string[] ReferencePath { get; set; }
 	}
 }
