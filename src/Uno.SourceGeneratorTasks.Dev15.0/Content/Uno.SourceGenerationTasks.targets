@@ -22,6 +22,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+	<UnoSourceGeneratorBeforeTarget Include="XamlPreCompile" />
 	<UnoSourceGeneratorBeforeTarget Include="CoreCompile" />
 
 	<SourceGeneratorInput Include="@(Compile)" />
@@ -91,7 +92,15 @@
 	  <UnoSourceGeneratorBinLogOutputPath Condition="'$(UnoSourceGeneratorBinLogOutputPath)'==''">$(IntermediateOutputPath)</UnoSourceGeneratorBinLogOutputPath>
 	</PropertyGroup>
 
-	<ItemGroup>
+	<ItemGroup Condition="'$(ReferencePathWithRefAssemblies)'==''">
+	  <!-- This case is present to handle the case of the UWP build that uses the XamlPreCompile step -->
+	  
+	  <!-- Filter ReferencePath as it may contain pdbs as well -->
+	  <_AssembliesForReferenceCopyLocalPaths Include="@(ReferencePath)"
+                                             Condition="'%(Extension)' == '.dll'" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(ReferencePathWithRefAssemblies)'!=''">
 	  <!-- Filter ReferenceCopyLocalPaths as it may contain pdbs as well -->
 	  <_AssembliesForReferenceCopyLocalPaths Include="@(ReferencePathWithRefAssemblies)"
                                              Condition="'%(Extension)' == '.dll'" />
