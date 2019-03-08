@@ -278,6 +278,10 @@ namespace Uno.SourceGeneration.Host
 
 			if (_environment.ReferencePath != null)
 			{
+#if DEBUG
+				var refString = string.Join("; ", project.MetadataReferences.Select(r => r.Display));
+				this.Log().Debug("Original MetadataReferences: " + refString);
+#endif
 				// Remove all locally loaded references to replace them with
 				// the outer build process references.
 				foreach (var metadataRef in project.MetadataReferences)
@@ -294,6 +298,11 @@ namespace Uno.SourceGeneration.Host
 						project = project.AddMetadataReference(metadataRef);
 					}
 				}
+
+#if DEBUG
+				var refString2 = string.Join("; ", project.MetadataReferences.Select(r => r.Display));
+				this.Log().Debug("Updated MetadataReferences: " + refString2);
+#endif
 			}
 
 			project = RemoveGeneratedDocuments(project);
