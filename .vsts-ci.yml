@@ -78,6 +78,13 @@ jobs:
 
 - job: macOS
 
+  strategy:
+    matrix:
+      Xamarin_5_16_0:
+        XamarinVersion: 5_16_0
+      Xamarin_5_12_0:
+        XamarinVersion: 5_12_0
+
   variables:
     NUGET_PACKAGES: $(Agent.WorkFolder)\.nuget
 
@@ -89,6 +96,9 @@ jobs:
     inputs:
       versionSpec: 4.7.0
       checkLatest: false
+
+  - bash: /bin/bash -c "sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh $(XamarinVersion)"
+    displayName: Select Xamarin Version
 
   - bash: msbuild /r /p:Configuration=Release ./src/Uno.SourceGenerator.Linux.sln # /bl:$(build.artifactstagingdirectory)/macos-build.binlog
     displayName: Build
