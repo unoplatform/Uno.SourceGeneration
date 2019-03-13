@@ -59,20 +59,24 @@ namespace Uno.SourceGeneration.Host
 
 		private void PreInit()
 		{
-			// Used by MSB.ProjectCollection
-			ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-
-			// Parallelize the initialization of the MefServices graph (Used by AdHocWorkspace)
-			Microsoft.CodeAnalysis.Host.Mef.MefHostServices.DefaultHost.ToString();
-
-			// Pre-load known references
-			if (_environment.ReferencePath != null)
+			Task.Run(() =>
 			{
-				foreach (var reference in _environment.ReferencePath)
+				// Used by MSB.ProjectCollection
+				ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+
+				// Parallelize the initialization of the MefServices graph (Used by AdHocWorkspace)
+				Microsoft.CodeAnalysis.Host.Mef.MefHostServices.DefaultHost.ToString();
+
+				// Pre-load known references in parallel
+				if (_environment.ReferencePath != null)
 				{
-					_metadataResolver.ResolveReference(Path.GetFileName(reference), Path.GetDirectoryName(reference), new MetadataReferenceProperties());
+					_environment
+						.ReferencePath
+						.AsParallel()
+						.Select(r => _metadataResolver.ResolveReference(Path.GetFileName(r), Path.GetDirectoryName(r), new MetadataReferenceProperties()))
+						.ToArray();
 				}
-			}
+			});
 		}
 
 		public string[] Generate()
