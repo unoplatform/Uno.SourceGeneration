@@ -19,6 +19,9 @@
 
 	<!-- Disable the host controller when running outside of VS -->
 	<UnoSourceGeneratorUseGenerationController Condition="'$(BuildingInsideVisualStudio)'=='' and '$(UnoSourceGeneratorUseGenerationController)'==''">false</UnoSourceGeneratorUseGenerationController>
+
+	<!-- Enables the out of process single-use generation host -->
+	<UnoSourceGeneratorUseGenerationHost Condition="'$(UnoSourceGeneratorUseGenerationHost)'==''">true</UnoSourceGeneratorUseGenerationHost>
   </PropertyGroup>
 
   <ItemGroup>
@@ -126,6 +129,7 @@
 							  TargetFrameworkRootPath="$(TargetFrameworkRootPath)"
 							  AdditionalAssemblies="@(SourceGeneratorAdditionalAssemblies)"
 							  UseGenerationController="$(UnoSourceGeneratorUseGenerationController)"
+							  UseGenerationHost="$(UnoSourceGeneratorUseGenerationHost)"
 							  CaptureGenerationHostOutput="$(UnoSourceGeneratorCaptureGenerationHostOutput)"
 							  BinLogOutputPath="$(UnoSourceGeneratorBinLogOutputPath)"
 							  BinLogEnabled="$(UnoSourceGeneratorUnsecureBinLogEnabled)"

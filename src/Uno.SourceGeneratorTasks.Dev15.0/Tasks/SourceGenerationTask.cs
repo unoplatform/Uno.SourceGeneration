@@ -58,9 +58,14 @@ namespace Uno.SourceGeneratorTasks
 		public string CaptureGenerationHostOutput { get; set; }
 
 		/// <summary>
-		/// Enables the use of the GenerationController mode.
+		/// Enables the use of the Generation Controller mode.
 		/// </summary>
 		public string UseGenerationController { get; set; } = bool.TrueString;
+
+		/// <summary>
+		/// Enables the use of the Generation Host mode.
+		/// </summary>
+		public string UseGenerationHost { get; set; } = bool.TrueString;
 
 		/// <summary>
 		/// Provides a list of assemblies to be loaded in the SourceGenerator
@@ -112,7 +117,7 @@ namespace Uno.SourceGeneratorTasks
 				{
 					GenerateWithHostController();
 				}
-				else if(IsMonoMSBuildCompatible || RuntimeHelpers.IsNetCore)
+				else if(SupportsGenerationHost)
 				{
 					GenerateWithHost();
 				}
@@ -157,6 +162,11 @@ namespace Uno.SourceGeneratorTasks
 				|| RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
 			);
 
+		public bool SupportsGenerationHost
+			=> (bool.TryParse(UseGenerationHost, out var result) && result)
+			&& (
+				IsMonoMSBuildCompatible || RuntimeHelpers.IsNetCore
+			);
 
 		private void GenerateWithHostController()
 		{
@@ -403,7 +413,6 @@ namespace Uno.SourceGeneratorTasks
 
 			string.Compare(FileVersionInfo.GetVersionInfo(new Uri(typeof(Microsoft.Build.Utilities.Task).Assembly.Location).LocalPath).FileVersion, "16.0") >= 0
 			|| RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
-
 
 		private BuildEnvironment CreateBuildEnvironment()
 			=> new BuildEnvironment
