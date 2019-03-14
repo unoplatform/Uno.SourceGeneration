@@ -165,7 +165,14 @@ namespace Uno.SourceGeneratorTasks
 		public bool SupportsGenerationHost
 			=> (bool.TryParse(UseGenerationHost, out var result) && result)
 			&& (
-				IsMonoMSBuildCompatible || RuntimeHelpers.IsNetCore
+				// MacOS with MSBuild 16.0+ or Linux
+				IsMonoMSBuildCompatible
+
+				// .NET Core
+				|| RuntimeHelpers.IsNetCore
+
+				// Desktop Windows
+				|| (!RuntimeHelpers.IsNetCore && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
 			);
 
 		private void GenerateWithHostController()
