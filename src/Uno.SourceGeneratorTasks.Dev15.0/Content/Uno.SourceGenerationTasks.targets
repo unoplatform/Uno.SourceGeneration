@@ -14,8 +14,14 @@
 	<_UnoSourceGeneratorProjectType Condition="'$(ProjectTypeGuids)'=='{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}'">android</_UnoSourceGeneratorProjectType>
 	<_UnoSourceGeneratorProjectType Condition="'$(ProjectTypeGuids)'=='{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}'">uap</_UnoSourceGeneratorProjectType>
 
+	<!-- Backward compatibility with UnoSourceGeneratorUseGenerationHost property-->
+	<UnoSourceGeneratorUseGenerationController Condition="'$(UnoSourceGeneratorUseGenerationHost)'!=''">true</UnoSourceGeneratorUseGenerationController>
+
 	<!-- Disable the host controller when running outside of VS -->
 	<UnoSourceGeneratorUseGenerationController Condition="'$(BuildingInsideVisualStudio)'=='' and '$(UnoSourceGeneratorUseGenerationController)'==''">false</UnoSourceGeneratorUseGenerationController>
+
+	<!-- Enables the out of process single-use generation host -->
+	<UnoSourceGeneratorUseGenerationHost Condition="'$(UnoSourceGeneratorUseGenerationHost)'==''">true</UnoSourceGeneratorUseGenerationHost>
   </PropertyGroup>
 
   <ItemGroup>
@@ -89,6 +95,20 @@
 	  <UnoSourceGeneratorBinLogOutputPath Condition="'$(UnoSourceGeneratorBinLogOutputPath)'==''">$(IntermediateOutputPath)</UnoSourceGeneratorBinLogOutputPath>
 	</PropertyGroup>
 
+	<ItemGroup Condition="'$(ReferencePathWithRefAssemblies)'==''">
+	  <!-- This case is present to handle the case of the UWP build that uses the XamlPreCompile step -->
+	  
+	  <!-- Filter ReferencePath as it may contain pdbs as well -->
+	  <_AssembliesForReferenceCopyLocalPaths Include="@(ReferencePath)"
+                                             Condition="'%(Extension)' == '.dll'" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(ReferencePathWithRefAssemblies)'!=''">
+	  <!-- Filter ReferenceCopyLocalPaths as it may contain pdbs as well -->
+	  <_AssembliesForReferenceCopyLocalPaths Include="@(ReferencePathWithRefAssemblies)"
+                                             Condition="'%(Extension)' == '.dll'" />
+	</ItemGroup>
+
 	<PropertyGroup Condition="'$(_UnoSourceGeneratorProjectType)'=='ios' or '$(_UnoSourceGeneratorProjectType)'=='mac'">
 	  <!-- 
 			Workaround until we can determine where the logic behind `TargetFrameworkRootPathSearchPathsOSX` 
@@ -109,9 +129,11 @@
 							  TargetFrameworkRootPath="$(TargetFrameworkRootPath)"
 							  AdditionalAssemblies="@(SourceGeneratorAdditionalAssemblies)"
 							  UseGenerationController="$(UnoSourceGeneratorUseGenerationController)"
+							  UseGenerationHost="$(UnoSourceGeneratorUseGenerationHost)"
 							  CaptureGenerationHostOutput="$(UnoSourceGeneratorCaptureGenerationHostOutput)"
 							  BinLogOutputPath="$(UnoSourceGeneratorBinLogOutputPath)"
 							  BinLogEnabled="$(UnoSourceGeneratorUnsecureBinLogEnabled)"
+							  ReferencePath="@(_AssembliesForReferenceCopyLocalPaths)"
 							  Condition="$(_hasSourceGenerators)">
 	  <Output TaskParameter="GenereratedFiles" ItemName="UnoGeneratedFiles" />
 	</SourceGenerationTask_v0>

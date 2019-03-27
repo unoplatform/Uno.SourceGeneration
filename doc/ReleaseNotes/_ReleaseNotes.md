@@ -3,6 +3,28 @@
 ## Next version
 
 ### Features
+
+### Breaking changes
+
+### Bug fixes
+
+## Release 1.30.0
+
+### Bug fixes
+
+- Add more information when the Roslyn Compilation fails
+
+- Fix UWP Compilation
+
+- Fix roslyn MetadataReference performance
+
+- Expose single-use host mode parameter
+
+- Fix for Hosted mode not selected on .NET desktop CLI
+
+## Release 1.29.0
+
+### Features
 - Improve error message when a cross targeted project is misconfigured (#25)
 - Add Linux build support
 - Nuget packages are now signed with Authenticode.
