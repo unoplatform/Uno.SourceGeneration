@@ -3,11 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.28315.86
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uno.SampleProject", "Uno.SampleProject\Uno.SampleProject.csproj", "{0D439289-B6AC-454C-AB10-FA54F08B22EC}"
-	ProjectSection(ProjectDependencies) = postProject
-		{0A1CC471-6080-415F-8947-E41D8534395E} = {0A1CC471-6080-415F-8947-E41D8534395E}
-		{D45247E2-A279-472C-8D8B-CBCB83F37FB1} = {D45247E2-A279-472C-8D8B-CBCB83F37FB1}
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Uno.SampleProject", "Uno.SampleProject\Uno.SampleProject.csproj", "{0D439289-B6AC-454C-AB10-FA54F08B22EC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Uno.SourceGeneration", "Uno.SourceGeneration\Uno.SourceGeneration.csproj", "{B59FA47D-B3D2-4309-AE28-F5150AB02D46}"
 EndProject

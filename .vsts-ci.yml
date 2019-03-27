@@ -9,14 +9,14 @@ jobs:
     inputs:
       versionSpec: 4.7.0
       checkLatest: false
-
+      
   - powershell: .\build\build.ps1 -script build\build.cake
-    displayName: Build 
+    displayName: Build
 
   - task: CopyFiles@2
     inputs:
       SourceFolder: $(build.sourcesdirectory)
-      Contents: ' $(build.sourcesdirectory)\build\*.nupkg'
+      Contents: '$(build.sourcesdirectory)\build\*.nupkg'
       TargetFolder: $(build.artifactstagingdirectory)
       CleanTargetFolder: false
       OverWrite: false
@@ -34,7 +34,19 @@ jobs:
       ArtifactDirectory: $(build.artifactstagingdirectory)
     condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['SignClientSecret'], '')), not(eq(variables['SignClientUser'], '')))
 
+  - task: DotNetCoreInstaller@0
+    inputs:
+      version: '2.2.103'
+
+  - task: DotNetCoreCLI@2
+    displayName: Validate DotNetCore CLI build
+    inputs:
+      command: build
+      arguments: "--configuration Release"
+      workingDirectory: $(build.sourcesdirectory)\src\Uno.SampleCoreApp
+
   - task: PublishBuildArtifacts@1
+    condition: always()
     inputs:
       PathtoPublish: $(build.artifactstagingdirectory)
       ArtifactName: unosourcegenerator-drop
@@ -54,10 +66,24 @@ jobs:
       versionSpec: 4.7.0
       checkLatest: false
 
-  - bash: msbuild /r /p:Configuration=Release /p:AddSyntheticProjectReferencesForSolutionDependencies=false ./src/Uno.SourceGenerator.Linux.sln
+  - bash: msbuild /r /p:Configuration=Release ./src/Uno.SourceGenerator.Linux.sln # /bl:$(build.artifactstagingdirectory)/linux-build.binlog
     displayName: Build
+    
+  - task: PublishBuildArtifacts@1
+    condition: always()
+    inputs:
+      PathtoPublish: $(build.artifactstagingdirectory)
+      ArtifactName: unosourcegenerator-drop
+      ArtifactType: Container
 
 - job: macOS
+
+  strategy:
+    matrix:
+      Xamarin_5_16_0:
+        XamarinVersion: 5_16_0
+      Xamarin_5_12_0:
+        XamarinVersion: 5_12_0
 
   variables:
     NUGET_PACKAGES: $(Agent.WorkFolder)\.nuget
@@ -71,5 +97,15 @@ jobs:
       versionSpec: 4.7.0
       checkLatest: false
 
-  - bash: msbuild /r /p:Configuration=Release /p:AddSyntheticProjectReferencesForSolutionDependencies=false ./src/Uno.SourceGenerator.Linux.sln
+  - bash: /bin/bash -c "sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh $(XamarinVersion)"
+    displayName: Select Xamarin Version
+
+  - bash: msbuild /r /p:Configuration=Release ./src/Uno.SourceGenerator.Linux.sln # /bl:$(build.artifactstagingdirectory)/macos-build.binlog
     displayName: Build
+    
+  - task: PublishBuildArtifacts@1
+    condition: always()
+    inputs:
+      PathtoPublish: $(build.artifactstagingdirectory)
+      ArtifactName: unosourcegenerator-drop
+      ArtifactType: Container

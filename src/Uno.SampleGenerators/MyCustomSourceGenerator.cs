@@ -14,12 +14,17 @@
 // limitations under the License.
 //
 // ******************************************************************
+using Microsoft.CodeAnalysis;
 using Uno.SourceGeneration;
 
 namespace Uno.SampleGenerators
 {
 	public class MyCustomSourceGenerator : SourceGenerator
 	{
+		private const string DependentTypeName = "Uno.SampleDependency.MyClass";
+		private const string LinkedTypeName = "Uno.SampleLinked.LinkedFileClass";
+		private readonly string SystemObject = typeof(object).FullName;
+
 		public override void Execute(SourceGeneratorContext context)
 		{
 			var project = context.GetProjectInstance();
@@ -32,17 +37,40 @@ namespace Uno.SampleGenerators
 			context.GetLogger().Error($"{nameof(MyCustomSourceGenerator)}: This is an ERROR logging");
 #endif
 
+			// This test ensures that dependent libraries are included in the compilation
+			// generated from the AdHoc workspace.
+			var dependentString = BuildVariableFromType(context, DependentTypeName, "_dependent");
+
+			// This test ensures that linked files included in the project are included
+			// in the Compilation instance used by the generators.
+			var linkedString = BuildVariableFromType(context, LinkedTypeName, "_linked");
+
+			// This test validates that some duplicate files do not interfere wi
+			var objectString = BuildVariableFromType(context, SystemObject, "_object");
+
+			var stringTypeString = BuildVariableFromType(context, "System.String", "_aString");
+
 			context.AddCompilationUnit(
 				"Test",
 				$@"
+#pragma warning disable 169
 namespace Test {{
 	public static class MyGeneratedType 
 	{{
 		// Project: {project?.FullPath}
 		public const string Project = @""{ project?.FullPath}"";
+		{dependentString}
+		{linkedString}
+		{objectString}
+		{stringTypeString}
 	}}
 }}"
 			);
 		}
+
+		private static string BuildVariableFromType(SourceGeneratorContext context, string typeName, string variable)
+			=> context.Compilation.GetTypeByMetadataName(typeName) is INamedTypeSymbol symbol && symbol.Kind != SymbolKind.ErrorType
+				? $"static {symbol} {variable};"
+				: $"#error type {typeName} is not available";
 	}
 }

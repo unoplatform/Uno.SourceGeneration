@@ -63,7 +63,16 @@ namespace Uno.SourceGeneratorTasks
 
 				RegisterAssemblyLoader();
 
-				AppDomain.CurrentDomain.DomainUnload += (s, e) => this.Log().Debug($"Unloading domain ({AppDomain.CurrentDomain.FriendlyName}");
+                AppDomain.CurrentDomain.DomainUnload += (s, e) =>
+                {
+                    try
+                    {
+                        this.Log().Debug($"Unloading domain ({AppDomain.CurrentDomain.FriendlyName}");
+                    }
+                    catch (Exception)
+                    {
+                    }
+                };
 			}
 		}
 
