@@ -11,7 +11,7 @@ using System.Reflection.PortableExecutable;
 using Microsoft.CodeAnalysis;
 using Uno.SourceGeneration.Host.Helpers;
 
-namespace Uno.SourceGeneration.Host.Server
+namespace Uno.SourceGeneration.Engine.Workspace
 {
 	internal class MetadataAndSymbolCache
     {
@@ -110,9 +110,8 @@ namespace Uno.SourceGeneration.Host.Server
     internal sealed class CachingMetadataReference : PortableExecutableReference
     {
         private static readonly MetadataAndSymbolCache s_mdCache = new MetadataAndSymbolCache();
-		private Metadata _metadata;
 
-		public CachingMetadataReference(string fullPath, MetadataReferenceProperties properties)
+        public CachingMetadataReference(string fullPath, MetadataReferenceProperties properties)
             : base(properties, fullPath)
         {
         }
@@ -124,16 +123,7 @@ namespace Uno.SourceGeneration.Host.Server
 
         protected override Metadata GetMetadataImpl()
         {
-			if (_metadata == null)
-			{
-				// Locally cache the value for this instance, when a resolver will get the file a subsequent time
-				// the cache will validate for a newer version of the metadata. This avoids re-reading the target
-				// file time while a given compilation is running.
-				// See https://github.com/dotnet/roslyn/issues/34072
-				_metadata = s_mdCache.GetMetadata(FilePath, Properties);
-			}
-
-			return _metadata;
+            return s_mdCache.GetMetadata(FilePath, Properties);
         }
 
         protected override PortableExecutableReference WithPropertiesImpl(MetadataReferenceProperties properties)

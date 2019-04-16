@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2036
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28516.95
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uno.SampleProject", "Uno.SampleProject\Uno.SampleProject.csproj", "{0D439289-B6AC-454C-AB10-FA54F08B22EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Uno.SampleProject", "Uno.SampleProject\Uno.SampleProject.csproj", "{0D439289-B6AC-454C-AB10-FA54F08B22EC}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0A1CC471-6080-415F-8947-E41D8534395E} = {0A1CC471-6080-415F-8947-E41D8534395E}
 		{D45247E2-A279-472C-8D8B-CBCB83F37FB1} = {D45247E2-A279-472C-8D8B-CBCB83F37FB1}
@@ -13,14 +13,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Uno.SourceGeneration", "Uno
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uno.SampleGenerators", "Uno.SampleGenerators\Uno.SampleGenerators.csproj", "{D45247E2-A279-472C-8D8B-CBCB83F37FB1}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Uno.SourceGeneratorTasks.Shared", "Uno.SourceGeneratorTasks.Shared\Uno.SourceGeneratorTasks.Shared.shproj", "{A564F304-6F1C-4C25-87D2-4D0BC7BE3114}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uno.SourceGeneratorTasks.Dev15.0", "Uno.SourceGeneratorTasks.Dev15.0\Uno.SourceGeneratorTasks.Dev15.0.csproj", "{0A1CC471-6080-415F-8947-E41D8534395E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1D32B614-7FE4-4235-A4AF-E33EA9829863} = {1D32B614-7FE4-4235-A4AF-E33EA9829863}
 	EndProjectSection
-EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Uno.SourceGenerationHost.Shared", "Uno.SourceGenerationHost.Shared\Uno.SourceGenerationHost.Shared.shproj", "{6C9997ED-DE72-4EE4-8B8E-6F5BF1CF2C71}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Doc", "Doc", "{DEB6C3E9-CC58-4925-B635-083634263ABC}"
 	ProjectSection(SolutionItems) = preProject
@@ -44,12 +40,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Uno.SourceGeneration.Host",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Uno.SampleCoreApp", "Uno.SampleCoreApp\Uno.SampleCoreApp.csproj", "{613832ED-7BF4-43BC-B8D3-2ACC4370237F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Uno.SampleDependency", "Uno.SampleDependency\Uno.SampleDependency.csproj", "{35288588-F8CD-4340-9722-ADB9E266739A}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Uno.SourceGeneration.Engine.Shared", "Uno.SourceGeneration.Engine.Shared\Uno.SourceGeneration.Engine.Shared.shproj", "{08631D97-B757-4226-897F-9839B1205AB5}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Uno.SourceGenerationEngine.Shared", "Uno.SourceGenerationHost.Shared\Uno.SourceGenerationEngine.Shared.shproj", "{6C9997ED-DE72-4EE4-8B8E-6F5BF1CF2C71}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Uno.SourceGenerationHost.Shared\Uno.SourceGenerationHost.Shared.projitems*{0a1cc471-6080-415f-8947-e41d8534395e}*SharedItemsImports = 4
-		Uno.SourceGeneratorTasks.Shared\Uno.SourceGeneratorTasks.Shared.projitems*{0a1cc471-6080-415f-8947-e41d8534395e}*SharedItemsImports = 4
+		Uno.SourceGeneration.Engine.Shared\Uno.SourceGeneration.Engine.Shared.projitems*{08631d97-b757-4226-897f-9839b1205ab5}*SharedItemsImports = 13
+		Uno.SourceGeneration.Engine.Shared\Uno.SourceGeneration.Engine.Shared.projitems*{0a1cc471-6080-415f-8947-e41d8534395e}*SharedItemsImports = 4
+		Uno.SourceGeneration.Protocol\Uno.SourceGeneration.Protocol.projitems*{0a1cc471-6080-415f-8947-e41d8534395e}*SharedItemsImports = 4
 		Uno.SourceGenerationHost.Shared\Uno.SourceGenerationHost.Shared.projitems*{6c9997ed-de72-4ee4-8b8e-6f5bf1cf2c71}*SharedItemsImports = 13
-		Uno.SourceGeneratorTasks.Shared\Uno.SourceGeneratorTasks.Shared.projitems*{a564f304-6f1c-4c25-87d2-4d0bc7be3114}*SharedItemsImports = 13
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -158,6 +160,22 @@ Global
 		{613832ED-7BF4-43BC-B8D3-2ACC4370237F}.Release|x64.Build.0 = Release|Any CPU
 		{613832ED-7BF4-43BC-B8D3-2ACC4370237F}.Release|x86.ActiveCfg = Release|Any CPU
 		{613832ED-7BF4-43BC-B8D3-2ACC4370237F}.Release|x86.Build.0 = Release|Any CPU
+		{35288588-F8CD-4340-9722-ADB9E266739A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35288588-F8CD-4340-9722-ADB9E266739A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35288588-F8CD-4340-9722-ADB9E266739A}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{35288588-F8CD-4340-9722-ADB9E266739A}.Debug|ARM.Build.0 = Debug|Any CPU
+		{35288588-F8CD-4340-9722-ADB9E266739A}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{35288588-F8CD-4340-9722-ADB9E266739A}.Debug|x64.Build.0 = Debug|Any CPU
+		{35288588-F8CD-4340-9722-ADB9E266739A}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{35288588-F8CD-4340-9722-ADB9E266739A}.Debug|x86.Build.0 = Debug|Any CPU
+		{35288588-F8CD-4340-9722-ADB9E266739A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35288588-F8CD-4340-9722-ADB9E266739A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35288588-F8CD-4340-9722-ADB9E266739A}.Release|ARM.ActiveCfg = Release|Any CPU
+		{35288588-F8CD-4340-9722-ADB9E266739A}.Release|ARM.Build.0 = Release|Any CPU
+		{35288588-F8CD-4340-9722-ADB9E266739A}.Release|x64.ActiveCfg = Release|Any CPU
+		{35288588-F8CD-4340-9722-ADB9E266739A}.Release|x64.Build.0 = Release|Any CPU
+		{35288588-F8CD-4340-9722-ADB9E266739A}.Release|x86.ActiveCfg = Release|Any CPU
+		{35288588-F8CD-4340-9722-ADB9E266739A}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
