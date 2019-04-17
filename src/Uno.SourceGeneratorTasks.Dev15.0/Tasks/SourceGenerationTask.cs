@@ -58,9 +58,14 @@ namespace Uno.SourceGeneratorTasks
 		public string CaptureGenerationHostOutput { get; set; }
 
 		/// <summary>
-		/// Enables the use of the GenerationController mode.
+		/// Enables the use of the Generation Controller mode.
 		/// </summary>
 		public string UseGenerationController { get; set; } = bool.TrueString;
+
+		/// <summary>
+		/// Enables the use of the Generation Host mode.
+		/// </summary>
+		public string UseGenerationHost { get; set; } = bool.TrueString;
 
 		/// <summary>
 		/// Provides a list of assemblies to be loaded in the SourceGenerator
@@ -80,6 +85,9 @@ namespace Uno.SourceGeneratorTasks
 
 		public string SharedGenerationId { get; set; }
 
+		[Required]
+		public Microsoft.Build.Framework.ITaskItem[] ReferencePath { get; set; }
+
 		[Output]
 		public string[] GenereratedFiles { get; set; }
 
@@ -89,6 +97,8 @@ namespace Uno.SourceGeneratorTasks
 		public override bool Execute()
 		{
 			string lockFile = null;
+
+			Log.LogMessage(MessageImportance.Low, $"Running generation in {Process.GetCurrentProcess().Id}/{Process.GetCurrentProcess().ProcessName}");
 
 			// Debugger.Launch();
 
@@ -107,7 +117,7 @@ namespace Uno.SourceGeneratorTasks
 				{
 					GenerateWithHostController();
 				}
-				else if(IsMonoMSBuildCompatible)
+				else if(SupportsGenerationHost)
 				{
 					GenerateWithHost();
 				}
@@ -131,7 +141,7 @@ namespace Uno.SourceGeneratorTasks
 					this.Log.LogError(e.Message);
 				}
 
-				this.Log.LogMessage(MessageImportance.Low, e.ToString());
+				this.Log.LogMessage(e.ToString());
 
 				return false;
 			}
@@ -144,15 +154,26 @@ namespace Uno.SourceGeneratorTasks
 			}
 		}
 
-
 		public bool SupportsGenerationController
 			=> (bool.TryParse(UseGenerationController, out var result) && result)
+			&& !RuntimeHelpers.IsNetCore
 			&& (
 				!RuntimeHelpers.IsMono
 				|| RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-				|| RuntimeHelpers.IsNetCore
 			);
 
+		public bool SupportsGenerationHost
+			=> (bool.TryParse(UseGenerationHost, out var result) && result)
+			&& (
+				// MacOS with MSBuild 16.0+ or Linux
+				IsMonoMSBuildCompatible
+
+				// .NET Core
+				|| RuntimeHelpers.IsNetCore
+
+				// Desktop Windows
+				|| (!RuntimeHelpers.IsNetCore && RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+			);
 
 		private void GenerateWithHostController()
 		{
@@ -218,12 +239,7 @@ namespace Uno.SourceGeneratorTasks
 			return GenerationServerConnection.GetPipeNameForPathOpt(
 				string.Concat(
 					GetHostPath(),
-					// Don't include the process ID since the server only processes one client at a time.
-					// Process.GetCurrentProcess().Id.ToString(),
-					buildEnvironment.ProjectFile,
-					buildEnvironment.Configuration,
-					buildEnvironment.TargetFramework,
-					string.Join(",", buildEnvironment.SourceGenerators)
+					Process.GetCurrentProcess().Id.ToString()
 				)
 			);
 		}
@@ -405,7 +421,6 @@ namespace Uno.SourceGeneratorTasks
 			string.Compare(FileVersionInfo.GetVersionInfo(new Uri(typeof(Microsoft.Build.Utilities.Task).Assembly.Location).LocalPath).FileVersion, "16.0") >= 0
 			|| RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
 
-
 		private BuildEnvironment CreateBuildEnvironment()
 			=> new BuildEnvironment
 			{
@@ -420,7 +435,8 @@ namespace Uno.SourceGeneratorTasks
 				BinLogEnabled = BinLogEnabled,
 				MSBuildBinPath = Path.GetDirectoryName(new Uri(typeof(Microsoft.Build.Logging.ConsoleLogger).Assembly.CodeBase).LocalPath),
 				AdditionalAssemblies = AdditionalAssemblies,
-				SourceGenerators = SourceGenerators
+				SourceGenerators = SourceGenerators,
+				ReferencePath = ReferencePath.Select(r => r.ItemSpec).ToArray()
 			};
 
 		private string EnsureRootedPath(string projectFile, string targetPath) =>
