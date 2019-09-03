@@ -60,9 +60,6 @@ jobs:
 - job: Linux
   container: nv-bionic-wasm
 
-  variables:
-    NUGET_PACKAGES: $(Agent.WorkFolder)\.nuget
-
   pool:
     vmImage: 'ubuntu-16.04'
 
