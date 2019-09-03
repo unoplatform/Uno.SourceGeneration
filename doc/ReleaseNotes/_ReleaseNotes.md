@@ -3,7 +3,8 @@
 ## Next version
 
 ### Features
-- 
+- Introduction of the `UnoSourceGeneratorAdditionalProperty` item group allows for the propagation of those properties to the generators. (#112)
+
 ### Breaking changes
 - 
 ### Bug fixes
