@@ -34,6 +34,7 @@
 
   <ItemGroup>
     <UnoSourceGeneratorAdditionalProperty Include="MyTestProperty" />
+    <UnoSourceGeneratorAdditionalProperty Include="__UNKNOWN_UNO_PROPERTY__" />
   </ItemGroup>
 
   <ItemGroup>
