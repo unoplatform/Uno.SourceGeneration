@@ -1,3 +1,8 @@
+resources:
+  containers:
+  - container: nv-bionic-wasm
+    image: nventive/wasm-build:1.4.1
+
 jobs:
 - job: Windows
 
@@ -53,9 +58,7 @@ jobs:
       ArtifactType: Container
 
 - job: Linux
-
-  variables:
-    NUGET_PACKAGES: $(Agent.WorkFolder)\.nuget
+  container: nv-bionic-wasm
 
   pool:
     vmImage: 'ubuntu-16.04'

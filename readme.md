@@ -203,9 +203,34 @@ You can write to build output using the following code:
     }
 ```
 
+## Available Properties
+
+The source generation task provides set of properties that can alter its behavior based on your project.
+
+### UnoSourceGeneratorAdditionalProperty
+
+The `UnoSourceGeneratorAdditionalProperty` item group provides the ability for a project to enable the
+propagation of specific properties to the generators. This may be required if properties are 
+[injected dynamically](https://github.com/Microsoft/VSProjectSystem/blob/master/doc/extensibility/IProjectGlobalPropertiesProvider.md#iprojectglobalpropertiesprovider),
+or provided as global variables.
+
+A good example of this is the `JavaSdkDirectory` that is generally injected as a global parameter through
+the msbuild command line.
+
+In such as case, add the following in your project file:
+
+```xml
+<ItemGroup>
+    <UnoSourceGeneratorAdditionalProperty Include="JavaSdkDirectory" />
+</ItemGroup>
+```
+
+In this case, the `JavaSdkDirectory` value will be captured in the original build environment, and provided
+to the generators' build environment.
+
 ## Troubleshooting
 
-## Error: `Failed to analyze project file ..., the targets ... failed to execute.`
+### Error: `Failed to analyze project file ..., the targets ... failed to execute.`
 
 This is issue is caused by a [open Roslyn issue](https://github.com/nventive/Uno.SourceGeneration/issues/2)
 for which all projects of the solution must have all the possible "head" projects configuration.

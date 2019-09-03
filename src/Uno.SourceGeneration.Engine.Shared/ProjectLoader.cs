@@ -68,6 +68,12 @@ namespace Uno.SourceGeneration.Host
 				}
 			}
 
+			// Merge additional properties
+			foreach(var prop in environment.AdditionalProperties)
+			{
+				globalProperties[prop.Key] = prop.Value;
+			}
+
 			if (_log.IsEnabled(Microsoft.Extensions.Logging.LogLevel.Debug))
 			{
 				_log.LogDebug($"Loading project file [{environment.ProjectFile}]");

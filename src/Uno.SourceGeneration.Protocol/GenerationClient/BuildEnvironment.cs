@@ -51,5 +51,8 @@ namespace Uno.SourceGeneratorTasks
 
 		[DataMember]
 		public string[] ReferencePath { get; set; }
+
+		[DataMember]
+		public Dictionary<string, string> AdditionalProperties { get; set; }
 	}
 }
