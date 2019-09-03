@@ -127,6 +127,19 @@
   <ItemGroup>
     <SourceGenerator Include="..\Uno.SampleGenerators\bin\$(Configuration)\Uno.SampleGenerators.dll" />
   </ItemGroup>
+  
+  <PropertyGroup Condition="'$(BuildingInsideUnoSourceGenerator)'==''">
+    <!--
+    Conditionally include this property group so that while in the source generator build
+    context, the value is provided through the capture of the original build context.
+    -->
+    <MyTestProperty>42</MyTestProperty>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <UnoSourceGeneratorAdditionalProperty Include="MyTestProperty" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Uno.SampleDependency\Uno.SampleDependency.csproj">
       <Project>{D02FBC83-F9DD-4710-AEBF-0BA2F8AE85B2}</Project>
