@@ -30,7 +30,7 @@ namespace Uno.SourceGeneration.Host.Server
                 options |= PEStreamOptions.PrefetchEntireImage;
             }
 
-            return ModuleMetadata.CreateFromStream(fileStream, options);
+            return ModuleMetadata.CreateFromStream(fileStream, options: options);
         }
 
         private ImmutableArray<ModuleMetadata> GetAllModules(ModuleMetadata manifestModule, string assemblyDir)

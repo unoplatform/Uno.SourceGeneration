@@ -5,6 +5,7 @@
     <RootNamespace>Uno.SampleProject</RootNamespace>
     <AssemblyName>Uno.SampleProject</AssemblyName>
     <UnoDebugGenerationHost>true</UnoDebugGenerationHost>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
