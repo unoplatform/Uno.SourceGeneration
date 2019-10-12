@@ -68,7 +68,8 @@ jobs:
 
   - task: DownloadBuildArtifacts@0
     inputs:
-        downloadPath: '$(System.ArtifactsDirectory)'
+      ArtifactName: unosourcegenerator-drop
+      downloadPath: '$(System.ArtifactsDirectory)'
 
   - task: CopyFiles@2
     inputs:
@@ -106,7 +107,8 @@ jobs:
   steps:
   - task: DownloadBuildArtifacts@0
     inputs:
-        downloadPath: '$(System.ArtifactsDirectory)'
+      ArtifactName: unosourcegenerator-drop
+      downloadPath: '$(System.ArtifactsDirectory)'
 
   - task: CopyFiles@2
     inputs:
@@ -155,7 +157,8 @@ jobs:
   steps:
   - task: DownloadBuildArtifacts@0
     inputs:
-        downloadPath: '$(System.ArtifactsDirectory)'
+      ArtifactName: unosourcegenerator-drop
+      downloadPath: '$(System.ArtifactsDirectory)'
 
   - task: CopyFiles@2
     inputs:
