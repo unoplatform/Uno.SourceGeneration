@@ -55,22 +55,33 @@ jobs:
 
 
 - job: Windows_VS2017
+  dependsOn:
+  - Windows_VS2019
+
+  variables:
+    - SAMPLES_BUILD: true
 
   pool:
     vmImage: 'vs2017-win2016'
 
   steps:
-  - task: NuGetToolInstaller@0
+
+  - task: DownloadBuildArtifacts@0
     inputs:
-      versionSpec: 4.7.0
-      checkLatest: false
+        downloadPath: '$(System.ArtifactsDirectory)'
+
+  - task: CopyFiles@2
+    inputs:
+        sourceFolder: '$(System.ArtifactsDirectory)\unosourcegenerator-drop\build'
+        targetFolder: $(build.sourcesdirectory)\src\PackageCache
 
   - task: DotNetCoreInstaller@2
     inputs:
       version: '3.0.100'
       
-  - powershell: .\build\build.ps1 -script build\build.cake
-    displayName: Build
+  - task: MSBuild@1
+    inputs:
+      solution: '$(build.sourcesdirectory)/src/Uno.SourceGenerator.Samples.sln'
 
   - task: DotNetCoreCLI@2
     displayName: Validate DotNetCore CLI build
@@ -79,19 +90,25 @@ jobs:
       arguments: "--configuration Release"
       workingDirectory: $(build.sourcesdirectory)\src\Uno.SampleCoreApp
 
-
-
 - job: Linux
+
+  dependsOn:
+  - Windows_VS2019
+
   container: nventive/wasm-build:1.4.1
 
   pool:
     vmImage: 'ubuntu-16.04'
 
   steps:
-  - task: NuGetToolInstaller@0
+  - task: DownloadBuildArtifacts@0
     inputs:
-      versionSpec: 4.7.0
-      checkLatest: false
+        downloadPath: '$(System.ArtifactsDirectory)'
+
+  - task: CopyFiles@2
+    inputs:
+        sourceFolder: '$(System.ArtifactsDirectory)\unosourcegenerator-drop\build'
+        targetFolder: $(build.sourcesdirectory)\src\PackageCache
 
   - task: DotNetCoreInstaller@2
     inputs:
@@ -108,6 +125,9 @@ jobs:
       ArtifactType: Container
 
 - job: macOS
+
+  dependsOn:
+  - Windows_VS2019
 
   strategy:
     matrix:
@@ -129,10 +149,14 @@ jobs:
     vmImage: 'macOS-10.13'
 
   steps:
-  - task: NuGetToolInstaller@0
+  - task: DownloadBuildArtifacts@0
     inputs:
-      versionSpec: 4.7.0
-      checkLatest: false
+        downloadPath: '$(System.ArtifactsDirectory)'
+
+  - task: CopyFiles@2
+    inputs:
+        sourceFolder: '$(System.ArtifactsDirectory)\unosourcegenerator-drop\build'
+        targetFolder: $(build.sourcesdirectory)\src\PackageCache
 
   - task: DotNetCoreInstaller@2
     inputs:
@@ -141,7 +165,7 @@ jobs:
   - bash: /bin/bash -c "sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh $(XamarinVersion)"
     displayName: Select Xamarin Version
 
-  - bash: msbuild /r /p:Configuration=Release ./src/Uno.SourceGenerator.Linux.sln # /bl:$(build.artifactstagingdirectory)/macos-build.binlog
+  - bash: msbuild /r /p:Configuration=Release ./src/Uno.SourceGenerator.Samples.sln # /bl:$(build.artifactstagingdirectory)/macos-build.binlog
     displayName: Build
     
   - task: PublishBuildArtifacts@1

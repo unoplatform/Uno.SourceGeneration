@@ -124,9 +124,6 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup>
-    <SourceGenerator Include="..\Uno.SampleGenerators\bin\$(Configuration)\Uno.SampleGenerators.dll" />
-  </ItemGroup>
   
   <PropertyGroup Condition="'$(BuildingInsideUnoSourceGenerator)'==''">
     <!--
@@ -160,7 +157,9 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  <Import Project="..\Uno.SourceGeneratorTasks.Dev15.0\Content\Uno.SourceGenerationTasks.targets" />
+  
+  <Import Project="..\SolutionBuild.targets" />
+  
   <PropertyGroup>
     <UnoSourceGeneratorTasksPath>..\..\Uno.SourceGeneratorTasks.Dev15.0\bin\$(Configuration)</UnoSourceGeneratorTasksPath>
     <UnoSourceGeneratorOutputPath>GeneratedFiles</UnoSourceGeneratorOutputPath>

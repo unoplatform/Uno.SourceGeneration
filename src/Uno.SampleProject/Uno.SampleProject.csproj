@@ -13,16 +13,7 @@
     </Compile>
   </ItemGroup>
 
-  <PropertyGroup>
-    <UnoSourceGeneratorTasksPath>..\..\Uno.SourceGeneratorTasks.Dev15.0\bin\$(Configuration)</UnoSourceGeneratorTasksPath>
-    <UnoSourceGeneratorOutputPath>obj\$(Configuration)</UnoSourceGeneratorOutputPath>
-  </PropertyGroup>
-
-  <Import Project="..\Uno.SourceGeneratorTasks.Dev15.0\Content\Uno.SourceGenerationTasks.targets" />
-
-  <ItemGroup>
-    <SourceGenerator Include="..\Uno.SampleGenerators\bin\$(Configuration)\Uno.SampleGenerators.dll" />
-  </ItemGroup>
+  <Import Project="..\SolutionBuild.targets" />
   
   <PropertyGroup Condition="'$(BuildingInsideUnoSourceGenerator)'==''">
     <!--
