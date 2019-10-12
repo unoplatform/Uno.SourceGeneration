@@ -82,11 +82,11 @@ jobs:
       
   - task: MSBuild@1
     inputs:
-      solution: '$(build.sourcesdirectory)/src/Uno.SourceGenerator.Samples.sln'
+      solution: '$(build.sourcesdirectory)/src/Uno.SourceGenerator.Samples.Windows.sln'
       msbuildArguments: /m /r /p:configuration=Release
 
   - task: DotNetCoreCLI@2
-    displayName: Validate DotNetCore CLI build
+    displayName: Validate .NET Core 3.0 CLI build
     inputs:
       command: build
       arguments: "--configuration Release"
@@ -120,15 +120,16 @@ jobs:
     inputs:
       version: '3.0.100'
 
-  - bash: msbuild /r /p:Configuration=Release ./src/Uno.SourceGenerator.Linux.sln # /bl:$(build.artifactstagingdirectory)/linux-build.binlog
+  - bash: msbuild /r /p:Configuration=Release ./src/Uno.SourceGenerator.Samples.Unix.sln # /bl:$(build.artifactstagingdirectory)/linux-build.binlog
     displayName: Build
+
     
-  - task: PublishBuildArtifacts@1
-    condition: always()
+  - task: DotNetCoreCLI@2
+    displayName: Validate .NET Core 3.0 CLI build
     inputs:
-      PathtoPublish: $(build.artifactstagingdirectory)
-      ArtifactName: unosourcegenerator-drop
-      ArtifactType: Container
+      command: build
+      arguments: "--configuration Release"
+      workingDirectory: $(build.sourcesdirectory)\src\Uno.SampleCoreApp
 
 - job: macOS
 
@@ -173,12 +174,12 @@ jobs:
   - bash: /bin/bash -c "sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh $(XamarinVersion)"
     displayName: Select Xamarin Version
 
-  - bash: msbuild /r /p:Configuration=Release ./src/Uno.SourceGenerator.Samples.sln # /bl:$(build.artifactstagingdirectory)/macos-build.binlog
+  - bash: msbuild /r /p:Configuration=Release ./src/Uno.SourceGenerator.Samples.Unix.sln # /bl:$(build.artifactstagingdirectory)/macos-build.binlog
     displayName: Build
-    
-  - task: PublishBuildArtifacts@1
-    condition: always()
+
+  - task: DotNetCoreCLI@2
+    displayName: Validate .NET Core 3.0 CLI build
     inputs:
-      PathtoPublish: $(build.artifactstagingdirectory)
-      ArtifactName: unosourcegenerator-drop
-      ArtifactType: Container
+      command: build
+      arguments: "--configuration Release"
+      workingDirectory: $(build.sourcesdirectory)\src\Uno.SampleCoreApp
