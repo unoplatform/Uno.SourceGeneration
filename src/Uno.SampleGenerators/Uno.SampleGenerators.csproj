@@ -83,11 +83,26 @@
     <Compile Include="GeneratorWithDependency.cs" />
     <Compile Include="UselessGenerator.cs" />
   </ItemGroup>
+
+  <Choose>
+    <When Condition="'$(SAMPLES_BUILD)'=='true'">
+      <ItemGroup>
+        <PackageReference Include="Uno.SourceGeneration" Version="*" />
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <ProjectReference Include="..\Uno.SourceGeneration\Uno.SourceGeneration.csproj">
+          <Project>{b59fa47d-b3d2-4309-ae28-f5150ab02d46}</Project>
+          <Name>Uno.SourceGeneration</Name>
+        </ProjectReference>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+
+
+
   <ItemGroup>
-    <ProjectReference Include="..\Uno.SourceGeneration\Uno.SourceGeneration.csproj">
-      <Project>{b59fa47d-b3d2-4309-ae28-f5150ab02d46}</Project>
-      <Name>Uno.SourceGeneration</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>
