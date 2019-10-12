@@ -10,7 +10,7 @@ jobs:
       versionSpec: 4.7.0
       checkLatest: false
 
-  - task: DotNetCoreInstaller@0
+  - task: DotNetCoreInstaller@2
     inputs:
       version: '3.0.100'
       
@@ -65,7 +65,7 @@ jobs:
       versionSpec: 4.7.0
       checkLatest: false
 
-  - task: DotNetCoreInstaller@0
+  - task: DotNetCoreInstaller@2
     inputs:
       version: '3.0.100'
       
@@ -93,7 +93,7 @@ jobs:
       versionSpec: 4.7.0
       checkLatest: false
 
-  - task: DotNetCoreInstaller@0
+  - task: DotNetCoreInstaller@2
     inputs:
       version: '3.0.100'
 
@@ -134,7 +134,7 @@ jobs:
       versionSpec: 4.7.0
       checkLatest: false
 
-  - task: DotNetCoreInstaller@0
+  - task: DotNetCoreInstaller@2
     inputs:
       version: '3.0.100'
 
