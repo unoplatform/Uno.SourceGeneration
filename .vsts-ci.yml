@@ -83,6 +83,7 @@ jobs:
   - task: MSBuild@1
     inputs:
       solution: '$(build.sourcesdirectory)/src/Uno.SourceGenerator.Samples.sln'
+      arguments: /r /p:configuration=Release
 
   - task: DotNetCoreCLI@2
     displayName: Validate DotNetCore CLI build
@@ -112,8 +113,8 @@ jobs:
 
   - task: CopyFiles@2
     inputs:
-        sourceFolder: '$(System.ArtifactsDirectory)\unosourcegenerator-drop\build'
-        targetFolder: $(build.sourcesdirectory)\src\PackageCache
+        sourceFolder: '$(System.ArtifactsDirectory)/unosourcegenerator-drop/build'
+        targetFolder: $(build.sourcesdirectory)/src/PackageCache
 
   - task: DotNetCoreInstaller@2
     inputs:
@@ -136,7 +137,7 @@ jobs:
 
   variables:
     SAMPLES_BUILD: true
-    NUGET_PACKAGES: $(Agent.WorkFolder)\.nuget
+    NUGET_PACKAGES: $(Agent.WorkFolder)/.nuget
 
   strategy:
     matrix:
@@ -162,8 +163,8 @@ jobs:
 
   - task: CopyFiles@2
     inputs:
-        sourceFolder: '$(System.ArtifactsDirectory)\unosourcegenerator-drop\build'
-        targetFolder: $(build.sourcesdirectory)\src\PackageCache
+        sourceFolder: '$(System.ArtifactsDirectory)/unosourcegenerator-drop/build'
+        targetFolder: $(build.sourcesdirectory)/src/PackageCache
 
   - task: DotNetCoreInstaller@2
     inputs:
