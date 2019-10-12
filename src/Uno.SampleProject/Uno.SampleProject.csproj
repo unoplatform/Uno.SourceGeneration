@@ -34,7 +34,7 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(SAMPLES_BUILD)'==''">
     <ProjectReference Include="../Uno.SourceGeneration.Host/Uno.SourceGeneration.Host.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>

@@ -83,7 +83,7 @@ jobs:
   - task: MSBuild@1
     inputs:
       solution: '$(build.sourcesdirectory)/src/Uno.SourceGenerator.Samples.sln'
-      arguments: /r /p:configuration=Release
+      msbuildArguments: /m /r /p:configuration=Release
 
   - task: DotNetCoreCLI@2
     displayName: Validate DotNetCore CLI build
