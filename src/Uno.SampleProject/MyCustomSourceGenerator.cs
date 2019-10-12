@@ -22,14 +22,8 @@ namespace Uno.SampleProject
 	{
 		public MyCustomSourceGenerator()
 		{
+			Debug.WriteLine(Test.MyGeneratedType.Project);
 			Debug.WriteLine(Test.MyGeneratedType2.Project);
 		}
-	}
-
-	public class Test
-	{
-		public int Value { get; }
-
-		public override string ToString() => Value.ToString();
 	}
 }
