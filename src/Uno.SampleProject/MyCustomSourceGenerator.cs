@@ -30,6 +30,6 @@ namespace Uno.SampleProject
 	{
 		public int Value { get; }
 
-		public readonly override string ToString() => Value.ToString();
+		public override string ToString() => Value.ToString();
 	}
 }
