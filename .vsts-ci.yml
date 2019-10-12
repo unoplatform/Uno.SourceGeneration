@@ -59,7 +59,7 @@ jobs:
   - Windows_VS2019
 
   variables:
-    - SAMPLES_BUILD: true
+    SAMPLES_BUILD: true
 
   pool:
     vmImage: 'vs2017-win2016'
@@ -97,6 +97,9 @@ jobs:
 
   container: nventive/wasm-build:1.4.1
 
+  variables:
+    SAMPLES_BUILD: true
+
   pool:
     vmImage: 'ubuntu-16.04'
 
@@ -128,6 +131,9 @@ jobs:
 
   dependsOn:
   - Windows_VS2019
+
+  variables:
+    SAMPLES_BUILD: true
 
   strategy:
     matrix:
