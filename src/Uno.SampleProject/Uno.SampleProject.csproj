@@ -46,6 +46,14 @@
       <UndefineProperties>TargetFramework</UndefineProperties>
     </ProjectReference>
   </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="../Uno.SampleGenerators/Uno.SampleGenerators.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+      <UndefineProperties>TargetFramework</UndefineProperties>
+    </ProjectReference>
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Uno.SampleDependency\Uno.SampleDependency.csproj" />

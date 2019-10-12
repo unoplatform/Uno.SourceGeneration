@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
 
   <Import Project="..\SolutionBuild.targets" />
@@ -12,11 +12,10 @@
     <EmbeddedResource Remove="GeneratedFiles\**" />
     <None Remove="GeneratedFiles\**" />
   </ItemGroup>
-  
   <ItemGroup>
     <Compile Include="..\LinkTest\LinkedCompileFile.cs" Link="LinkedCompileFile.cs" />
   </ItemGroup>
-
+  
   <PropertyGroup Condition="'$(BuildingInsideUnoSourceGenerator)'==''">
     <!--
     Conditionally include this property group so that while in the source generator build
@@ -28,7 +27,7 @@
   <ItemGroup>
     <UnoSourceGeneratorAdditionalProperty Include="MyTestProperty" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <ProjectReference Include="..\Uno.SampleDependency\Uno.SampleDependency.csproj" />
     <ProjectReference Include="../Uno.SampleGenerators/Uno.SampleGenerators.csproj">

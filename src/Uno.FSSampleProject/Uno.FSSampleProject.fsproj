@@ -9,4 +9,13 @@
   </ItemGroup>
 
   <Import Project="../SolutionBuild.targets" />
+
+  <ItemGroup>
+    <ProjectReference Include="../Uno.SampleGenerators/Uno.SampleGenerators.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+      <UndefineProperties>TargetFramework</UndefineProperties>
+    </ProjectReference>
+  </ItemGroup>
+
 </Project>
