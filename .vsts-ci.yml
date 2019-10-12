@@ -134,6 +134,7 @@ jobs:
 
   variables:
     SAMPLES_BUILD: true
+    NUGET_PACKAGES: $(Agent.WorkFolder)\.nuget
 
   strategy:
     matrix:
@@ -147,9 +148,6 @@ jobs:
         XamarinVersion: 5_16_0
       Xamarin_5_12_0:
         XamarinVersion: 5_12_0
-
-  variables:
-    NUGET_PACKAGES: $(Agent.WorkFolder)\.nuget
 
   pool:
     vmImage: 'macOS-10.13'
