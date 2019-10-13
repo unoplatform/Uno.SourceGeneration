@@ -111,7 +111,7 @@ Task("Build")
 
 	var nuGetPackSettings = new NuGetPackSettings
 	{
-	  Version = versionInfo.FullSemVer,
+	  Version = versionInfo.SemVer,
 	};
 
 	var nugetFilePaths = GetFiles("./*.nuspec");
@@ -143,7 +143,7 @@ Task("Version")
 		UpdateAssemblyInfoFilePath = baseDir + "/build/AssemblyVersion.cs"
 	});
 
-	Information($"FullSemVer: {versionInfo.FullSemVer} Sha: {versionInfo.Sha}");
+	Information($"SemVer: {versionInfo.SemVer} Sha: {versionInfo.Sha}");
 
 	var files = new[] {
 		@"..\src\Uno.SourceGeneratorTasks.Dev15.0\Content\Uno.SourceGenerationTasks.targets",
