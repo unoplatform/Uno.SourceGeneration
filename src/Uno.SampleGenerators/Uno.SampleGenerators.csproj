@@ -87,7 +87,7 @@
   <Choose>
     <When Condition="'$(SAMPLES_BUILD)'=='true'">
       <ItemGroup>
-        <PackageReference Include="Uno.SourceGeneration" Version="*-dev*" />
+        <PackageReference Include="Uno.SourceGeneration" Version="$(SOURCEGEN_VERSION)" />
       </ItemGroup>
     </When>
     <Otherwise>
