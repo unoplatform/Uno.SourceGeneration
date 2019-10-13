@@ -99,8 +99,6 @@ jobs:
 
   container: nventive/wasm-build:1.4.1
 
-  variables:
-
   pool:
     vmImage: 'ubuntu-16.04'
 
