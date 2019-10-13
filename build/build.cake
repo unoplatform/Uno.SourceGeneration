@@ -13,13 +13,6 @@ using System.Text.RegularExpressions;
 var target = Argument("target", "Default");
 
 //////////////////////////////////////////////////////////////////////
-// VERSIONS
-//////////////////////////////////////////////////////////////////////
-
-var gitVersioningVersion = "2.0.41";
-var signClientVersion = "0.9.0";
-
-//////////////////////////////////////////////////////////////////////
 // VARIABLES
 //////////////////////////////////////////////////////////////////////
 
@@ -140,6 +133,7 @@ Task("Version")
 {
 	versionInfo = GitVersion(new GitVersionSettings {
 		UpdateAssemblyInfo = true,
+		LogFilePath = Path.Combine(EnvironmentVariable("BUILD_ARTIFACTSTAGINGDIRECTORY"), "GitVersionLog.txt"),
 		UpdateAssemblyInfoFilePath = baseDir + "/build/AssemblyVersion.cs"
 	});
 
