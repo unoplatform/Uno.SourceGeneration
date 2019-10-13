@@ -4,7 +4,7 @@
   <Choose>
 	<When Condition="'$(SAMPLES_BUILD)'=='true'">
 	  <ItemGroup>
-		<PackageReference Include="Uno.SourceGenerationTasks" Version="1.32.0-dev.297" />
+		<PackageReference Include="Uno.SourceGenerationTasks" Version="*-dev*" />
 	  </ItemGroup>
 	</When>
 	<Otherwise>
