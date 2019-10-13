@@ -100,7 +100,6 @@ jobs:
   container: nventive/wasm-build:1.4.1
 
   variables:
-    SAMPLES_BUILD: true
 
   pool:
     vmImage: 'ubuntu-16.04'
@@ -120,7 +119,7 @@ jobs:
     inputs:
       version: '3.0.100'
 
-  - bash: msbuild /r /p:Configuration=Release ./src/Uno.SourceGenerator.Samples.Unix.sln # /bl:$(build.artifactstagingdirectory)/linux-build.binlog
+  - bash: msbuild /r /p:Configuration=Release /p:SAMPLES_BUILD=true ./src/Uno.SourceGenerator.Samples.Unix.sln # /bl:$(build.artifactstagingdirectory)/linux-build.binlog
     displayName: Build
 
     
@@ -128,7 +127,7 @@ jobs:
     displayName: Validate .NET Core 3.0 CLI build
     inputs:
       command: build
-      arguments: "--configuration Release"
+      arguments: "--configuration Release -p:SAMPLES_BUILD=true"
       workingDirectory: $(build.sourcesdirectory)\src\Uno.SampleCoreApp
 
 - job: macOS
@@ -137,7 +136,6 @@ jobs:
   - Windows_VS2019
 
   variables:
-    SAMPLES_BUILD: true
     NUGET_PACKAGES: $(Agent.WorkFolder)/.nuget
 
   strategy:
@@ -174,12 +172,12 @@ jobs:
   - bash: /bin/bash -c "sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh $(XamarinVersion)"
     displayName: Select Xamarin Version
 
-  - bash: msbuild /r /p:Configuration=Release ./src/Uno.SourceGenerator.Samples.Unix.sln # /bl:$(build.artifactstagingdirectory)/macos-build.binlog
+  - bash: msbuild /r /p:Configuration=Release /p:SAMPLES_BUILD=true ./src/Uno.SourceGenerator.Samples.Unix.sln # /bl:$(build.artifactstagingdirectory)/macos-build.binlog
     displayName: Build
 
   - task: DotNetCoreCLI@2
     displayName: Validate .NET Core 3.0 CLI build
     inputs:
       command: build
-      arguments: "--configuration Release"
+      arguments: "--configuration Release -p:SAMPLES_BUILD=true"
       workingDirectory: $(build.sourcesdirectory)\src\Uno.SampleCoreApp
