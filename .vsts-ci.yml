@@ -87,13 +87,13 @@ jobs:
   - task: MSBuild@1
     inputs:
       solution: '$(build.sourcesdirectory)/src/Uno.SourceGenerator.Samples.Windows.sln'
-      msbuildArguments: /m /r /p:configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.FullSemVer) /bl:$(build.artifactstagingdirectory)/windows-sample-build.binlog
+      msbuildArguments: /m /r /p:configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/windows-sample-build.binlog
 
   - task: DotNetCoreCLI@2
     displayName: Validate .NET Core 3.0 CLI build
     inputs:
       command: build
-      arguments: "--configuration Release -p:SOURCEGEN_VERSION=$(GITVERSION.FullSemVer)"
+      arguments: "--configuration Release -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer)"
       workingDirectory: $(build.sourcesdirectory)\src\Uno.SampleCoreApp
 
 - job: Linux
@@ -126,7 +126,7 @@ jobs:
     inputs:
       version: '3.0.100'
 
-  - bash: msbuild /r /p:Configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.FullSemVer) /p:SAMPLES_BUILD=true ./src/Uno.SourceGenerator.Samples.Unix.sln /bl:$(build.artifactstagingdirectory)/linux-sample-build.binlog
+  - bash: msbuild /r /p:Configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /p:SAMPLES_BUILD=true ./src/Uno.SourceGenerator.Samples.Unix.sln /bl:$(build.artifactstagingdirectory)/linux-sample-build.binlog
     displayName: Build
 
     
@@ -134,7 +134,7 @@ jobs:
     displayName: Validate .NET Core 3.0 CLI build
     inputs:
       command: build
-      arguments: "--configuration Release -p:SAMPLES_BUILD=true -p:SOURCEGEN_VERSION=$(GITVERSION.FullSemVer)"
+      arguments: "--configuration Release -p:SAMPLES_BUILD=true -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer)"
       workingDirectory: $(build.sourcesdirectory)\src\Uno.SampleCoreApp
       
   - task: PublishBuildArtifacts@1
@@ -191,14 +191,14 @@ jobs:
   - bash: /bin/bash -c "sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh $(XamarinVersion)"
     displayName: Select Xamarin Version
 
-  - bash: msbuild /r /p:Configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.FullSemVer) /p:SAMPLES_BUILD=true ./src/Uno.SourceGenerator.Samples.Unix.sln /bl:$(build.artifactstagingdirectory)/macos-sample-build-$(XamarinVersion).binlog
+  - bash: msbuild /r /p:Configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /p:SAMPLES_BUILD=true ./src/Uno.SourceGenerator.Samples.Unix.sln /bl:$(build.artifactstagingdirectory)/macos-sample-build-$(XamarinVersion).binlog
     displayName: Build
 
   - task: DotNetCoreCLI@2
     displayName: Validate .NET Core 3.0 CLI build
     inputs:
       command: build
-      arguments: "--configuration Release -p:SAMPLES_BUILD=true -p:SOURCEGEN_VERSION=$(GITVERSION.FullSemVer)"
+      arguments: "--configuration Release -p:SAMPLES_BUILD=true -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer)"
       workingDirectory: $(build.sourcesdirectory)\src\Uno.SampleCoreApp
       
   - task: PublishBuildArtifacts@1
