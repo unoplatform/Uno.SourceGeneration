@@ -2,5 +2,8 @@
 <Project>
 	<PropertyGroup>
       <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+
+      <!-- Fallback cache does not have the same contents: https://github.com/NuGet/Home/issues/7921#issuecomment-478152479-->
+      <DisableImplicitNuGetFallbackFolder>true</DisableImplicitNuGetFallbackFolder>
     </PropertyGroup>
 </Project>

@@ -972,7 +972,7 @@
       "System.Reflection.TypeExtensions": {
         "type": "Transitive",
         "resolved": "4.1.0",
-        "contentHash": "Wxh1rob3b2Awf74mHHRx6ZbU1OreDEeDyzWlqtf+xPAb4Byx8feK8i1IPszhIJb27UMdacSmbHvyNQCLysMMtw==",
+        "contentHash": "tsQ/ptQ3H5FYfON8lL4MxRk/8kFyE0A+tGPXmVP967cT/gzLHYxIejIYSxp4JmIeFHVP78g/F2FE1mUUTbDtrg==",
         "dependencies": {
           "System.Diagnostics.Contracts": "4.0.1",
           "System.Diagnostics.Debug": "4.0.11",
@@ -1505,9 +1505,6 @@
         }
       },
       "uno.sampledependency": {
-        "type": "Project"
-      },
-      "uno.samplegenerators": {
         "type": "Project"
       }
     },
@@ -2236,7 +2233,7 @@
       "System.Reflection.TypeExtensions": {
         "type": "Transitive",
         "resolved": "4.1.0",
-        "contentHash": "Wxh1rob3b2Awf74mHHRx6ZbU1OreDEeDyzWlqtf+xPAb4Byx8feK8i1IPszhIJb27UMdacSmbHvyNQCLysMMtw==",
+        "contentHash": "tsQ/ptQ3H5FYfON8lL4MxRk/8kFyE0A+tGPXmVP967cT/gzLHYxIejIYSxp4JmIeFHVP78g/F2FE1mUUTbDtrg==",
         "dependencies": {
           "System.Diagnostics.Contracts": "4.0.1",
           "System.Diagnostics.Debug": "4.0.11",
@@ -3311,7 +3308,7 @@
       "System.Reflection.TypeExtensions": {
         "type": "Transitive",
         "resolved": "4.1.0",
-        "contentHash": "Wxh1rob3b2Awf74mHHRx6ZbU1OreDEeDyzWlqtf+xPAb4Byx8feK8i1IPszhIJb27UMdacSmbHvyNQCLysMMtw==",
+        "contentHash": "tsQ/ptQ3H5FYfON8lL4MxRk/8kFyE0A+tGPXmVP967cT/gzLHYxIejIYSxp4JmIeFHVP78g/F2FE1mUUTbDtrg==",
         "dependencies": {
           "System.Diagnostics.Contracts": "4.0.1",
           "System.Diagnostics.Debug": "4.0.11",
@@ -4354,7 +4351,7 @@
       "System.Reflection.TypeExtensions": {
         "type": "Transitive",
         "resolved": "4.1.0",
-        "contentHash": "Wxh1rob3b2Awf74mHHRx6ZbU1OreDEeDyzWlqtf+xPAb4Byx8feK8i1IPszhIJb27UMdacSmbHvyNQCLysMMtw==",
+        "contentHash": "tsQ/ptQ3H5FYfON8lL4MxRk/8kFyE0A+tGPXmVP967cT/gzLHYxIejIYSxp4JmIeFHVP78g/F2FE1mUUTbDtrg==",
         "dependencies": {
           "System.Diagnostics.Contracts": "4.0.1",
           "System.Diagnostics.Debug": "4.0.11",
@@ -5442,7 +5439,7 @@
       "System.Reflection.TypeExtensions": {
         "type": "Transitive",
         "resolved": "4.1.0",
-        "contentHash": "Wxh1rob3b2Awf74mHHRx6ZbU1OreDEeDyzWlqtf+xPAb4Byx8feK8i1IPszhIJb27UMdacSmbHvyNQCLysMMtw==",
+        "contentHash": "tsQ/ptQ3H5FYfON8lL4MxRk/8kFyE0A+tGPXmVP967cT/gzLHYxIejIYSxp4JmIeFHVP78g/F2FE1mUUTbDtrg==",
         "dependencies": {
           "System.Diagnostics.Contracts": "4.0.1",
           "System.Diagnostics.Debug": "4.0.11",
@@ -6485,7 +6482,7 @@
       "System.Reflection.TypeExtensions": {
         "type": "Transitive",
         "resolved": "4.1.0",
-        "contentHash": "Wxh1rob3b2Awf74mHHRx6ZbU1OreDEeDyzWlqtf+xPAb4Byx8feK8i1IPszhIJb27UMdacSmbHvyNQCLysMMtw==",
+        "contentHash": "tsQ/ptQ3H5FYfON8lL4MxRk/8kFyE0A+tGPXmVP967cT/gzLHYxIejIYSxp4JmIeFHVP78g/F2FE1mUUTbDtrg==",
         "dependencies": {
           "System.Diagnostics.Contracts": "4.0.1",
           "System.Diagnostics.Debug": "4.0.11",
@@ -7573,7 +7570,7 @@
       "System.Reflection.TypeExtensions": {
         "type": "Transitive",
         "resolved": "4.1.0",
-        "contentHash": "Wxh1rob3b2Awf74mHHRx6ZbU1OreDEeDyzWlqtf+xPAb4Byx8feK8i1IPszhIJb27UMdacSmbHvyNQCLysMMtw==",
+        "contentHash": "tsQ/ptQ3H5FYfON8lL4MxRk/8kFyE0A+tGPXmVP967cT/gzLHYxIejIYSxp4JmIeFHVP78g/F2FE1mUUTbDtrg==",
         "dependencies": {
           "System.Diagnostics.Contracts": "4.0.1",
           "System.Diagnostics.Debug": "4.0.11",
