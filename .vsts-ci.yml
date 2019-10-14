@@ -55,8 +55,8 @@ jobs:
 
 
 - job: Windows_VS2017
-  dependsOn:
-  - Windows_VS2019
+  #dependsOn:
+  #- Windows_VS2019
 
   variables:
     SAMPLES_BUILD: true
@@ -68,7 +68,7 @@ jobs:
       
   - task: GitVersion@5
     inputs:
-      updateAssemblyInfo: false
+      runtime: 'full'
 
   - task: DownloadBuildArtifacts@0
     inputs:
