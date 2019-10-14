@@ -123,6 +123,9 @@
       },
       "uno.sampledependency": {
         "type": "Project"
+      },
+      "uno.samplegenerators": {
+        "type": "Project"
       }
     },
     "UAP,Version=v10.0.16299/win10-arm": {

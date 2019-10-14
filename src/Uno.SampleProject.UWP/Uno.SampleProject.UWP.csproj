@@ -131,6 +131,12 @@
     -->
     <MyTestProperty>42</MyTestProperty>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <UnoSourceGeneratorAdditionalProperty Include="MyTestProperty" />
+    <UnoSourceGeneratorAdditionalProperty Include="__UNKNOWN_UNO_PROPERTY__" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Uno.SampleDependency\Uno.SampleDependency.csproj">
       <Project>{D02FBC83-F9DD-4710-AEBF-0BA2F8AE85B2}</Project>
