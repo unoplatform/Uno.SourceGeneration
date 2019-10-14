@@ -124,7 +124,6 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  
   <PropertyGroup Condition="'$(BuildingInsideUnoSourceGenerator)'==''">
     <!--
     Conditionally include this property group so that while in the source generator build
@@ -132,11 +131,6 @@
     -->
     <MyTestProperty>42</MyTestProperty>
   </PropertyGroup>
-
-  <ItemGroup>
-    <UnoSourceGeneratorAdditionalProperty Include="MyTestProperty" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Uno.SampleDependency\Uno.SampleDependency.csproj">
       <Project>{D02FBC83-F9DD-4710-AEBF-0BA2F8AE85B2}</Project>
@@ -145,10 +139,10 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.NETCore.UniversalWindowsPlatform">
-      <Version>5.2.3</Version>
+      <Version>6.2.9</Version>
     </PackageReference>
     <PackageReference Include="System.ValueTuple">
-      <Version>4.3.0</Version>
+      <Version>4.5.0</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
@@ -157,9 +151,7 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
-  
   <Import Project="..\SolutionBuild.targets" />
-  
   <ItemGroup>
     <ProjectReference Include="../Uno.SampleGenerators/Uno.SampleGenerators.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
@@ -167,7 +159,9 @@
       <UndefineProperties>TargetFramework</UndefineProperties>
     </ProjectReference>
   </ItemGroup>
-
+  <ItemGroup>
+    <None Include="packages.lock.json" />
+  </ItemGroup>
   <PropertyGroup>
     <UnoSourceGeneratorTasksPath>..\..\Uno.SourceGeneratorTasks.Dev15.0\bin\$(Configuration)</UnoSourceGeneratorTasksPath>
     <UnoSourceGeneratorOutputPath>GeneratedFiles</UnoSourceGeneratorOutputPath>

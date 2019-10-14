@@ -8,5 +8,6 @@
 
       <!-- Enable floating versions support -->
       <RestoreForceEvaluate>true</RestoreForceEvaluate>
+      <NoWarn>$(NoWarn);NU1701</NoWarn>
     </PropertyGroup>
 </Project>

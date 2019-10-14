@@ -116,7 +116,7 @@ jobs:
     inputs:
       command: build
       arguments: "--configuration Release -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer)"
-      workingDirectory: $(build.sourcesdirectory)\src\Uno.SampleCoreApp
+      workingDirectory: $(build.sourcesdirectory)/src/Uno.SampleCoreApp
 
 - job: Linux
 
@@ -168,7 +168,7 @@ jobs:
     inputs:
       command: build
       arguments: "--configuration Release -p:SAMPLES_BUILD=true -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer)"
-      workingDirectory: $(build.sourcesdirectory)\src\Uno.SampleCoreApp
+      workingDirectory: $(build.sourcesdirectory)/src/Uno.SampleCoreApp
       
   - task: PublishBuildArtifacts@1
     condition: always()
@@ -240,7 +240,7 @@ jobs:
     inputs:
       command: build
       arguments: "--configuration Release -p:SAMPLES_BUILD=true -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer)"
-      workingDirectory: $(build.sourcesdirectory)\src\Uno.SampleCoreApp
+      workingDirectory: $(build.sourcesdirectory)/src/Uno.SampleCoreApp
       
   - task: PublishBuildArtifacts@1
     condition: always()
