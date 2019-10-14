@@ -4,7 +4,17 @@ jobs:
   pool:
     vmImage: 'windows-2019'
 
+  variables:
+      NUGET_PACKAGES: $(Pipeline.Workspace)\.nuget\packages
+
   steps:
+
+  - task: CacheBeta@0
+    inputs:
+      key: nuget | packages.lock.json
+      path: $(NUGET_PACKAGES)
+    displayName: Cache NuGet packages
+
   - task: NuGetToolInstaller@0
     inputs:
       versionSpec: 4.7.0
@@ -60,12 +70,19 @@ jobs:
 
   variables:
     SAMPLES_BUILD: true
+    NUGET_PACKAGES: $(Pipeline.Workspace)\.nuget\packages
 
   pool:
     vmImage: 'vs2017-win2016'
 
   steps:
-      
+
+  - task: CacheBeta@0
+    inputs:
+      key: nuget | packages.lock.json
+      path: $(NUGET_PACKAGES)
+    displayName: Cache NuGet packages
+     
   - task: GitVersion@5
     inputs:
       configFilePath: '$(build.sourcesdirectory)\gitversion.yml'
@@ -106,7 +123,16 @@ jobs:
   pool:
     vmImage: 'ubuntu-16.04'
 
+  variables:
+    NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
+
   steps:
+
+  - task: CacheBeta@0
+    inputs:
+      key: nuget | packages.lock.json
+      path: $(NUGET_PACKAGES)
+    displayName: Cache NuGet packages
       
   - task: GitVersion@5
     inputs:
@@ -150,7 +176,7 @@ jobs:
   - Windows_VS2019
 
   variables:
-    NUGET_PACKAGES: $(Agent.WorkFolder)/.nuget
+    NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
 
   strategy:
     matrix:
@@ -173,6 +199,12 @@ jobs:
   - task: GitVersion@5
     inputs:
       configFilePath: '$(build.sourcesdirectory)/gitversion.yml'
+
+  - task: CacheBeta@0
+    inputs:
+      key: nuget | packages.lock.json
+      path: $(NUGET_PACKAGES)
+    displayName: Cache NuGet packages
 
   - task: DownloadBuildArtifacts@0
     inputs:
