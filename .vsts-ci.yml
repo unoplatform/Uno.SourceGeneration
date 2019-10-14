@@ -65,10 +65,13 @@ jobs:
     vmImage: 'vs2017-win2016'
 
   steps:
+
+  - task: DotNetCoreInstaller@2
+    inputs:
+      version: '3.0.100'
       
   - task: GitVersion@5
     inputs:
-      runtime: 'full'
       configFilePath: '$(build.sourcesdirectory)\gitversion.yml'
 
   - task: DownloadBuildArtifacts@0
@@ -80,10 +83,6 @@ jobs:
     inputs:
         sourceFolder: '$(System.ArtifactsDirectory)\unosourcegenerator-drop\build'
         targetFolder: $(build.sourcesdirectory)\src\PackageCache
-
-  - task: DotNetCoreInstaller@2
-    inputs:
-      version: '3.0.100'
       
   - task: MSBuild@1
     inputs:
@@ -108,10 +107,13 @@ jobs:
     vmImage: 'ubuntu-16.04'
 
   steps:
+
+  - task: DotNetCoreInstaller@2
+    inputs:
+      version: '3.0.100'
       
   - task: GitVersion@5
     inputs:
-      runtime: 'full'
       configFilePath: '$(build.sourcesdirectory)/gitversion.yml'
 
   - task: DownloadBuildArtifacts@0
@@ -124,13 +126,8 @@ jobs:
         sourceFolder: '$(System.ArtifactsDirectory)/unosourcegenerator-drop/build'
         targetFolder: $(build.sourcesdirectory)/src/PackageCache
 
-  - task: DotNetCoreInstaller@2
-    inputs:
-      version: '3.0.100'
-
   - bash: msbuild /r /p:Configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /p:SAMPLES_BUILD=true ./src/Uno.SourceGenerator.Samples.Unix.sln /bl:$(build.artifactstagingdirectory)/linux-sample-build.binlog
     displayName: Build
-
     
   - task: DotNetCoreCLI@2
     displayName: Validate .NET Core 3.0 CLI build
@@ -171,10 +168,13 @@ jobs:
     vmImage: 'macOS-10.13'
 
   steps:
+
+  - task: DotNetCoreInstaller@2
+    inputs:
+      version: '3.0.100'
       
   - task: GitVersion@5
     inputs:
-      runtime: 'full'
       configFilePath: '$(build.sourcesdirectory)/gitversion.yml'
 
   - task: DownloadBuildArtifacts@0
@@ -186,10 +186,6 @@ jobs:
     inputs:
         sourceFolder: '$(System.ArtifactsDirectory)/unosourcegenerator-drop/build'
         targetFolder: $(build.sourcesdirectory)/src/PackageCache
-
-  - task: DotNetCoreInstaller@2
-    inputs:
-      version: '3.0.100'
 
   - bash: /bin/bash -c "sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh $(XamarinVersion)"
     displayName: Select Xamarin Version
