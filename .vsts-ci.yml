@@ -24,6 +24,7 @@ jobs:
   - task: DotNetCoreInstaller@2
     inputs:
       version: '3.0.100'
+      installationPath: $(Agent.ToolsDirectory)/dotnet
       
   - powershell: .\build\build.ps1 -script build\build.cake
     displayName: Build
@@ -102,6 +103,7 @@ jobs:
   - task: DotNetCoreInstaller@2
     inputs:
       version: '3.0.100'
+      installationPath: $(Agent.ToolsDirectory)/dotnet
       
   - task: MSBuild@1
     inputs:
@@ -154,6 +156,7 @@ jobs:
   - task: DotNetCoreInstaller@2
     inputs:
       version: '3.0.100'
+      installationPath: $(Agent.ToolsDirectory)/dotnet
 
   - bash: msbuild /r /p:Configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /p:SAMPLES_BUILD=true ./src/Uno.SourceGenerator.Samples.Unix.sln /bl:$(build.artifactstagingdirectory)/linux-sample-build.binlog
     displayName: Build
@@ -223,6 +226,7 @@ jobs:
   - task: DotNetCoreInstaller@2
     inputs:
       version: '3.0.100'
+      installationPath: $(Agent.ToolsDirectory)/dotnet
 
   - bash: /bin/bash -c "sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh $(XamarinVersion)"
     displayName: Select Xamarin Version
