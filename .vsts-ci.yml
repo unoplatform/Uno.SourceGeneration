@@ -115,7 +115,7 @@ jobs:
     displayName: Validate .NET Core 3.0 CLI build
     inputs:
       command: build
-      arguments: "--configuration Release -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer)"
+      arguments: "--configuration Release -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer)  /bl:$(build.artifactstagingdirectory)/windows-sample-build-netcore.binlog"
       workingDirectory: $(build.sourcesdirectory)/src/Uno.SampleCoreApp
 
 - job: Linux
@@ -167,7 +167,7 @@ jobs:
     displayName: Validate .NET Core 3.0 CLI build
     inputs:
       command: build
-      arguments: "--configuration Release -p:SAMPLES_BUILD=true -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer)"
+      arguments: "--configuration Release -p:SAMPLES_BUILD=true -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/linux-sample-build-netcore.binlog"
       workingDirectory: $(build.sourcesdirectory)/src/Uno.SampleCoreApp
       
   - task: PublishBuildArtifacts@1
@@ -239,7 +239,7 @@ jobs:
     displayName: Validate .NET Core 3.0 CLI build
     inputs:
       command: build
-      arguments: "--configuration Release -p:SAMPLES_BUILD=true -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer)"
+      arguments: "--configuration Release -p:SAMPLES_BUILD=true -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/macos-sample-build-$(XamarinVersion)-netcore.binlog"
       workingDirectory: $(build.sourcesdirectory)/src/Uno.SampleCoreApp
       
   - task: PublishBuildArtifacts@1
