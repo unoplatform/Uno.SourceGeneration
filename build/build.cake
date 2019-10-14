@@ -133,7 +133,7 @@ Task("Version")
 {
 	versionInfo = GitVersion(new GitVersionSettings {
 		UpdateAssemblyInfo = true,
-		LogFilePath = Path.Combine(EnvironmentVariable("BUILD_ARTIFACTSTAGINGDIRECTORY"), "GitVersionLog.txt"),
+		LogFilePath = System.IO.Path.Combine(EnvironmentVariable("BUILD_ARTIFACTSTAGINGDIRECTORY"), "GitVersionLog.txt"),
 		UpdateAssemblyInfoFilePath = baseDir + "/build/AssemblyVersion.cs"
 	});
 
