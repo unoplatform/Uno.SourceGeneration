@@ -69,6 +69,7 @@ jobs:
   - task: GitVersion@5
     inputs:
       runtime: 'full'
+      configFilePath: '$(build.sourcesdirectory)\gitversion.yml'
 
   - task: DownloadBuildArtifacts@0
     inputs:
