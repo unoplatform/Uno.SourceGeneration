@@ -5,7 +5,6 @@
     <RootNamespace>Uno.SampleProject</RootNamespace>
     <AssemblyName>Uno.SampleProject</AssemblyName>
     <UnoDebugGenerationHost>true</UnoDebugGenerationHost>
-    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,16 +13,7 @@
     </Compile>
   </ItemGroup>
 
-  <PropertyGroup>
-    <UnoSourceGeneratorTasksPath>..\..\Uno.SourceGeneratorTasks.Dev15.0\bin\$(Configuration)</UnoSourceGeneratorTasksPath>
-    <UnoSourceGeneratorOutputPath>obj\$(Configuration)</UnoSourceGeneratorOutputPath>
-  </PropertyGroup>
-
-  <Import Project="..\Uno.SourceGeneratorTasks.Dev15.0\Content\Uno.SourceGenerationTasks.targets" />
-
-  <ItemGroup>
-    <SourceGenerator Include="..\Uno.SampleGenerators\bin\$(Configuration)\Uno.SampleGenerators.dll" />
-  </ItemGroup>
+  <Import Project="..\SolutionBuild.targets" />
   
   <PropertyGroup Condition="'$(BuildingInsideUnoSourceGenerator)'==''">
     <!--
@@ -44,13 +34,21 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(SAMPLES_BUILD)'==''">
     <ProjectReference Include="../Uno.SourceGeneration.Host/Uno.SourceGeneration.Host.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
       <UndefineProperties>TargetFramework</UndefineProperties>
     </ProjectReference>
     <ProjectReference Include="../Uno.SourceGeneratorTasks.Dev15.0/Uno.SourceGeneratorTasks.Dev15.0.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+      <UndefineProperties>TargetFramework</UndefineProperties>
+    </ProjectReference>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="../Uno.SampleGenerators/Uno.SampleGenerators.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
       <UndefineProperties>TargetFramework</UndefineProperties>

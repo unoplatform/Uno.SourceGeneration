@@ -5,26 +5,18 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
   </PropertyGroup>
 
-  <PropertyGroup>
-	<UnoSourceGeneratorTasksPath>..\..\Uno.SourceGeneratorTasks.Dev15.0\bin\$(Configuration)</UnoSourceGeneratorTasksPath>
-	<UnoSourceGeneratorOutputPath>GeneratedFiles</UnoSourceGeneratorOutputPath>
-  </PropertyGroup>
-  <Import Project="..\Uno.SourceGeneratorTasks.Dev15.0\Content\Uno.SourceGenerationTasks.targets" />
+  <Import Project="..\SolutionBuild.targets" />
+  
   <ItemGroup>
     <Compile Remove="GeneratedFiles\**" />
     <EmbeddedResource Remove="GeneratedFiles\**" />
     <None Remove="GeneratedFiles\**" />
   </ItemGroup>
+  
   <ItemGroup>
     <Compile Include="..\LinkTest\LinkedCompileFile.cs" Link="LinkedCompileFile.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Uno.SampleDependency\Uno.SampleDependency.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-	<SourceGenerator Include="..\Uno.SampleGenerators\bin\$(Configuration)\Uno.SampleGenerators.dll" />
-  </ItemGroup>
-  
+
   <PropertyGroup Condition="'$(BuildingInsideUnoSourceGenerator)'==''">
     <!--
     Conditionally include this property group so that while in the source generator build
@@ -35,6 +27,10 @@
 
   <ItemGroup>
     <UnoSourceGeneratorAdditionalProperty Include="MyTestProperty" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Uno.SampleDependency\Uno.SampleDependency.csproj" />
   </ItemGroup>
 
 </Project>
