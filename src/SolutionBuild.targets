@@ -11,11 +11,12 @@
 	  <PropertyGroup>
 		<UnoSourceGeneratorTasksPath>$(MSBuildThisFileDirectory)\Uno.SourceGeneratorTasks.Dev15.0\bin\$(Configuration)</UnoSourceGeneratorTasksPath>
 	  </PropertyGroup>
-	  <ItemGroup>
-		<SourceGenerator Include="$(MSBuildThisFileDirectory)\Uno.SampleGenerators\bin\$(Configuration)\Uno.SampleGenerators.dll" />
-	  </ItemGroup>
 	</Otherwise>
   </Choose>
+  
+  <ItemGroup>
+	<SourceGenerator Include="$(MSBuildThisFileDirectory)\Uno.SampleGenerators\bin\$(Configuration)\Uno.SampleGenerators.dll" />
+  </ItemGroup>
 
   <Import Project="$(MSBuildThisFileDirectory)\Uno.SourceGeneratorTasks.Dev15.0\Content\Uno.SourceGenerationTasks.targets" Condition="'$(SAMPLES_BUILD)'==''"/>
 </Project>
