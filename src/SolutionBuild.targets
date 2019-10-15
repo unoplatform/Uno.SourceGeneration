@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Project>
+
+  <Choose>
+	<When Condition="'$(SAMPLES_BUILD)'=='true'">
+	  <ItemGroup>
+		<PackageReference Include="Uno.SourceGenerationTasks" Version="$(SOURCEGEN_VERSION)" />
+	  </ItemGroup>
+	</When>
+	<Otherwise>
+	  <PropertyGroup>
+		<UnoSourceGeneratorTasksPath>$(MSBuildThisFileDirectory)\Uno.SourceGeneratorTasks.Dev15.0\bin\$(Configuration)</UnoSourceGeneratorTasksPath>
+	  </PropertyGroup>
+	</Otherwise>
+  </Choose>
+  
+  <ItemGroup>
+	<SourceGenerator Include="$(MSBuildThisFileDirectory)\Uno.SampleGenerators\bin\$(Configuration)\Uno.SampleGenerators.dll" />
+  </ItemGroup>
+
+  <Import Project="$(MSBuildThisFileDirectory)\Uno.SourceGeneratorTasks.Dev15.0\Content\Uno.SourceGenerationTasks.targets" Condition="'$(SAMPLES_BUILD)'==''"/>
+</Project>

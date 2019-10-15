@@ -107,7 +107,7 @@ namespace Uno.SourceGeneration.Host
 					.FirstOrDefault();
 			}
 
-#if NET461
+#if NET472
 			Assembly appDomainResolve(object s, ResolveEventArgs e)
 				=> localResolve(new AssemblyName(e.Name));
 
