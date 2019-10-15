@@ -61,8 +61,8 @@ jobs:
   - task: PublishBuildArtifacts@1
     condition: always()
     inputs:
-      PathtoPublish: $(build.artifactstagingdirectory)
-      ArtifactName: unosourcegenerator-drop
+      PathtoPublish: $(build.artifactstagingdirectory)/binlog
+      ArtifactName: unosourcegenerator-binlog
       ArtifactType: Container
 
 - job: Windows_VS2017
@@ -102,7 +102,7 @@ jobs:
   - task: MSBuild@1
     inputs:
       solution: '$(build.sourcesdirectory)/src/Uno.SourceGenerator.Samples.Windows.sln'
-      msbuildArguments: /m /r /p:configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/windows-sample-build.binlog
+      msbuildArguments: /m /r /p:configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/binlog/windows-sample-build.binlog
 
   # Update .NET core after msbuild, otherwise this error happens:
   #
@@ -117,14 +117,14 @@ jobs:
     displayName: Validate .NET Core 3.0 CLI build
     inputs:
       command: build
-      arguments: "--configuration Release -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer)  /bl:$(build.artifactstagingdirectory)/windows-sample-build-netcore.binlog"
+      arguments: "--configuration Release -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer)  /bl:$(build.artifactstagingdirectory)/binlog/windows-sample-build-netcore.binlog"
       workingDirectory: $(build.sourcesdirectory)/src/Uno.SampleCoreApp
             
   - task: PublishBuildArtifacts@1
     condition: always()
     inputs:
-      PathtoPublish: $(build.artifactstagingdirectory)
-      ArtifactName: unosourcegenerator-drop
+      PathtoPublish: $(build.artifactstagingdirectory)/binlog
+      ArtifactName: unosourcegenerator-binlog
       ArtifactType: Container
 
 - job: Linux
@@ -168,7 +168,7 @@ jobs:
       version: '3.0.100'
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
-  - bash: msbuild /r /p:Configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /p:SAMPLES_BUILD=true ./src/Uno.SourceGenerator.Samples.Unix.sln /bl:$(build.artifactstagingdirectory)/linux-sample-build.binlog
+  - bash: msbuild /r /p:Configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /p:SAMPLES_BUILD=true ./src/Uno.SourceGenerator.Samples.Unix.sln /bl:$(build.artifactstagingdirectory)/binlog/linux-sample-build.binlog
     displayName: Build
 
     
@@ -176,14 +176,14 @@ jobs:
     displayName: Validate .NET Core 3.0 CLI build
     inputs:
       command: build
-      arguments: "--configuration Release -p:SAMPLES_BUILD=true -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/linux-sample-build-netcore.binlog"
+      arguments: "--configuration Release -p:SAMPLES_BUILD=true -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/binlog/linux-sample-build-netcore.binlog"
       workingDirectory: $(build.sourcesdirectory)/src/Uno.SampleCoreApp
       
   - task: PublishBuildArtifacts@1
     condition: always()
     inputs:
-      PathtoPublish: $(build.artifactstagingdirectory)
-      ArtifactName: unosourcegenerator-drop
+      PathtoPublish: $(build.artifactstagingdirectory)/binlog
+      ArtifactName: unosourcegenerator-binlog
       ArtifactType: Container
 
 - job: macOS
@@ -241,19 +241,19 @@ jobs:
   - bash: /bin/bash -c "sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh $(XamarinVersion)"
     displayName: Select Xamarin Version
 
-  - bash: msbuild /r /p:Configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /p:SAMPLES_BUILD=true ./src/Uno.SourceGenerator.Samples.Unix.sln /bl:$(build.artifactstagingdirectory)/macos-sample-build-$(XamarinVersion).binlog
+  - bash: msbuild /r /p:Configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /p:SAMPLES_BUILD=true ./src/Uno.SourceGenerator.Samples.Unix.sln /bl:$(build.artifactstagingdirectory)/binlog/macos-sample-build-$(XamarinVersion).binlog
     displayName: Build
 
   - task: DotNetCoreCLI@2
     displayName: Validate .NET Core 3.0 CLI build
     inputs:
       command: build
-      arguments: "--configuration Release -p:SAMPLES_BUILD=true -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/macos-sample-build-$(XamarinVersion)-netcore.binlog"
+      arguments: "--configuration Release -p:SAMPLES_BUILD=true -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/binlog/macos-sample-build-$(XamarinVersion)-netcore.binlog"
       workingDirectory: $(build.sourcesdirectory)/src/Uno.SampleCoreApp
       
   - task: PublishBuildArtifacts@1
     condition: always()
     inputs:
-      PathtoPublish: $(build.artifactstagingdirectory)
-      ArtifactName: unosourcegenerator-drop
+      PathtoPublish: $(build.artifactstagingdirectory)/binlog
+      ArtifactName: unosourcegenerator-binlog
       ArtifactType: Container
