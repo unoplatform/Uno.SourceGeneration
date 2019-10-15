@@ -61,8 +61,8 @@ jobs:
   - task: PublishBuildArtifacts@1
     condition: always()
     inputs:
-      PathtoPublish: $(build.artifactstagingdirectory)/binlog
-      ArtifactName: unosourcegenerator-binlog
+      PathtoPublish: $(build.artifactstagingdirectory)
+      ArtifactName: unosourcegenerator-drop
       ArtifactType: Container
 
 - job: Windows_VS2017
