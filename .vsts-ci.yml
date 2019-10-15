@@ -6,7 +6,7 @@ jobs:
 
   variables:
     NUGET_PACKAGES: $(Pipeline.Workspace)\.nuget\packages
-    RestoreLockedMode: true
+    RestoreLockedMode: false # Until https://github.com/NuGet/Home/issues/8645
     RestoreForceEvaluate: true
 
   steps:
@@ -65,8 +65,6 @@ jobs:
       ArtifactName: unosourcegenerator-drop
       ArtifactType: Container
 
-
-
 - job: Windows_VS2017
   dependsOn:
   - Windows_VS2019
@@ -74,7 +72,7 @@ jobs:
   variables:
     SAMPLES_BUILD: true
     NUGET_PACKAGES: $(Pipeline.Workspace)\.nuget\packages
-    RestoreLockedMode: true
+    RestoreLockedMode: false # Until https://github.com/NuGet/Home/issues/8645
 
   pool:
     vmImage: 'vs2017-win2016'
@@ -100,16 +98,20 @@ jobs:
     inputs:
         sourceFolder: '$(System.ArtifactsDirectory)\unosourcegenerator-drop\build'
         targetFolder: $(build.sourcesdirectory)\src\PackageCache
-
-  - task: DotNetCoreInstaller@2
-    inputs:
-      version: '3.0.100'
-      installationPath: $(Agent.ToolsDirectory)/dotnet
       
   - task: MSBuild@1
     inputs:
       solution: '$(build.sourcesdirectory)/src/Uno.SourceGenerator.Samples.Windows.sln'
       msbuildArguments: /m /r /p:configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/windows-sample-build.binlog
+
+  # Update .NET core after msbuild, otherwise this error happens:
+  #
+  #    Error : The current .NET SDK does not support targeting .NET Standard 2.0.  Either target .NET Standard 1.6 or lower, or use a version of the .NET SDK that supports .NET Standard 2.0.
+  #
+  - task: DotNetCoreInstaller@2
+    inputs:
+      version: '3.0.100'
+      installationPath: $(Agent.ToolsDirectory)/dotnet
 
   - task: DotNetCoreCLI@2
     displayName: Validate .NET Core 3.0 CLI build
@@ -130,7 +132,7 @@ jobs:
 
   variables:
     NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
-    RestoreLockedMode: true
+    RestoreLockedMode: false # Until https://github.com/NuGet/Home/issues/8645
 
   steps:
 
@@ -184,7 +186,7 @@ jobs:
 
   variables:
     NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
-    RestoreLockedMode: true
+    RestoreLockedMode: false # Until https://github.com/NuGet/Home/issues/8645
 
   strategy:
     matrix:
