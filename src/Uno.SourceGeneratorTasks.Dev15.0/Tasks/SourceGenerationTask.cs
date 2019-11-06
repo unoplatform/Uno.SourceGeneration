@@ -88,6 +88,9 @@ namespace Uno.SourceGeneratorTasks
 		[Required]
 		public Microsoft.Build.Framework.ITaskItem[] ReferencePath { get; set; }
 
+		[Required]
+		public Microsoft.Build.Framework.ITaskItem[] AdditionalProperties { get; set; }
+
 		[Output]
 		public string[] GenereratedFiles { get; set; }
 
@@ -361,7 +364,7 @@ namespace Uno.SourceGeneratorTasks
 		private string GetHostPath()
 		{
 			var currentPath = Path.GetDirectoryName(new Uri(GetType().Assembly.CodeBase).LocalPath);
-			var hostPlatform = RuntimeHelpers.IsNetCore ? "netcoreapp2.1" : "net461";
+			var hostPlatform = RuntimeHelpers.IsNetCore ? "netcoreapp3.0" : "net472";
 			var installedPath = Path.Combine(currentPath, "..", "host", hostPlatform);
 #if DEBUG
 			var configuration = "Debug";
@@ -436,7 +439,9 @@ namespace Uno.SourceGeneratorTasks
 				MSBuildBinPath = Path.GetDirectoryName(new Uri(typeof(Microsoft.Build.Logging.ConsoleLogger).Assembly.CodeBase).LocalPath),
 				AdditionalAssemblies = AdditionalAssemblies,
 				SourceGenerators = SourceGenerators,
-				ReferencePath = ReferencePath.Select(r => r.ItemSpec).ToArray()
+				ReferencePath = ReferencePath.Select(r => r.ItemSpec).ToArray(),
+				AdditionalProperties = AdditionalProperties
+					.ToDictionary(v => v.ItemSpec, v => v.GetMetadata("Value")),
 			};
 
 		private string EnsureRootedPath(string projectFile, string targetPath) =>

@@ -13,14 +13,13 @@ The `Uno.SourceGeneratorTasks` support updating generators on the fly, making it
 The `Uno.SourceGeneratorTasks` support any target framework for code generation, though there are limitations when [using a mixed targetframeworks graph](https://github.com/dotnet/roslyn/issues/23114), such as generating code
 in a `net47` project that references a `netstandard2.0` project. In such cases, prefer adding a `net47` target instead of targeting `netstandard2.0`.
 
-Visual Studio 2017 15.3+ for Windows, macOS and Linux builds are supported.
+Visual Studio 2017 15.3+ for Windows, macOS and Linux builds are supported. Building for .NET Core requires .NET 3.0.100 or later.
 
 ## Build status
 
-| Target | Branch | Status | Build output (artifacts) |
-| ------ | ------ | ------ | ----- |
-| development | master |[![Build status](https://ci.appveyor.com/api/projects/status/0jsq4wg0ce7a5rqu/branch/master?svg=true)](https://ci.appveyor.com/project/nventivedevops/uno-sourcegeneration/branch/master) <br> ![Build Stats](https://buildstats.info/appveyor/chart/nventivedevops/uno-sourcegeneration?branch=master&includeBuildsFromPullRequest=false) | [Appveyor - master](https://ci.appveyor.com/project/nventivedevops/uno-sourcegeneration/branch/master/artifacts)
-| stable | stable |[![Build status](https://ci.appveyor.com/api/projects/status/0jsq4wg0ce7a5rqu/branch/stable?svg=true)](https://ci.appveyor.com/project/nventivedevops/uno-sourcegeneration/branch/stable) <br> ![Build Stats](https://buildstats.info/appveyor/chart/nventivedevops/uno-sourcegeneration?branch=stable&includeBuildsFromPullRequest=false) | [Appveyor - stable](https://ci.appveyor.com/project/nventivedevops/uno-sourcegeneration/branch/stable/artifacts)
+| Target | Branch | Status |
+| ------ | ------ | ------ |
+| development | master |[![Build Status](https://dev.azure.com/uno-platform/Uno%20Platform/_apis/build/status/Uno%20Platform/Uno.SourceGeneration%20CI?branchName=master)](https://dev.azure.com/uno-platform/Uno%20Platform/_build/latest?definitionId=32&branchName=master)
 
 ## Nuget Packages
 
@@ -28,6 +27,8 @@ Visual Studio 2017 15.3+ for Windows, macOS and Linux builds are supported.
 | -- | -- | -- |
 | `Uno.SourceGeneration` | [![NuGet](https://img.shields.io/nuget/v/Uno.SourceGeneration.svg)](https://www.nuget.org/packages/Uno.SourceGeneration/) | Use this package to create a generator |
 | `Uno.SourceGenerationTasks` | [![NuGet](https://img.shields.io/nuget/v/Uno.SourceGenerationTasks.svg)](https://www.nuget.org/packages/Uno.SourceGenerationTasks/) | Use this package to use a generator |
+
+Experimental packages are available through this NuGet feed: https://pkgs.dev.azure.com/uno-platform/Uno%20Platform/_packaging/unoplatformdev/nuget/v3/index.json
 
 ## Creating a Source Generator
 
@@ -203,9 +204,34 @@ You can write to build output using the following code:
     }
 ```
 
+## Available Properties
+
+The source generation task provides set of properties that can alter its behavior based on your project.
+
+### UnoSourceGeneratorAdditionalProperty
+
+The `UnoSourceGeneratorAdditionalProperty` item group provides the ability for a project to enable the
+propagation of specific properties to the generators. This may be required if properties are 
+[injected dynamically](https://github.com/Microsoft/VSProjectSystem/blob/master/doc/extensibility/IProjectGlobalPropertiesProvider.md#iprojectglobalpropertiesprovider),
+or provided as global variables.
+
+A good example of this is the `JavaSdkDirectory` that is generally injected as a global parameter through
+the msbuild command line.
+
+In such as case, add the following in your project file:
+
+```xml
+<ItemGroup>
+    <UnoSourceGeneratorAdditionalProperty Include="JavaSdkDirectory" />
+</ItemGroup>
+```
+
+In this case, the `JavaSdkDirectory` value will be captured in the original build environment, and provided
+to the generators' build environment.
+
 ## Troubleshooting
 
-## Error: `Failed to analyze project file ..., the targets ... failed to execute.`
+### Error: `Failed to analyze project file ..., the targets ... failed to execute.`
 
 This is issue is caused by a [open Roslyn issue](https://github.com/nventive/Uno.SourceGeneration/issues/2)
 for which all projects of the solution must have all the possible "head" projects configuration.

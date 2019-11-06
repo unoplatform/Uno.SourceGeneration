@@ -1,6 +1,6 @@
 #addin "nuget:?package=Cake.FileHelpers"
 #addin "nuget:?package=Cake.Powershell"
-#tool "nuget:?package=GitVersion.CommandLine&version=3.6.5"
+#tool "nuget:?package=GitVersion.CommandLine&version=5.0.1"
 
 using System;
 using System.Linq;
@@ -11,13 +11,6 @@ using System.Text.RegularExpressions;
 //////////////////////////////////////////////////////////////////////
 
 var target = Argument("target", "Default");
-
-//////////////////////////////////////////////////////////////////////
-// VERSIONS
-//////////////////////////////////////////////////////////////////////
-
-var gitVersioningVersion = "2.0.41";
-var signClientVersion = "0.9.0";
 
 //////////////////////////////////////////////////////////////////////
 // VARIABLES
@@ -111,7 +104,7 @@ Task("Build")
 
 	var nuGetPackSettings = new NuGetPackSettings
 	{
-	  Version = versionInfo.FullSemVer,
+	  Version = versionInfo.SemVer,
 	};
 
 	var nugetFilePaths = GetFiles("./*.nuspec");
@@ -140,10 +133,11 @@ Task("Version")
 {
 	versionInfo = GitVersion(new GitVersionSettings {
 		UpdateAssemblyInfo = true,
+		LogFilePath = System.IO.Path.Combine(EnvironmentVariable("BUILD_ARTIFACTSTAGINGDIRECTORY"), "GitVersionLog.txt"),
 		UpdateAssemblyInfoFilePath = baseDir + "/build/AssemblyVersion.cs"
 	});
 
-	Information($"FullSemVer: {versionInfo.FullSemVer} Sha: {versionInfo.Sha}");
+	Information($"SemVer: {versionInfo.SemVer} Sha: {versionInfo.Sha}");
 
 	var files = new[] {
 		@"..\src\Uno.SourceGeneratorTasks.Dev15.0\Content\Uno.SourceGenerationTasks.targets",

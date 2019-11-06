@@ -8,12 +8,14 @@
     <Compile Include="Library.fs" />
   </ItemGroup>
 
-  <PropertyGroup>
-    <UnoSourceGeneratorTasksPath>..\..\Uno.SourceGeneratorTasks.Dev15.0\bin\$(Configuration)</UnoSourceGeneratorTasksPath>
-  </PropertyGroup>
-  <Import Project="..\Uno.SourceGeneratorTasks.Dev15.0\Content\Uno.SourceGenerationTasks.targets" />
+  <Import Project="../SolutionBuild.targets" />
+
   <ItemGroup>
-    <SourceGenerator Include="..\Uno.SampleGenerators\bin\$(Configuration)\Uno.SampleGenerators.dll" />
+    <ProjectReference Include="../Uno.SampleGenerators/Uno.SampleGenerators.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+      <UndefineProperties>TargetFramework</UndefineProperties>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>

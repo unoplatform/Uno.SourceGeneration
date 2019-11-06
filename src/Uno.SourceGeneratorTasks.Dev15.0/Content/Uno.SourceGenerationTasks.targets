@@ -109,6 +109,11 @@
                                              Condition="'%(Extension)' == '.dll'" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <!-- Capture the values of the additional property values -->
+	  <_UnoSourceGeneratorAdditionalProperty Include="@(UnoSourceGeneratorAdditionalProperty)" Value="$(%(Identity))" />
+	</ItemGroup>
+
 	<PropertyGroup Condition="'$(_UnoSourceGeneratorProjectType)'=='ios' or '$(_UnoSourceGeneratorProjectType)'=='mac'">
 	  <!-- 
 			Workaround until we can determine where the logic behind `TargetFrameworkRootPathSearchPathsOSX` 
@@ -134,6 +139,7 @@
 							  BinLogOutputPath="$(UnoSourceGeneratorBinLogOutputPath)"
 							  BinLogEnabled="$(UnoSourceGeneratorUnsecureBinLogEnabled)"
 							  ReferencePath="@(_AssembliesForReferenceCopyLocalPaths)"
+						      AdditionalProperties="@(_UnoSourceGeneratorAdditionalProperty)"
 							  Condition="$(_hasSourceGenerators)">
 	  <Output TaskParameter="GenereratedFiles" ItemName="UnoGeneratedFiles" />
 	</SourceGenerationTask_v0>

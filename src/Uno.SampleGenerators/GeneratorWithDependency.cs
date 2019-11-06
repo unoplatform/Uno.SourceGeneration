@@ -1,4 +1,4 @@
-// ******************************************************************
+﻿// ******************************************************************
 // Copyright � 2015-2018 nventive inc. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,16 +14,15 @@
 // limitations under the License.
 //
 // ******************************************************************
-using System.Diagnostics;
+using Uno.SourceGeneration;
 
-namespace Uno.SampleProject
+namespace Uno.SampleGenerators
 {
-	public class MyCustomSourceGenerator
+	public class WithDependencyGenerator : SourceGenerator
 	{
-		public MyCustomSourceGenerator()
+		public override void Execute(SourceGeneratorContext context)
 		{
-			Debug.WriteLine(Test.MyGeneratedType.Project);
-			Debug.WriteLine(Test.MyGeneratedType2.Project);
+			context.AddCompilationUnit("with_dependency", $"/* {NodaTime.DateTimeZone.Utc.Id} */");
 		}
 	}
 }

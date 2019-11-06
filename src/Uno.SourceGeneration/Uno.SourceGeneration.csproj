@@ -3,8 +3,8 @@
   <PropertyGroup>
 	<TargetFrameworks>netcoreapp2.1;net461</TargetFrameworks>
 	<DefineConstants>$(DefineConstants);HAS_BINLOG</DefineConstants>
-	<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-	<GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net461'">

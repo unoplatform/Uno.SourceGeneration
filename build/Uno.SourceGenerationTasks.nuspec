@@ -18,8 +18,8 @@
 	<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\**\*.pdb" target="build\Dev15.0" />
 	<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\*.config" target="build\Dev15.0" />
 
-	<file src="..\src\Uno.SourceGeneration.Host\bin\Release\net461\**\*.*" target="build\host\net461" />
-	<file src="..\src\Uno.SourceGeneration.Host\bin\Release\netcoreapp2.1\**\*.*" target="build\host\netcoreapp2.1" />
+	<file src="..\src\Uno.SourceGeneration.Host\bin\Release\net472\**\*.*" target="build\host\net472" />
+	<file src="..\src\Uno.SourceGeneration.Host\bin\Release\netcoreapp3.0\**\*.*" target="build\host\netcoreapp3.0" />
 
 	<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Content\Uno.SourceGenerationTasks.targets" target="build\netstandard1.0" />
 	

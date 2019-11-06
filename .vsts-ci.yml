@@ -1,14 +1,31 @@
 jobs:
-- job: Windows
+- job: Windows_VS2019
 
   pool:
-    vmImage: 'vs2017-win2016'
+    vmImage: 'windows-2019'
+
+  variables:
+    NUGET_PACKAGES: $(Pipeline.Workspace)\.nuget\packages
+    RestoreLockedMode: false # Until https://github.com/NuGet/Home/issues/8645
+    RestoreForceEvaluate: true
 
   steps:
+
+  - task: CacheBeta@0
+    inputs:
+      key: nuget | **/packages.lock.json
+      path: $(NUGET_PACKAGES)
+    displayName: Cache NuGet packages
+
   - task: NuGetToolInstaller@0
     inputs:
       versionSpec: 4.7.0
       checkLatest: false
+
+  - task: DotNetCoreInstaller@2
+    inputs:
+      version: '3.0.100'
+      installationPath: $(Agent.ToolsDirectory)/dotnet
       
   - powershell: .\build\build.ps1 -script build\build.cake
     displayName: Build
@@ -34,10 +51,6 @@ jobs:
       ArtifactDirectory: $(build.artifactstagingdirectory)
     condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['SignClientSecret'], '')), not(eq(variables['SignClientUser'], '')))
 
-  - task: DotNetCoreInstaller@0
-    inputs:
-      version: '2.2.103'
-
   - task: DotNetCoreCLI@2
     displayName: Validate DotNetCore CLI build
     inputs:
@@ -52,60 +65,195 @@ jobs:
       ArtifactName: unosourcegenerator-drop
       ArtifactType: Container
 
-- job: Linux
+- job: Windows_VS2017
+  dependsOn:
+  - Windows_VS2019
 
   variables:
-    NUGET_PACKAGES: $(Agent.WorkFolder)\.nuget
+    SAMPLES_BUILD: true
+    NUGET_PACKAGES: $(Pipeline.Workspace)\.nuget\packages
+    RestoreLockedMode: false # Until https://github.com/NuGet/Home/issues/8645
+
+  pool:
+    vmImage: 'vs2017-win2016'
+
+  steps:
+
+  - task: CacheBeta@0
+    inputs:
+      key: nuget | **/packages.lock.json
+      path: $(NUGET_PACKAGES)
+    displayName: Cache NuGet packages
+     
+  - task: GitVersion@5
+    inputs:
+      configFilePath: '$(build.sourcesdirectory)\gitversion.yml'
+
+  - task: DownloadBuildArtifacts@0
+    inputs:
+      ArtifactName: unosourcegenerator-drop
+      downloadPath: '$(System.ArtifactsDirectory)'
+
+  - task: CopyFiles@2
+    inputs:
+        sourceFolder: '$(System.ArtifactsDirectory)\unosourcegenerator-drop\build'
+        targetFolder: $(build.sourcesdirectory)\src\PackageCache
+      
+  - task: MSBuild@1
+    inputs:
+      solution: '$(build.sourcesdirectory)/src/Uno.SourceGenerator.Samples.Windows.sln'
+      msbuildArguments: /m /r /p:configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/binlog/windows-sample-build.binlog
+
+  # Update .NET core after msbuild, otherwise this error happens:
+  #
+  #    Error : The current .NET SDK does not support targeting .NET Standard 2.0.  Either target .NET Standard 1.6 or lower, or use a version of the .NET SDK that supports .NET Standard 2.0.
+  #
+  - task: DotNetCoreInstaller@2
+    inputs:
+      version: '3.0.100'
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+
+  - task: DotNetCoreCLI@2
+    displayName: Validate .NET Core 3.0 CLI build
+    inputs:
+      command: build
+      arguments: "--configuration Release -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer)  /bl:$(build.artifactstagingdirectory)/binlog/windows-sample-build-netcore.binlog"
+      workingDirectory: $(build.sourcesdirectory)/src/Uno.SampleCoreApp
+            
+  - task: PublishBuildArtifacts@1
+    condition: always()
+    inputs:
+      PathtoPublish: $(build.artifactstagingdirectory)/binlog
+      ArtifactName: unosourcegenerator-binlog
+      ArtifactType: Container
+
+- job: Linux
+
+  dependsOn:
+  - Windows_VS2019
+
+  container: nventive/wasm-build:1.4.1
 
   pool:
     vmImage: 'ubuntu-16.04'
 
-  steps:
-  - task: NuGetToolInstaller@0
-    inputs:
-      versionSpec: 4.7.0
-      checkLatest: false
+  variables:
+    NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
+    RestoreLockedMode: false # Until https://github.com/NuGet/Home/issues/8645
 
-  - bash: msbuild /r /p:Configuration=Release ./src/Uno.SourceGenerator.Linux.sln # /bl:$(build.artifactstagingdirectory)/linux-build.binlog
+  steps:
+
+  - task: CacheBeta@0
+    inputs:
+      key: nuget | **/packages.lock.json
+      path: $(NUGET_PACKAGES)
+    displayName: Cache NuGet packages
+      
+  - task: GitVersion@5
+    inputs:
+      configFilePath: '$(build.sourcesdirectory)/gitversion.yml'
+
+  - task: DownloadBuildArtifacts@0
+    inputs:
+      ArtifactName: unosourcegenerator-drop
+      downloadPath: '$(System.ArtifactsDirectory)'
+
+  - task: CopyFiles@2
+    inputs:
+        sourceFolder: '$(System.ArtifactsDirectory)/unosourcegenerator-drop/build'
+        targetFolder: $(build.sourcesdirectory)/src/PackageCache
+
+  - task: DotNetCoreInstaller@2
+    inputs:
+      version: '3.0.100'
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+
+  - bash: msbuild /r /p:Configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /p:SAMPLES_BUILD=true ./src/Uno.SourceGenerator.Samples.Unix.sln /bl:$(build.artifactstagingdirectory)/binlog/linux-sample-build.binlog
     displayName: Build
+
     
+  - task: DotNetCoreCLI@2
+    displayName: Validate .NET Core 3.0 CLI build
+    inputs:
+      command: build
+      arguments: "--configuration Release -p:SAMPLES_BUILD=true -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/binlog/linux-sample-build-netcore.binlog"
+      workingDirectory: $(build.sourcesdirectory)/src/Uno.SampleCoreApp
+      
   - task: PublishBuildArtifacts@1
     condition: always()
     inputs:
-      PathtoPublish: $(build.artifactstagingdirectory)
-      ArtifactName: unosourcegenerator-drop
+      PathtoPublish: $(build.artifactstagingdirectory)/binlog
+      ArtifactName: unosourcegenerator-binlog
       ArtifactType: Container
 
 - job: macOS
 
+  dependsOn:
+  - Windows_VS2019
+
+  variables:
+    NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
+    RestoreLockedMode: false # Until https://github.com/NuGet/Home/issues/8645
+
   strategy:
     matrix:
+      Xamarin_6_4_0:
+        XamarinVersion: 6_4_0
+      Xamarin_6_0_0:
+        XamarinVersion: 6_0_0
+      Xamarin_5_18_1:
+        XamarinVersion: 5_18_1
       Xamarin_5_16_0:
         XamarinVersion: 5_16_0
       Xamarin_5_12_0:
         XamarinVersion: 5_12_0
 
-  variables:
-    NUGET_PACKAGES: $(Agent.WorkFolder)\.nuget
-
   pool:
     vmImage: 'macOS-10.13'
 
   steps:
-  - task: NuGetToolInstaller@0
+      
+  - task: GitVersion@5
     inputs:
-      versionSpec: 4.7.0
-      checkLatest: false
+      configFilePath: '$(build.sourcesdirectory)/gitversion.yml'
+
+  - task: CacheBeta@0
+    inputs:
+      key: nuget | **/packages.lock.json
+      path: $(NUGET_PACKAGES)
+    displayName: Cache NuGet packages
+
+  - task: DownloadBuildArtifacts@0
+    inputs:
+      ArtifactName: unosourcegenerator-drop
+      downloadPath: '$(System.ArtifactsDirectory)'
+
+  - task: CopyFiles@2
+    inputs:
+        sourceFolder: '$(System.ArtifactsDirectory)/unosourcegenerator-drop/build'
+        targetFolder: $(build.sourcesdirectory)/src/PackageCache
+
+  - task: DotNetCoreInstaller@2
+    inputs:
+      version: '3.0.100'
+      installationPath: $(Agent.ToolsDirectory)/dotnet
 
   - bash: /bin/bash -c "sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh $(XamarinVersion)"
     displayName: Select Xamarin Version
 
-  - bash: msbuild /r /p:Configuration=Release ./src/Uno.SourceGenerator.Linux.sln # /bl:$(build.artifactstagingdirectory)/macos-build.binlog
+  - bash: msbuild /r /p:Configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /p:SAMPLES_BUILD=true ./src/Uno.SourceGenerator.Samples.Unix.sln /bl:$(build.artifactstagingdirectory)/binlog/macos-sample-build-$(XamarinVersion).binlog
     displayName: Build
-    
+
+  - task: DotNetCoreCLI@2
+    displayName: Validate .NET Core 3.0 CLI build
+    inputs:
+      command: build
+      arguments: "--configuration Release -p:SAMPLES_BUILD=true -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/binlog/macos-sample-build-$(XamarinVersion)-netcore.binlog"
+      workingDirectory: $(build.sourcesdirectory)/src/Uno.SampleCoreApp
+      
   - task: PublishBuildArtifacts@1
     condition: always()
     inputs:
-      PathtoPublish: $(build.artifactstagingdirectory)
-      ArtifactName: unosourcegenerator-drop
+      PathtoPublish: $(build.artifactstagingdirectory)/binlog
+      ArtifactName: unosourcegenerator-binlog
       ArtifactType: Container

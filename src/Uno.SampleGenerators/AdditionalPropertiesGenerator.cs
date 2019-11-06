@@ -1,4 +1,4 @@
-// ******************************************************************
+﻿// ******************************************************************
 // Copyright � 2015-2018 nventive inc. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,16 +14,28 @@
 // limitations under the License.
 //
 // ******************************************************************
-using System.Diagnostics;
+using Uno.SourceGeneration;
 
-namespace Uno.SampleProject
+namespace Uno.SampleGenerators
 {
-	public class MyCustomSourceGenerator
+	[GenerateAfter("Uno.SampleGenerators.MyCustomSourceGenerator")]
+	public class AdditionalPropertiesGenerator : GeneratorBaseClass
 	{
-		public MyCustomSourceGenerator()
+		public override void Execute(SourceGeneratorContext context)
 		{
-			Debug.WriteLine(Test.MyGeneratedType.Project);
-			Debug.WriteLine(Test.MyGeneratedType2.Project);
+			var project = context.GetProjectInstance();
+
+			context.AddCompilationUnit(
+				"Test2",
+				$@"
+namespace AdditionalPropertiesGeneratorTest {{
+	public static class TestType
+	{{
+		// Project: {project?.FullPath}
+		// reusing the compiled code form other generator
+		public const int Project = {project.GetProperty("MyTestProperty").EvaluatedValue};
+	}}
+}}");
 		}
 	}
 }

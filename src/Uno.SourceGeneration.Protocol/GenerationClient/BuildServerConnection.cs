@@ -485,7 +485,7 @@ namespace Uno.SourceGeneration.Host.GenerationClient
             }
         }
 
-#if NET461
+#if NET461 || NET472
         internal static bool CheckIdentityUnix(PipeStream stream)
         {
             // Identity verification is unavailable in the MSBuild task,
