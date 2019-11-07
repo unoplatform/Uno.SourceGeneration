@@ -6,7 +6,13 @@
 - Introduction of the `UnoSourceGeneratorAdditionalProperty` item group allows for the propagation of those properties to the generators. (#112)
 
 ### Breaking changes
+* This update removes unused dependencies, to improve the nuget restore time :
+    * Microsoft.Build.Engine
+    * Microsoft.Build.Tasks.Core
+    * Microsoft.CodeAnalysis
+  You may have to add those dependencies manually if your code relied in those, or one of their dependencies.
 - 
+
 ### Bug fixes
 - 
 
