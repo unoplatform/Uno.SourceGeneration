@@ -16,6 +16,10 @@ jobs:
       key: nuget | **/packages.lock.json
       path: $(NUGET_PACKAGES)
     displayName: Cache NuGet packages
+     
+  - task: GitVersion@5
+    inputs:
+      configFilePath: '$(build.sourcesdirectory)\gitversion.yml'
 
   - task: NuGetToolInstaller@0
     inputs:
