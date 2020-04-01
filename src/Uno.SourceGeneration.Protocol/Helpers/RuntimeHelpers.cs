@@ -7,7 +7,7 @@ namespace Uno.SourceGeneration.Helpers
 {
 	public class RuntimeHelpers
 	{
-		public static bool IsNetCore => RuntimeInformation.FrameworkDescription.StartsWith(".NET Core");
+		public static bool IsNetCore => Type.GetType("System.Runtime.Loader.AssemblyLoadContext", false) != null;
 
 		public static bool IsMono => Type.GetType("Mono.Runtime") != null;
 	}
