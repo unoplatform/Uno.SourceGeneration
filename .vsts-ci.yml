@@ -158,9 +158,10 @@ jobs:
 
   strategy:
     matrix:
-      NetCore_5_0:
-        NETCORE_VERSION: 5.0.x
-        NETCORE_PREVIEW: True
+      # Restore when fixing https://github.com/unoplatform/Uno.SourceGeneration/issues/122
+      # NetCore_5_0:
+      #   NETCORE_VERSION: 5.0.x
+      #   NETCORE_PREVIEW: True
       NetCore_3_1:
         NETCORE_VERSION: 3.1.x
         NETCORE_PREVIEW: False
@@ -249,11 +250,12 @@ jobs:
 
   strategy:
     matrix:
-      Xamarin_6_6_0_NetCore_5_0:
-        XamarinVersion: 6_6_0
-        VM_Image: 'macOS-10.15'
-        NETCORE_VERSION: 5.0.x
-        NETCORE_PREVIEW: True
+      # Restore when fixing https://github.com/unoplatform/Uno.SourceGeneration/issues/122
+      # Xamarin_6_6_0_NetCore_5_0:
+      #   XamarinVersion: 6_6_0
+      #   VM_Image: 'macOS-10.15'
+      #   NETCORE_VERSION: 5.0.x
+      #   NETCORE_PREVIEW: True
       Xamarin_6_6_0_NetCore_3_1:
         XamarinVersion: 6_6_0
         VM_Image: 'macOS-10.15'
