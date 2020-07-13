@@ -217,7 +217,7 @@ namespace Uno.SourceGeneratorTasks
 
 					responseTask.Wait(_sharedCompileCts.Token);
 
-					BinaryLoggerReplayHelper.Replay(BuildEngine, binlogFile);
+					BinaryLoggerReplayHelper.Replay(BuildEngine, binlogFile, Log);
 
 					if (responseTask.Result.Type == GenerationResponse.ResponseType.Completed)
 					{
@@ -340,7 +340,7 @@ namespace Uno.SourceGeneratorTasks
 						process.WaitForExit();
 					}
 
-					BinaryLoggerReplayHelper.Replay(BuildEngine, binlogFile);
+					BinaryLoggerReplayHelper.Replay(BuildEngine, binlogFile, Log);
 
 					if (process.ExitCode == 0)
 					{
