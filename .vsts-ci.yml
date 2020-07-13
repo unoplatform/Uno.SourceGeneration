@@ -7,7 +7,7 @@ jobs:
   strategy:
     matrix:
       NetCore_5_0:
-        NETCORE_VERSION: 5.0.x
+        NETCORE_VERSION: 5.0.100-preview.5.20279.10
         NETCORE_PREVIEW: True
       NetCore_3_1:
         NETCORE_VERSION: 3.1.x
