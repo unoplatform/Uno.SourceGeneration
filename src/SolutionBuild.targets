@@ -9,7 +9,8 @@
 	</When>
 	<Otherwise>
 	  <PropertyGroup>
-		<UnoSourceGeneratorTasksPath>$(MSBuildThisFileDirectory)\Uno.SourceGeneratorTasks.Dev15.0\bin\$(Configuration)</UnoSourceGeneratorTasksPath>
+		<UnoSourceGeneratorTasksPath Condition="'$(DOTNET_HOST_PATH)'==''">$(MSBuildThisFileDirectory)\Uno.SourceGeneratorTasks.Dev15.0\bin\$(Configuration)\net472</UnoSourceGeneratorTasksPath>
+		<UnoSourceGeneratorTasksPath Condition="'$(DOTNET_HOST_PATH)'!=''">$(MSBuildThisFileDirectory)\Uno.SourceGeneratorTasks.Dev15.0\bin\$(Configuration)\netcoreapp3.1</UnoSourceGeneratorTasksPath>
 	  </PropertyGroup>
 	</Otherwise>
   </Choose>
