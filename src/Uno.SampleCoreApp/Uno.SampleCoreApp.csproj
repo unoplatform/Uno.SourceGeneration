@@ -33,4 +33,17 @@
     <ProjectReference Include="..\Uno.SampleDependency\Uno.SampleDependency.csproj" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(SAMPLES_BUILD)'==''">
+	<ProjectReference Include="../Uno.SourceGeneration.Host/Uno.SourceGeneration.Host.csproj">
+	  <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+	  <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+	  <UndefineProperties>TargetFramework</UndefineProperties>
+	</ProjectReference>
+	<ProjectReference Include="../Uno.SourceGeneratorTasks.Dev15.0/Uno.SourceGeneratorTasks.Dev15.0.csproj">
+	  <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+	  <SkipGetTargetFrameworkProperties>true</SkipGetTargetFrameworkProperties>
+	  <UndefineProperties>TargetFramework</UndefineProperties>
+	</ProjectReference>
+  </ItemGroup>
+
 </Project>

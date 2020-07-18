@@ -4,9 +4,9 @@
     ".NETStandard,Version=v2.0": {
       "FSharp.Core": {
         "type": "Direct",
-        "requested": "[4.7.1, )",
-        "resolved": "4.7.1",
-        "contentHash": "cQ4Dn5mFIWnJF8MmL49k2V6L8mtInDrXopskNFbpC4lsPdspTn7WzUQLylB4HU4tpi76ManXMVCAvtlYowTfHQ=="
+        "requested": "[4.7.2, )",
+        "resolved": "4.7.2",
+        "contentHash": "w3XFVTnyZUbC8e2QT6a85ern6y7eQPPk+MYemz1FP0iBfgZcembL+wmo5cIZ1kxB8jfoXC8Q9KVkOMsGpkBKbA=="
       },
       "NETStandard.Library": {
         "type": "Direct",

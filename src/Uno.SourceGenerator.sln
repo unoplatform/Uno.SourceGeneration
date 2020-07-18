@@ -55,8 +55,7 @@ EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Uno.SourceGeneration.Engine.Shared\Uno.SourceGeneration.Engine.Shared.projitems*{08631d97-b757-4226-897f-9839b1205ab5}*SharedItemsImports = 13
-		Uno.SourceGeneration.Engine.Shared\Uno.SourceGeneration.Engine.Shared.projitems*{0a1cc471-6080-415f-8947-e41d8534395e}*SharedItemsImports = 4
-		Uno.SourceGeneration.Protocol\Uno.SourceGeneration.Protocol.projitems*{0a1cc471-6080-415f-8947-e41d8534395e}*SharedItemsImports = 4
+		Uno.SourceGeneration.Protocol\Uno.SourceGeneration.Protocol.projitems*{0a1cc471-6080-415f-8947-e41d8534395e}*SharedItemsImports = 5
 		Uno.SourceGeneration.Engine.Shared\Uno.SourceGeneration.Engine.Shared.projitems*{1d32b614-7fe4-4235-a4af-e33ea9829863}*SharedItemsImports = 5
 		Uno.SourceGeneration.Protocol\Uno.SourceGeneration.Protocol.projitems*{1d32b614-7fe4-4235-a4af-e33ea9829863}*SharedItemsImports = 5
 		Uno.SourceGenerationHost.Shared\Uno.SourceGenerationHost.Shared.projitems*{1d32b614-7fe4-4235-a4af-e33ea9829863}*SharedItemsImports = 5

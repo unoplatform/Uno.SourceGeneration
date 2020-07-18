@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if !NETSTANDARD
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.Logging;
@@ -42,3 +43,4 @@ namespace Uno.SourceGeneration.Helpers
 
 	}
 }
+#endif

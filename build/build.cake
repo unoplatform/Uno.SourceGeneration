@@ -18,7 +18,7 @@ var target = Argument("target", "Default");
 
 var baseDir = MakeAbsolute(Directory("../")).ToString();
 var buildDir = baseDir + "/build";
-var Solution = baseDir + "/src/Uno.SourceGenerator.sln";
+var Solution = baseDir + "/src/Uno.SampleCoreApp";
 var toolsDir = buildDir + "/tools";
 GitVersion versionInfo = null;
 
@@ -83,24 +83,12 @@ Task("Build")
 {
 	Information("\nBuilding Solution");
 
-	var buildSettings = new MSBuildSettings
+	var settings = new DotNetCoreBuildSettings
 	{
-		MaxCpuCount = 1
-	}
-	.SetConfiguration("Release")
-	.WithTarget("Restore");
-	
-	MSBuild(Solution, buildSettings);
+		Configuration = "Release",
+	};
 
-	buildSettings = new MSBuildSettings
-	{
-		MaxCpuCount = 1
-	}
-	.SetPlatformTarget(PlatformTarget.x86)
-	.SetConfiguration("Release")
-	.WithTarget("Build");
-	
-	MSBuild(Solution, buildSettings);
+	DotNetCoreBuild(Solution, settings);
 
 	var nuGetPackSettings = new NuGetPackSettings
 	{

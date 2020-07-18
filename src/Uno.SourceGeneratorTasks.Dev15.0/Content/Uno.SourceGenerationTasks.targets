@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-	<UnoSourceGeneratorTasksPath Condition="'$(UnoSourceGeneratorTasksPath)'==''">..\Dev15.0</UnoSourceGeneratorTasksPath>
+	<UnoSourceGeneratorTasksPath Condition="'$(UnoSourceGeneratorTasksPath)'=='' and '$(DOTNET_HOST_PATH)'==''">..\Dev15.0\net472</UnoSourceGeneratorTasksPath>
+	<UnoSourceGeneratorTasksPath Condition="'$(UnoSourceGeneratorTasksPath)'=='' and '$(DOTNET_HOST_PATH)'!=''">..\Dev15.0\netcoreapp3.1</UnoSourceGeneratorTasksPath>
+	
 	<UnoSourceGeneration_FixIntellisense Condition="'$(UnoSourceGeneration_FixIntellisense)'==''">true</UnoSourceGeneration_FixIntellisense>
 
 	<_UnoSourceGeneratorOutputPath Condition="'$(UnoSourceGeneratorOutputPath)'==''">$(IntermediateOutputPath)</_UnoSourceGeneratorOutputPath>
