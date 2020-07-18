@@ -124,11 +124,11 @@ jobs:
   #
   - task: DotNetCoreInstaller@2
     inputs:
-      version: '3.0.100'
+      version: '3.1.x'
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
   - task: DotNetCoreCLI@2
-    displayName: Validate .NET Core 3.0 CLI build
+    displayName: Validate .NET Core 3.1.x CLI build
     inputs:
       command: build
       arguments: "--configuration Release -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer)  /bl:$(build.artifactstagingdirectory)/binlog/windows-sample-build-netcore.binlog"
@@ -160,9 +160,6 @@ jobs:
         NETCORE_PREVIEW: True
       NetCore_3_1:
         NETCORE_VERSION: 3.1.x
-        NETCORE_PREVIEW: False
-      NetCore_3_0:
-        NETCORE_VERSION: 3.0.100
         NETCORE_PREVIEW: False
 
   steps:
@@ -226,11 +223,8 @@ jobs:
       NetCore_3_1:
         NETCORE_VERSION: 3.1.x
         NETCORE_PREVIEW: False
-      NetCore_3_0:
-        NETCORE_VERSION: 3.0.100
-        NETCORE_PREVIEW: False
 
-  container: unoplatform/wasm-build:2.0
+  container: unoplatform/wasm-build:2.2
 
   pool:
     vmImage: 'ubuntu-18.04'
@@ -254,11 +248,11 @@ jobs:
       version: 2.1.x
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
-  # 3.0 is required for Source Generation sample
+  # 3.1 is required for Source Generation sample
   - task: DotNetCoreInstaller@2
-    displayName: Installing .NET Core 3.0 CLI
+    displayName: Installing .NET Core 3.1 CLI
     inputs:
-      version: 3.0.x
+      version: 3.1.x
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
   - task: GitVersion@5
@@ -287,7 +281,7 @@ jobs:
 
     
   - task: DotNetCoreCLI@2
-    displayName: Validate .NET Core 3.0 CLI build
+    displayName: Validate .NET Core CLI build
     inputs:
       command: build
       arguments: "--configuration Release -p:SAMPLES_BUILD=true -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/binlog/linux-sample-build-netcore.binlog"
@@ -325,32 +319,27 @@ jobs:
       Xamarin_6_6_0_NetCore_3_0:
         XamarinVersion: 6_6_0
         VM_Image: 'macOS-10.15'
-        NETCORE_VERSION: 3.0.100
+        NETCORE_VERSION: 3.1.x
         NETCORE_PREVIEW: False
       Xamarin_6_4_0:
         XamarinVersion: 6_4_0
         VM_Image: 'macOS-10.14'
-        NETCORE_VERSION: 3.0.100
+        NETCORE_VERSION: 3.1.x
         NETCORE_PREVIEW: False
       Xamarin_6_0_0:
         XamarinVersion: 6_0_0
         VM_Image: 'macOS-10.14'
-        NETCORE_VERSION: 3.0.100
+        NETCORE_VERSION: 3.1.x
         NETCORE_PREVIEW: False
       Xamarin_5_18_1:
         XamarinVersion: 5_18_1
         VM_Image: 'macOS-10.14'
-        NETCORE_VERSION: 3.0.100
+        NETCORE_VERSION: 3.1.x
         NETCORE_PREVIEW: False
       Xamarin_5_16_0:
         XamarinVersion: 5_16_0
         VM_Image: 'macOS-10.14'
-        NETCORE_VERSION: 3.0.100
-        NETCORE_PREVIEW: False
-      Xamarin_5_12_0:
-        XamarinVersion: 5_12_0
-        VM_Image: 'macOS-10.14'
-        NETCORE_VERSION: 3.0.100
+        NETCORE_VERSION: 3.1.x
         NETCORE_PREVIEW: False
 
   pool:
@@ -365,11 +354,11 @@ jobs:
       version: 2.1.x
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
-  # 3.0 is required for Source Generation sample
+  # 3.1 is required for Source Generation sample
   - task: DotNetCoreInstaller@2
-    displayName: Installing .NET Core 3.0 CLI
+    displayName: Installing .NET Core 3.1.x CLI
     inputs:
-      version: 3.0.x
+      version: 3.1.x
       installationPath: $(Agent.ToolsDirectory)/dotnet
      
   - task: GitVersion@5
