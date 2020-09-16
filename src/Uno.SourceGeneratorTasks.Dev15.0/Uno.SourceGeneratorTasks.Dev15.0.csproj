@@ -71,4 +71,7 @@
     </ProjectReference>
   </ItemGroup>
 
+  <!-- MSBuild 16.8 compatibility -->
+  <Target Name="GetTargetPath" />
+
 </Project>

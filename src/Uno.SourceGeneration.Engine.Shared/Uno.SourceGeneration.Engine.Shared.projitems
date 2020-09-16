@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)CachingMetadataReferenceResolver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)InternalGeneratorExecutionContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Workspace\CommandLineArgumentReader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Workspace\CompilerOptionParseUtilities.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Workspace\Conversions.cs" />

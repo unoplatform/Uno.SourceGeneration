@@ -29,7 +29,7 @@ namespace Uno.SourceGeneration.Host
 
 		public string Configuration { get; internal set; }
 		public ProjectInstance ExecutedProject { get; internal set; }
-		public (Type generatorType, Func<SourceGenerator> builder)[] Generators { get; internal set; }
+		public (Type generatorType, Func<SourceGenerator> unoBuilder, Func<ISourceGenerator> roslynBuilder)[] Generators { get; internal set; }
 		public string IntermediatePath { get; internal set; }
 		public Project LoadedProject { get; internal set; }
 		public string[] References { get; internal set; }

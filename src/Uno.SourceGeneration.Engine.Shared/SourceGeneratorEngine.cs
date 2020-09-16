@@ -169,47 +169,91 @@ namespace Uno.SourceGeneration.Host
 						.AsParallel()
 						.Select(generatorDef =>
 						{
-							var generator = generatorDef.builder();
-
-							try
+							if (generatorDef.unoBuilder != null)
 							{
-								var generatorLogger = new GeneratorLogger(generator.Log());
+								var generator = generatorDef.unoBuilder();
 
-								var context = new InternalSourceGeneratorContext(compilationResult.compilation, compilationResult.project);
-								context.SetProjectInstance(details.ExecutedProject);
-								context.SetLogger(generatorLogger);
-
-								generatorLogger.Debug($"{2}");
-
-								var w = Stopwatch.StartNew();
-								generator.Execute(context);
-
-								if (this.Log().IsEnabled(LogLevel.Debug))
+								try
 								{
-									this.Log().Debug($"Ran {w.Elapsed} for [{generator.GetType()}]");
+									var generatorLogger = new GeneratorLogger(generator.Log());
+
+									var context = new InternalSourceGeneratorContext(compilationResult.compilation, compilationResult.project);
+									context.SetProjectInstance(details.ExecutedProject);
+									context.SetLogger(generatorLogger);
+
+									generatorLogger.Debug($"{2}");
+
+									var w = Stopwatch.StartNew();
+									generator.Execute(context);
+
+									if (this.Log().IsEnabled(LogLevel.Debug))
+									{
+										this.Log().Debug($"Ran {w.Elapsed} for [{generator.GetType()}]");
+									}
+
+									return new
+									{
+										GeneratorType = generatorDef.generatorType,
+										Trees = context.Trees
+									};
 								}
-
-								return new
+								catch (Exception e)
 								{
-									Generator = generator,
-									Context = context
-								};
-							}
-							catch (Exception e)
-							{
-								// Wrap the exception into a string to avoid serialization issue when 
-								// parts of the stack are coming from an assembly the msbuild task is 
-								// not able to load properly.
+									// Wrap the exception into a string to avoid serialization issue when 
+									// parts of the stack are coming from an assembly the msbuild task is 
+									// not able to load properly.
 
-								throw new InvalidOperationException($"Generation failed for {generator.GetType()}. {e}");
+									throw new InvalidOperationException($"Generation failed for {generator.GetType()}. {e}");
+								}
+							}
+							else if (generatorDef.roslynBuilder != null)
+							{
+								var generator = generatorDef.roslynBuilder();
+
+								try
+								{
+									var generatorLogger = new GeneratorLogger(generator.Log());
+									var generatorInitializationContext = new GeneratorInitializationContext();
+									var generatorExecutionContext = new InternalGeneratorExecutionContext(compilationResult.compilation, null, CancellationToken.None, compilationResult.project);
+
+									generatorExecutionContext.SetProjectInstance(details.ExecutedProject);
+									generatorExecutionContext.SetLogger(generatorLogger);
+
+									var w = Stopwatch.StartNew();
+									generator.Initialize(generatorInitializationContext);
+									generator.Execute(generatorExecutionContext);
+
+									if (this.Log().IsEnabled(LogLevel.Debug))
+									{
+										this.Log().Debug($"Ran {w.Elapsed} for [{generator.GetType()}]");
+									}
+
+									return new
+									{
+										GeneratorType = generatorDef.generatorType,
+										Trees = generatorExecutionContext.Trees
+									};
+								}
+								catch (Exception e)
+								{
+									// Wrap the exception into a string to avoid serialization issue when 
+									// parts of the stack are coming from an assembly the msbuild task is 
+									// not able to load properly.
+
+									throw new InvalidOperationException($"Generation failed for {generator.GetType()}. {e}");
+								}
+							}
+							else
+							{
+								throw new InvalidOperationException();
 							}
 						})
 						.ToArray();
 
 					generatedFilesAndContent = (from result in generatorResults
-												from tree in result.Context.Trees
+												from tree in result.Trees
 												select (
-													Path.Combine(_environment.OutputPath ?? details.IntermediatePath, BuildTreeFileName(result.Generator, tree.Key)),
+													Path.Combine(_environment.OutputPath ?? details.IntermediatePath, BuildTreeFileName(result.GeneratorType, tree.Key)),
 													tree.Value)
 						)
 						.ToArray();
@@ -253,7 +297,7 @@ namespace Uno.SourceGeneration.Host
 			}
 		}
 
-		private string BuildTreeFileName(SourceGenerator generator, string key)
+		private string BuildTreeFileName(Type generatorType, string key)
 		{
 			key = key
 				.Replace(":", "_")
@@ -266,7 +310,7 @@ namespace Uno.SourceGeneration.Host
 				.Replace(":", "_")
 				.Replace(".", "_");
 
-			return Path.Combine(generator.GetType().Name, key + $".g.cs");
+			return Path.Combine(generatorType.Name, key + $".g.cs");
 		}
 
 		private async Task<(Compilation compilation, Project project)> GetCompilation(ProjectDetails details)

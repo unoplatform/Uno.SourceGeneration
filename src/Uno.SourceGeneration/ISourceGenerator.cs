@@ -1,4 +1,4 @@
-// ******************************************************************
+﻿// ******************************************************************
 // Copyright � 2015-2018 nventive inc. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,20 +14,14 @@
 // limitations under the License.
 //
 // ******************************************************************
-using Microsoft.CodeAnalysis;
-
 namespace Uno.SourceGeneration
 {
-	public abstract class SourceGeneratorContext
+	/// <summary>
+	/// Defines a C# 9.0 compatible source generator, to be used with the Uno SourceGeneration tasks.
+	/// </summary>
+	public interface ISourceGenerator
 	{
-		public abstract Compilation Compilation { get; }
-
-		public abstract Project Project { get; }
-
-		public abstract void ReportDiagnostic(Diagnostic diagnostic);
-
-		public abstract void AddCompilationUnit(string name, SyntaxTree tree);
-
-		public abstract void AddCompilationUnit(string name, string tree);
+		void Execute(GeneratorExecutionContext context);
+		void Initialize(GeneratorInitializationContext context);
 	}
 }
