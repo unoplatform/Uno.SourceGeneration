@@ -1,4 +1,4 @@
-// ******************************************************************
+﻿// ******************************************************************
 // Copyright � 2015-2018 nventive inc. All rights reserved.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,20 +14,31 @@
 // limitations under the License.
 //
 // ******************************************************************
-using Microsoft.CodeAnalysis;
+using Uno.SourceGeneration;
 
-namespace Uno.SourceGeneration
+namespace Uno.SampleGenerators
 {
-	public abstract class SourceGeneratorContext
+	[GenerateAfter("Uno.SampleGenerators.MyCustomSourceGenerator")]
+	[Generator]
+	public class RoslynCompatGenerator : ISourceGenerator
 	{
-		public abstract Compilation Compilation { get; }
+		public void Initialize(GeneratorInitializationContext context)
+		{
 
-		public abstract Project Project { get; }
+		}
 
-		public abstract void ReportDiagnostic(Diagnostic diagnostic);
-
-		public abstract void AddCompilationUnit(string name, SyntaxTree tree);
-
-		public abstract void AddCompilationUnit(string name, string tree);
+		public void Execute(GeneratorExecutionContext context)
+		{
+			context.AddSource(
+				"Test3",
+				$@"
+				namespace RoslynCompatGeneratorTest {{
+					public static class TestType
+					{{
+						// reusing the compiled code form other generator
+						public const int Project = {context.GetMSBuildPropertyValue("MyTestProperty")};
+					}}
+				}}");
+		}
 	}
 }

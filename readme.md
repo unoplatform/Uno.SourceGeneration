@@ -6,6 +6,8 @@ msbuild task which executes the SourceGenerators.
 
 It provides a way to generate C# source code based on a project being built, using all of its syntactic and semantic model information.
 
+The Uno Source Generator also supports the [Roslyn 3.8 (C# 9.0) Source Generator APIs](https://github.com/dotnet/roslyn/blob/master/docs/features/source-generators.cookbook.md), see below for more details. Note that as of Roslyn 3.8, generators do not support multi-pass generation where generators can depend on each others. In order to benefit from this feature, a generator must run using Uno.SourceGenerationTasks.
+
 Using this generator allows for a set of generators to share the same Roslyn compilation context, which is particularly expensive to create, and run all the generators in parallel.
 
 The `Uno.SourceGeneratorTasks` support updating generators on the fly, making iterative development easier as visual studio or MSBuild will not lock the generator's assemblies.
@@ -135,6 +137,46 @@ Packaging the generator in nuget requires to :
         </PropertyGroup>
         ```
         This will allow for the generator package to be installed on any target framework.
+
+## Creating a C# 9.0 compatible generator
+
+Based on [C# 9.0 generators](https://github.com/dotnet/roslyn/blob/master/docs/features/source-generators.cookbook.md) the bootstrapper defines a set of APIs that are compatible with Roslyn.
+
+Here's a roslyn compatible generator:
+```csharp
+[Generator]
+public class CustomGenerator : ISourceGenerator
+{
+    public void Initialize(GeneratorInitializationContext context) {}
+
+    public void Execute(GeneratorExecutionContext context)
+    {
+        context.AddSource("myGeneratedFile.cs", @"
+namespace GeneratedNamespace
+{
+    public class GeneratedClass
+    {
+        public static void GeneratedMethod()
+        {
+            // generated code
+        }
+    }
+}");
+    }
+}
+```
+
+Uno also provides a set of methods giving access [to the MSBuild properties and items](https://github.com/dotnet/roslyn/blob/master/docs/features/source-generators.cookbook.md#consume-msbuild-properties-and-metadata), compatible Uno's source generation tasks:
+```csharp
+public void Execute(GeneratorExecutionContext context)
+{
+	var myProperty = context.GetMSBuildPropertyValue("MyTestProperty");
+
+    var myItems = context.GetMSBuildPropertyValue("GetMSBuildItems").Select(i => i.Identity);
+}
+```
+
+Note that the a generator running under Uno.SourceGenerationTasks does not need to define in MSBuild which properties need to be used, whereas C# 9.0 requires it.
 
 ## Debugging a generator
 

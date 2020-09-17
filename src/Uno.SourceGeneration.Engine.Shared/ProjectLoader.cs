@@ -182,7 +182,7 @@ namespace Uno.SourceGeneration.Host
 					}
 
 					LogFailedTargets(environment.ProjectFile, result);
-					details.Generators = new (Type, Func<SourceGenerator>)[0];
+					details.Generators = new (Type, Func<SourceGenerator>, Func<ISourceGenerator>)[0];
 					return details;
 				}
 				// else
@@ -240,7 +240,7 @@ namespace Uno.SourceGeneration.Host
 
 				LogFailedTargets(environment.ProjectFile, result);
 
-				details.Generators = new (Type, Func<SourceGenerator>)[0];
+				details.Generators = new (Type, Func<SourceGenerator>, Func<ISourceGenerator>)[0];
 			}
 
 			_allProjects.TryAdd(key, details);
@@ -298,9 +298,9 @@ namespace Uno.SourceGeneration.Host
 			}
 		}
 
-		private static (Type, Func<SourceGenerator>)[] LoadAnalyzers(IEnumerable<string> enumerable)
+		private static (Type, Func<SourceGenerator>, Func<ISourceGenerator>)[] LoadAnalyzers(IEnumerable<string> enumerable)
 		{
-			var generators = new List<(Type, Func<SourceGenerator>)>();
+			var generators = new List<(Type, Func<SourceGenerator>, Func<ISourceGenerator>)>();
 
 			foreach (var analyzerAsm in enumerable.Where(ContainsGenerators))
 			{
@@ -327,12 +327,18 @@ namespace Uno.SourceGeneration.Host
 
 						var q = from type in asm.GetTypes()
 								where !type.IsAbstract
-								where type.GetBaseTypes().Any(c => c.FullName == typeof(SourceGenerator).FullName)
-								select type;
+								let isUnoSourceGenerator = type.GetBaseTypes().Any(c => c.FullName == typeof(SourceGenerator).FullName)
+								let isRoslynSourceGenerator = type.GetInterfaces().Any(i => i == typeof(ISourceGenerator))
+								where isUnoSourceGenerator || isRoslynSourceGenerator
+								select (type, isUnoSourceGenerator, isRoslynSourceGenerator);
 
 						generators.AddRange(
 							q.Select(t =>
-								(t, new Func<SourceGenerator>(() =>(SourceGenerator)Activator.CreateInstance(t)))
+								(
+									t.type,
+									t.isUnoSourceGenerator ? new Func<SourceGenerator>(() => (SourceGenerator)Activator.CreateInstance(t.type)) : null,
+									t.isRoslynSourceGenerator ? new Func<ISourceGenerator>(() => (ISourceGenerator)Activator.CreateInstance(t.type)) : null
+								)
 							)
 						);
 
