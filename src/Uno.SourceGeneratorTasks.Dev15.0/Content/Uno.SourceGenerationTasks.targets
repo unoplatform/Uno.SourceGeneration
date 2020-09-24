@@ -25,7 +25,12 @@
 	<!-- Enables the out of process single-use generation host -->
 	<UnoSourceGeneratorUseGenerationHost Condition="'$(UnoSourceGeneratorUseGenerationHost)'==''">true</UnoSourceGeneratorUseGenerationHost>
   </PropertyGroup>
-
+  
+  <PropertyGroup>
+	<!-- Workaround for https://github.com/unoplatform/uno/issues/3408 to get Refit 5+ to work alongside Uno SourceGeneration -->
+	<RefitDisableGenerateRefitStubs Condition="'$(BuildingInsideUnoSourceGenerator)'!=''">true</RefitDisableGenerateRefitStubs>
+  </PropertyGroup>
+  
   <ItemGroup>
 	<UnoSourceGeneratorBeforeTarget Include="XamlPreCompile" />
 	<UnoSourceGeneratorBeforeTarget Include="CoreCompile" />
