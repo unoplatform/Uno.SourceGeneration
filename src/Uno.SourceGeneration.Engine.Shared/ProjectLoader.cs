@@ -34,6 +34,7 @@ using System.Linq;
 using System.Collections.Concurrent;
 using static Microsoft.Extensions.Logging.LoggerExtensions;
 using Uno.SourceGeneratorTasks;
+using System.Reflection.Metadata;
 
 namespace Uno.SourceGeneration.Host
 {
@@ -327,8 +328,8 @@ namespace Uno.SourceGeneration.Host
 
 						var q = from type in asm.GetTypes()
 								where !type.IsAbstract
-								let isUnoSourceGenerator = type.GetBaseTypes().Any(c => c.FullName == typeof(SourceGenerator).FullName)
-								let isRoslynSourceGenerator = type.GetInterfaces().Any(i => i == typeof(ISourceGenerator))
+								let isUnoSourceGenerator = IsTypeUnoGenerators(type)
+								let isRoslynSourceGenerator = IsTypeRoslynGenerator(type)
 								where isUnoSourceGenerator || isRoslynSourceGenerator
 								select (type, isUnoSourceGenerator, isRoslynSourceGenerator);
 
@@ -366,6 +367,12 @@ namespace Uno.SourceGeneration.Host
 			return generators.ToArray();
 		}
 
+		private static bool IsTypeRoslynGenerator(Type type)
+			=> type.GetInterfaces().Any(i => i.FullName == typeof(ISourceGenerator).FullName);
+
+		private static bool IsTypeUnoGenerators(Type type)
+			=> type.GetBaseTypes().Any(c => c.FullName == typeof(SourceGenerator).FullName);
+
 		private static bool ContainsGenerators(string assembly)
 		{
 			try
@@ -373,7 +380,8 @@ namespace Uno.SourceGeneration.Host
 				_log.LogInformation($"Checking [{assembly}]");
 				var definition = Mono.Cecil.AssemblyDefinition.ReadAssembly(assembly);
 
-				return definition.MainModule.Types.Any(t => t.BaseType?.FullName == typeof(SourceGenerator).FullName);
+				return definition.MainModule.Types
+					.Any(t => t.BaseType?.FullName == typeof(SourceGenerator).FullName || t.Interfaces.Any(i => GetInterfaceTypeName(i) == typeof(ISourceGenerator).FullName));
 			}
 			catch (Exception e)
 			{
@@ -381,6 +389,19 @@ namespace Uno.SourceGeneration.Host
 				return false;
 			}
 		}
+
+#if NETFRAMEWORK
+		// Required to keep using an older version of Cecil.
+		private static string GetInterfaceTypeName(Mono.Cecil.TypeReference i)
+		{
+			return i.FullName;
+		}
+#else
+		private static string GetInterfaceTypeName(Mono.Cecil.InterfaceImplementation i)
+		{
+			return i.InterfaceType.FullName;
+		}
+#endif
 
 		private static MSBE.BuildResult BuildAsync(MSBE.BuildParameters parameters, MSBE.BuildRequestData requestData)
 		{
