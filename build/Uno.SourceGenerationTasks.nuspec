@@ -25,6 +25,7 @@
 	<file src="..\src\Uno.SourceGeneration.Host\bin\Release\net472\**\*.*" target="build\host\net472" />
 	<file src="..\src\Uno.SourceGeneration.Host\bin\Release\netcoreapp3.1\**\*.*" target="build\host\netcoreapp3.1" />
 	<file src="..\src\Uno.SourceGeneration.Host\bin\Release\net5\**\*.*" target="build\host\net5" />
+	<file src="..\src\Uno.SourceGeneration.Host\bin\Release\net6\**\*.*" target="build\host\net6" />
 
 	<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Content\Uno.SourceGenerationTasks.targets" target="build\netstandard1.0" />
 	
