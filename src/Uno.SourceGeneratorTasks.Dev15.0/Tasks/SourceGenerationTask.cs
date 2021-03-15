@@ -390,7 +390,7 @@ namespace Uno.SourceGeneratorTasks
 		private static string GetNetCoreHostVersion()
 			// .NET Core 3.1.3
 			// .NET 5.0.0-preview.6.20305.6
-			=> RuntimeInformation.FrameworkDescription.StartsWith(".NET Core") ? "netcoreapp3.1" : "net5";
+			=> RuntimeInformation.FrameworkDescription.StartsWith(".NET Core") ? "netcoreapp3.1" : "net" + RuntimeInformation.FrameworkDescription.Replace(".NET ", "")[0];
 
 		public bool IsMonoMSBuildCompatible =>
 			// Starting from vs16.0 the following errors does not happen. Below this version, we continue to use

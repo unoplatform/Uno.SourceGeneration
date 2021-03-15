@@ -8,8 +8,6 @@ jobs:
     NUGET_PACKAGES: $(Pipeline.Workspace)\.nuget\packages
     RestoreLockedMode: false # Until https://github.com/NuGet/Home/issues/8645
     RestoreForceEvaluate: true
-    NETCORE_VERSION: 5.x
-    NETCORE_PREVIEW: True
 
   steps:
 
@@ -28,17 +26,23 @@ jobs:
       versionSpec: 4.7.0
       checkLatest: false
 
-  - task: DotNetCoreInstaller@2
-    displayName: Installing .NET Core 3.1 CLI
+  - task: UseDotNet@2
+    displayName: Install .NET Core 3.1 CLI
     inputs:
       version: 3.1.x
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
-  - task: DotNetCoreInstaller@2
-    displayName: Installing .NET Core $(NETCORE_VERSION) CLI
+  - task: UseDotNet@2
+    displayName: Install .NET Core 5.0.103 CLI
     inputs:
-      version: $(NETCORE_VERSION)
-      includePreviewVersions: $(NETCORE_PREVIEW)
+      version: 5.0.103
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+
+  - task: UseDotNet@2
+    displayName: 'Install .NET 6.0.100-preview.2.21155.3 SDK'
+    inputs:
+      version: 6.0.100-preview.2.21155.3
+      includePreviewVersions: true
       installationPath: $(Agent.ToolsDirectory)/dotnet
       
   - powershell: .\build\build.ps1 -script build\build.cake
@@ -155,6 +159,9 @@ jobs:
 
   strategy:
     matrix:
+      NetCore_6_0:
+        NETCORE_VERSION: 6.0.100-preview.2.21155.3
+        NETCORE_PREVIEW: True
       NetCore_5_0:
         NETCORE_VERSION: 5.0.x
         NETCORE_PREVIEW: False
@@ -217,6 +224,9 @@ jobs:
 
   strategy:
     matrix:
+      NetCore_6_0:
+        NETCORE_VERSION: 6.0.100-preview.2.21155.3
+        NETCORE_PREVIEW: True
       NetCore_5_0:
         NETCORE_VERSION: 5.0.x
         NETCORE_PREVIEW: False
@@ -305,6 +315,12 @@ jobs:
 
   strategy:
     matrix:
+      # Disable in Preview two for https://github.com/dotnet/runtime/issues/49610
+      # Xamarin_6_12_0_NET_6_0:
+      #   XamarinVersion: 6_12_0
+      #   VM_Image: 'macOS-10.15'
+      #   NETCORE_VERSION: 6.0.100-preview.2.21155.3
+      #   NETCORE_PREVIEW: True
       Xamarin_6_6_0_NetCore_5_0:
         XamarinVersion: 6_6_0
         VM_Image: 'macOS-10.15'
@@ -392,12 +408,10 @@ jobs:
   - bash: msbuild /r /p:Configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /p:SAMPLES_BUILD=true ./src/Uno.SourceGenerator.Samples.Unix.sln /bl:$(build.artifactstagingdirectory)/binlog/macos-sample-build-$(XamarinVersion).binlog
     displayName: Build
 
-  - task: DotNetCoreCLI@2
+  - bash: |
+      cd $(build.sourcesdirectory)/src/Uno.SampleCoreApp
+      dotnet build --configuration Release -p:SAMPLES_BUILD=true -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/binlog/macos-sample-build-$(XamarinVersion)-netcore.binlog
     displayName: Validate .NET Core CLI build
-    inputs:
-      command: build
-      arguments: "--configuration Release -p:SAMPLES_BUILD=true -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/binlog/macos-sample-build-$(XamarinVersion)-netcore.binlog"
-      workingDirectory: $(build.sourcesdirectory)/src/Uno.SampleCoreApp
       
   - task: PublishBuildArtifacts@1
     condition: always()

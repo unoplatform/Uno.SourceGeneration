@@ -2,7 +2,7 @@
 
   <PropertyGroup>
 	<OutputType>Exe</OutputType>
-	<TargetFrameworks>net5;netcoreapp3.1;net472</TargetFrameworks>
+	<TargetFrameworks>net6;net5;netcoreapp3.1;net472</TargetFrameworks>
 	<DefineConstants>$(DefineConstants);HAS_BINLOG;IS_BUILD_HOST</DefineConstants>
 	<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 	<GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
@@ -82,7 +82,7 @@
 	</PackageReference>
   </ItemGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1' or '$(TargetFramework)'=='net5' ">
+  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1' or '$(TargetFramework)'=='net5' or '$(TargetFramework)'=='net6' ">
     <PackageReference Include="System.IO.Pipes.AccessControl" Version="4.3.0" />
     <PackageReference Include="Microsoft.Build">
 	  <Version>15.4.8</Version>
