@@ -181,9 +181,6 @@ namespace Uno.SourceGeneratorTasks
 		{
 			Log.LogMessage(MessageImportance.Low, "Using host controller generation mode");
 
-			var taskLogger = new TaskLoggerProvider() { TaskLog = Log };
-			LogExtensionPoint.AmbientLoggerFactory.AddProvider(taskLogger);
-
 			using (_sharedCompileCts = new CancellationTokenSource())
 			{
 				var responseFile = Path.GetTempFileName();
@@ -249,9 +246,6 @@ namespace Uno.SourceGeneratorTasks
 		private void GenerateWithHost()
 		{
 			Log.LogMessage(MessageImportance.Low, $"Using single-use host generation mode");
-
-			var taskLogger = new TaskLoggerProvider() { TaskLog = Log };
-			LogExtensionPoint.AmbientLoggerFactory.AddProvider(taskLogger);
 
 			var captureHostOutput = false;
 			if (!bool.TryParse(this.CaptureGenerationHostOutput, out captureHostOutput))
@@ -325,7 +319,7 @@ namespace Uno.SourceGeneratorTasks
 						var error = process.StandardError.ReadToEnd();
 						process.WaitForExit();
 
-						this.Log().Info(
+						Log.LogMessage(
 							$"Executing {startInfo.FileName} {startInfo.Arguments}:\n" +
 							$"result: {process.ExitCode}\n" +
 							$"\n---begin host output---\n{output}\n" +

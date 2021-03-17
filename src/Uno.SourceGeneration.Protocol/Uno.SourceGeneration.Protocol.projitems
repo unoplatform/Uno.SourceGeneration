@@ -20,8 +20,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\LogExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\RuntimeHelpers.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\StringExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\TaskLogger.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Helpers\TaskLoggerProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\TopologicalSorting.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\TypeExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Messages\CompletedGenerationResponse.cs" />
