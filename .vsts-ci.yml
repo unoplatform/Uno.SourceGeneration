@@ -39,9 +39,9 @@ jobs:
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
   - task: UseDotNet@2
-    displayName: 'Install .NET 6.0.100-preview.2.21155.3 SDK'
+    displayName: 'Install .NET 6.0.100-preview.6.21355.2 SDK'
     inputs:
-      version: 6.0.100-preview.2.21155.3
+      version: 6.0.100-preview.6.21355.2
       includePreviewVersions: true
       installationPath: $(Agent.ToolsDirectory)/dotnet
       
@@ -160,7 +160,7 @@ jobs:
   strategy:
     matrix:
       NetCore_6_0:
-        NETCORE_VERSION: 6.0.100-preview.2.21155.3
+        NETCORE_VERSION: 6.0.100-preview.6.21355.2
         NETCORE_PREVIEW: True
       NetCore_5_0:
         NETCORE_VERSION: 5.0.x
@@ -225,7 +225,7 @@ jobs:
   strategy:
     matrix:
       NetCore_6_0:
-        NETCORE_VERSION: 6.0.100-preview.2.21155.3
+        NETCORE_VERSION: 6.0.100-preview.6.21355.2
         NETCORE_PREVIEW: True
       NetCore_5_0:
         NETCORE_VERSION: 5.0.x
@@ -319,7 +319,7 @@ jobs:
       # Xamarin_6_12_0_NET_6_0:
       #   XamarinVersion: 6_12_0
       #   VM_Image: 'macOS-10.15'
-      #   NETCORE_VERSION: 6.0.100-preview.2.21155.3
+      #   NETCORE_VERSION: 6.0.100-preview.6.21355.2
       #   NETCORE_PREVIEW: True
       Xamarin_6_6_0_NetCore_5_0:
         XamarinVersion: 6_6_0
