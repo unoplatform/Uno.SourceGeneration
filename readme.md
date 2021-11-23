@@ -36,11 +36,11 @@ Experimental packages are available through this NuGet feed: https://pkgs.dev.az
 
 1. In Visual Studio 2017, create a **.NET Standard Class Library** project named `MyGenerator`
 2. In the csproj file
-    1. Change the TargetFramework to `net46`
+    1. Change the TargetFramework to `net461`
     2. Add a package reference to `Uno.SourceGeneration` (take the latest version)
     ```xml
     <ItemGroup>
-        <PackageReference Include="Uno.SourceGeneration" Version="1.5.0" />
+        <PackageReference Include="Uno.SourceGeneration" Version="3.2.0" />
     </ItemGroup>
     ```
 3. Add a new source file containing this code :
