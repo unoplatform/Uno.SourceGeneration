@@ -92,68 +92,6 @@ jobs:
       ArtifactName: unosourcegenerator-drop
       ArtifactType: Container
 
-- job: Windows_VS2017
-  dependsOn:
-  - Build_Packages
-
-  variables:
-    SAMPLES_BUILD: true
-    NUGET_PACKAGES: $(Pipeline.Workspace)\.nuget\packages
-    RestoreLockedMode: false # Until https://github.com/NuGet/Home/issues/8645
-
-  pool:
-    vmImage: 'vs2017-win2016'
-
-  steps:
-
-  - task: CacheBeta@0
-    inputs:
-      key: nuget | **/packages.lock.json
-      path: $(NUGET_PACKAGES)
-    displayName: Cache NuGet packages
-     
-  - task: GitVersion@5
-    inputs:
-      configFilePath: '$(build.sourcesdirectory)\gitversion.yml'
-
-  - task: DownloadBuildArtifacts@0
-    inputs:
-      ArtifactName: unosourcegenerator-drop
-      downloadPath: '$(System.ArtifactsDirectory)'
-
-  - task: CopyFiles@2
-    inputs:
-        sourceFolder: '$(System.ArtifactsDirectory)\unosourcegenerator-drop\build'
-        targetFolder: $(build.sourcesdirectory)\src\PackageCache
-      
-  - task: MSBuild@1
-    inputs:
-      solution: '$(build.sourcesdirectory)/src/Uno.SourceGenerator.Samples.Windows.sln'
-      msbuildArguments: /m /r /p:configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/binlog/windows-sample-build.binlog
-
-  # Update .NET core after msbuild, otherwise this error happens:
-  #
-  #    Error : The current .NET SDK does not support targeting .NET Standard 2.0.  Either target .NET Standard 1.6 or lower, or use a version of the .NET SDK that supports .NET Standard 2.0.
-  #
-  - task: DotNetCoreInstaller@2
-    inputs:
-      version: '3.1.x'
-      installationPath: $(Agent.ToolsDirectory)/dotnet
-
-  - task: DotNetCoreCLI@2
-    displayName: Validate .NET Core 3.1.x CLI build
-    inputs:
-      command: build
-      arguments: "--configuration Release -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer)  /bl:$(build.artifactstagingdirectory)/binlog/windows-sample-build-netcore.binlog"
-      workingDirectory: $(build.sourcesdirectory)/src/Uno.SampleCoreApp
-            
-  - task: PublishBuildArtifacts@1
-    condition: always()
-    inputs:
-      PathtoPublish: $(build.artifactstagingdirectory)/binlog
-      ArtifactName: unosourcegenerator-binlog
-      ArtifactType: Container
-
 - job: Windows_VS2019
   dependsOn:
   - Build_Packages
@@ -186,9 +124,18 @@ jobs:
       path: $(NUGET_PACKAGES)
     displayName: Cache NuGet packages
      
-  - task: GitVersion@5
+  - task: gitversion/setup@0
+    retryCountOnTaskFailure: 3
     inputs:
-      configFilePath: '$(build.sourcesdirectory)\gitversion.yml'
+      versionSpec: '5.6.8'
+
+  - task: gitversion/execute@0
+    retryCountOnTaskFailure: 3
+    inputs:
+      updateAssemblyInfo: 'False'
+      useConfigFile: true
+      configFilePath: gitversion.yml
+    displayName: Use GitVersion
 
   - task: DownloadBuildArtifacts@0
     inputs:
@@ -274,9 +221,18 @@ jobs:
       version: 3.1.x
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
-  - task: GitVersion@5
+  - task: gitversion/setup@0
+    retryCountOnTaskFailure: 3
     inputs:
-      configFilePath: '$(build.sourcesdirectory)/gitversion.yml'
+      versionSpec: '5.6.8'
+
+  - task: gitversion/execute@0
+    retryCountOnTaskFailure: 3
+    inputs:
+      updateAssemblyInfo: 'False'
+      useConfigFile: true
+      configFilePath: gitversion.yml
+    displayName: Use GitVersion
 
   - task: DownloadBuildArtifacts@0
     inputs:
@@ -385,9 +341,18 @@ jobs:
       version: 3.1.x
       installationPath: $(Agent.ToolsDirectory)/dotnet
      
-  - task: GitVersion@5
+  - task: gitversion/setup@0
+    retryCountOnTaskFailure: 3
     inputs:
-      configFilePath: '$(build.sourcesdirectory)/gitversion.yml'
+      versionSpec: '5.6.8'
+
+  - task: gitversion/execute@0
+    retryCountOnTaskFailure: 3
+    inputs:
+      updateAssemblyInfo: 'False'
+      useConfigFile: true
+      configFilePath: gitversion.yml
+    displayName: Use GitVersion
 
   - task: CacheBeta@0
     inputs:
