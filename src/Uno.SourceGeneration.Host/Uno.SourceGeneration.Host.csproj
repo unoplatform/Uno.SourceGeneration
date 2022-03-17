@@ -9,6 +9,7 @@
 	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	<LangVersion>7.2</LangVersion>
 	<AppConfig>$(MSBuildThisFileDirectory)app.$(TargetFramework).config</AppConfig>
+	<RollForward>LatestMajor</RollForward>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='net472'">
