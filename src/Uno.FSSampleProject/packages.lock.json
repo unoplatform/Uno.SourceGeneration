@@ -2,6 +2,12 @@
   "version": 1,
   "dependencies": {
     ".NETStandard,Version=v2.0": {
+      "FSharp.Core": {
+        "type": "Direct",
+        "requested": "[6.0.3-beta.*, )",
+        "resolved": "6.0.3",
+        "contentHash": "ywxwMhsA1nG2hsRSMl3IzYvdugrSoFg/ZY99cuBqV0SX0yp8ubD6Hee8Bh3YwaF2Ucyq/Jz8lZ0MY5VjxgogbA=="
+      },
       "NETStandard.Library": {
         "type": "Direct",
         "requested": "[2.0.3, )",
