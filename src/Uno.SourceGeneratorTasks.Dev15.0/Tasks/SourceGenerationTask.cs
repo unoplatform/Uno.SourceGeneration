@@ -357,7 +357,21 @@ namespace Uno.SourceGeneratorTasks
 		private string GetHostPath()
 		{
 			var currentPath = Path.GetDirectoryName(new Uri(GetType().Assembly.CodeBase).LocalPath);
-			var hostPlatform = RuntimeHelpers.IsNetCore ? GetNetCoreHostVersion() : "net472";
+			var hostPlatform = "net472";
+			if (RuntimeHelpers.IsNetCore)
+			{
+				var fx = RuntimeInformation.FrameworkDescription;
+				if (fx.StartsWith(".NET Core", StringComparison.OrdinalIgnoreCase))
+				{
+					hostPlatform = "netcoreapp3.1";
+				}
+				else if (fx.StartsWith(".NET ", StringComparison.OrdinalIgnoreCase))
+				{
+					var version = fx[5];
+					// net6 is the latest being shipped and we have <RollForward>LatestMajor</RollForward>
+					hostPlatform = (version > '6') ? "net6" : "net" + version;
+				}
+			}
 			var installedPath = Path.Combine(currentPath, "..", "..", "host", hostPlatform);
 #if DEBUG
 			var configuration = "Debug";
@@ -380,11 +394,6 @@ namespace Uno.SourceGeneratorTasks
 				throw new InvalidOperationException($"Unable to find Uno.SourceGeneration.Host.dll (in {devPath} or {installedPath})");
 			}
 		}
-
-		private static string GetNetCoreHostVersion()
-			// .NET Core 3.1.3
-			// .NET 5.0.0-preview.6.20305.6
-			=> RuntimeInformation.FrameworkDescription.StartsWith(".NET Core") ? "netcoreapp3.1" : "net" + RuntimeInformation.FrameworkDescription.Replace(".NET ", "")[0];
 
 		public bool IsMonoMSBuildCompatible =>
 			// Starting from vs16.0 the following errors does not happen. Below this version, we continue to use
