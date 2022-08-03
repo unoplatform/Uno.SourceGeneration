@@ -106,6 +106,10 @@ jobs:
 
   strategy:
     matrix:
+      NetCore_7_0_100_Preview_Override:
+        NETCORE_VERSION: 7.0.100-preview.6.22352.1
+        TARGETFRAMEWORKOVERRIDE: net7.0
+        NETCORE_PREVIEW: True
       NetCore_7_0_100_Preview:
         NETCORE_VERSION: 7.0.100-preview.6.22352.1
         NETCORE_PREVIEW: True
@@ -172,7 +176,7 @@ jobs:
     displayName: Validate .NET Core $(NETCORE_VERSION) CLI build
     inputs:
       command: build
-      arguments: "--configuration Release -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer)  /bl:$(build.artifactstagingdirectory)/binlog/windows-sample-build-netcore.binlog"
+      arguments: "--configuration Release -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/binlog/windows-sample-build-netcore.binlog"
       workingDirectory: $(build.sourcesdirectory)/src/Uno.SampleCoreApp
             
   - task: PublishBuildArtifacts@1
