@@ -106,9 +106,22 @@ jobs:
 
   strategy:
     matrix:
-      NetCore_6_0:
-        NETCORE_VERSION: 6.0.100-preview.6.21355.2
+      NetCore_7_0_100_Preview_Override:
+        NETCORE_VERSION: 7.0.100-preview.6.22352.1
+        TARGETFRAMEWORKOVERRIDE: net7.0
         NETCORE_PREVIEW: True
+      NetCore_7_0_100_Preview:
+        NETCORE_VERSION: 7.0.100-preview.6.22352.1
+        NETCORE_PREVIEW: True
+      NetCore_6_0_302:
+        NETCORE_VERSION: 6.0.302
+        NETCORE_PREVIEW: False
+      NetCore_6_0_300:
+        NETCORE_VERSION: 6.0.300
+        NETCORE_PREVIEW: False
+      NetCore_6_0_100:
+        NETCORE_VERSION: 6.0.100
+        NETCORE_PREVIEW: False
       NetCore_5_0:
         NETCORE_VERSION: 5.0.x
         NETCORE_PREVIEW: False
@@ -163,7 +176,7 @@ jobs:
     displayName: Validate .NET Core $(NETCORE_VERSION) CLI build
     inputs:
       command: build
-      arguments: "--configuration Release -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer)  /bl:$(build.artifactstagingdirectory)/binlog/windows-sample-build-netcore.binlog"
+      arguments: "--configuration Release -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/binlog/windows-sample-build-netcore.binlog"
       workingDirectory: $(build.sourcesdirectory)/src/Uno.SampleCoreApp
             
   - task: PublishBuildArtifacts@1
@@ -180,9 +193,18 @@ jobs:
 
   strategy:
     matrix:
-      NetCore_6_0:
-        NETCORE_VERSION: 6.0.100-preview.6.21355.2
+      NetCore_7_0_100_Preview:
+        NETCORE_VERSION: 7.0.100-preview.6.22352.1
         NETCORE_PREVIEW: True
+      NetCore_6_0_302:
+        NETCORE_VERSION: 6.0.302
+        NETCORE_PREVIEW: False
+      NetCore_6_0_300:
+        NETCORE_VERSION: 6.0.300
+        NETCORE_PREVIEW: False
+      NetCore_6_0_100:
+        NETCORE_VERSION: 6.0.100
+        NETCORE_PREVIEW: False
       NetCore_5_0:
         NETCORE_VERSION: 5.0.x
         NETCORE_PREVIEW: False
@@ -280,12 +302,21 @@ jobs:
 
   strategy:
     matrix:
-      # Disable in Preview two for https://github.com/dotnet/runtime/issues/49610
-      # Xamarin_6_12_0_NET_6_0:
-      #   XamarinVersion: 6_12_0
-      #   VM_Image: 'macOS-10.15'
-      #   NETCORE_VERSION: 6.0.100-preview.6.21355.2
-      #   NETCORE_PREVIEW: True
+      Xamarin_6_12_0_NET_7_0_100:
+         XamarinVersion: 6_12_17
+         VM_Image: 'macOS-12'
+         NETCORE_VERSION: 7.0.100-preview.6.22352.1
+         NETCORE_PREVIEW: True
+      Xamarin_6_12_0_NET_6_0_302:
+         XamarinVersion: 6_12_0
+         VM_Image: 'macOS-10.15'
+         NETCORE_VERSION: 6.0.302
+         NETCORE_PREVIEW: False
+      Xamarin_6_12_0_NET_6_0_100:
+         XamarinVersion: 6_12_0
+         VM_Image: 'macOS-10.15'
+         NETCORE_VERSION: 6.0.100
+         NETCORE_PREVIEW: False
       Xamarin_6_6_0_NetCore_5_0:
         XamarinVersion: 6_6_0
         VM_Image: 'macOS-10.15'
