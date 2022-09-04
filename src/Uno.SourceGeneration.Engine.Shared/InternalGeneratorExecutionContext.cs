@@ -18,6 +18,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading;
 
 namespace Uno.SourceGeneration.Host
@@ -49,5 +50,7 @@ namespace Uno.SourceGeneration.Host
 		internal IEnumerable<KeyValuePair<string, string>> Trees => _trees;
 
 		internal Project Project { get; private set; }
+
+		public override ImmutableArray<AdditionalText> AdditionalFiles => Project.AnalyzerOptions.AdditionalFiles;
 	}
 }

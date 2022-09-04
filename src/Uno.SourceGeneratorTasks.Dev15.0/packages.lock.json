@@ -1568,15 +1568,15 @@
       "uno.samplegenerators": {
         "type": "Project",
         "dependencies": {
-          "NodaTime": "2.4.7",
-          "Uno.SourceGeneration": "1.0.0"
+          "NodaTime": "[2.4.7, )",
+          "Uno.SourceGeneration": "[1.0.0, )"
         }
       },
       "uno.sourcegeneration": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.Build": "15.4.8",
-          "Microsoft.CodeAnalysis.Workspaces.Common": "2.10.0"
+          "Microsoft.Build": "[15.4.8, )",
+          "Microsoft.CodeAnalysis.Workspaces.Common": "[2.10.0, )"
         }
       }
     },
@@ -2208,15 +2208,15 @@
       "uno.samplegenerators": {
         "type": "Project",
         "dependencies": {
-          "NodaTime": "2.4.7",
-          "Uno.SourceGeneration": "1.0.0"
+          "NodaTime": "[2.4.7, )",
+          "Uno.SourceGeneration": "[1.0.0, )"
         }
       },
       "uno.sourcegeneration": {
         "type": "Project",
         "dependencies": {
-          "Microsoft.Build": "14.3.0",
-          "Microsoft.CodeAnalysis.Workspaces.Common": "1.3.1"
+          "Microsoft.Build": "[14.3.0, )",
+          "Microsoft.CodeAnalysis.Workspaces.Common": "[1.3.1, )"
         }
       }
     }
