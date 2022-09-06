@@ -45,7 +45,7 @@ namespace Uno.SourceGeneration
 		/// <summary>
 		/// Unused, present for compatibilty
 		/// </summary>
-		public ImmutableArray<AdditionalText> AdditionalFiles { get; }
+		public abstract ImmutableArray<AdditionalText> AdditionalFiles { get; }
 
 		public CancellationToken CancellationToken { get; }
 

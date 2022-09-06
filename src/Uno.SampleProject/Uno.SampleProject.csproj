@@ -34,6 +34,12 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <AdditionalFiles Include="file1.txt" />
+    <AdditionalFiles Include="file2.txt" />
+  </ItemGroup>
+
+
   <ItemGroup Condition="'$(SAMPLES_BUILD)'==''">
     <ProjectReference Include="../Uno.SourceGeneration.Host/Uno.SourceGeneration.Host.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
