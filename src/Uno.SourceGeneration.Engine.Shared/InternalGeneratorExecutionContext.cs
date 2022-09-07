@@ -47,12 +47,12 @@ namespace Uno.SourceGeneration.Host
 		{
 		}
 
-		public override bool TryGetValueOptionValue(SyntaxTree tree, string key, out string value)
+		public override bool TryGetOptionValue(SyntaxTree tree, string key, out string value)
 		{
 			return Project.AnalyzerOptions.AnalyzerConfigOptionsProvider.GetOptions(tree).TryGetValue(key, out value);
 		}
 
-		public override bool TryGetValueOptionValue(AdditionalText textFile, string key, out string value)
+		public override bool TryGetOptionValue(AdditionalText textFile, string key, out string value)
 		{
 			return Project.AnalyzerOptions.AnalyzerConfigOptionsProvider.GetOptions(textFile).TryGetValue(key, out value);
 		}

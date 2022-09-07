@@ -10,6 +10,10 @@
       <Version>2.4.7</Version>
     </PackageReference>
   </ItemGroup>
+
+  <ItemGroup>
+    <CompilerVisibleItemMetadata Include="AdditionalFiles" MetadataName="MyOption" />
+  </ItemGroup>
   
   <Choose>
 	<When Condition="'$(SAMPLES_BUILD)'=='true'">

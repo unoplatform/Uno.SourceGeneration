@@ -64,9 +64,9 @@ namespace Uno.SourceGeneration
 		/// </summary>
 		public abstract void ReportDiagnostic(Diagnostic diagnostic);
 
-		public abstract bool TryGetValueOptionValue(SyntaxTree tree, string key, out string value);
+		public abstract bool TryGetOptionValue(SyntaxTree tree, string key, out string value);
 
-		public abstract bool TryGetValueOptionValue(AdditionalText textFile, string key, out string value);
+		public abstract bool TryGetOptionValue(AdditionalText textFile, string key, out string value);
 
 		public abstract bool TryGetGlobalOptionValue(string key, out string value);
 
