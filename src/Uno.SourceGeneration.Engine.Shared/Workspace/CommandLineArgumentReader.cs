@@ -283,6 +283,15 @@ namespace Uno.SourceGeneration.Engine.Workspace
             }
         }
 
+        protected void ReadAnalyzerConfig()
+        {
+            var editorConfigFiles = Project.GetItems("EditorConfigFiles");
+            foreach (var editorConfigFile in editorConfigFiles)
+            {
+                Add("analyzerconfig", editorConfigFile.EvaluatedInclude);
+            }
+        }
+
         protected ImmutableArray<string> Read()
         {
             ReadCore();

@@ -63,7 +63,6 @@ namespace Uno.SourceGeneration.Engine.Workspace
 			// CheckForDuplicateDocuments(documents, additionalDocuments, projectPath, projectId);
 
 			var resolvedReferences = ResolveReferencesAsync(projectId, projectFileInfo, commandLineArgs);
-
 			return ProjectInfo.Create(
 				projectId,
 				version,
@@ -80,7 +79,16 @@ namespace Uno.SourceGeneration.Engine.Workspace
 				analyzerReferences: Enumerable.Empty<AnalyzerReference>(),
 				additionalDocuments: additionalDocuments,
 				isSubmission: false,
-				hostObjectType: null);
+				hostObjectType: null).WithAnalyzerConfigDocuments(commandLineArgs.AnalyzerConfigPaths.Select(CreateDocumentInfo));
+
+			DocumentInfo CreateDocumentInfo(string path)
+			{
+				return DocumentInfo.Create(
+					DocumentId.CreateNewId(projectId, path),
+					name: path,
+					filePath: path,
+					loader: new FileTextLoader(path, commandLineArgs.Encoding));
+			}
 		}
 
 		private readonly struct ResolvedReferences
