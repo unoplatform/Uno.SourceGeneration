@@ -35,8 +35,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <AdditionalFiles Include="file1.txt" />
-    <AdditionalFiles Include="file2.txt" />
+    <CompilerVisibleItemMetadata Include="AdditionalFiles" MetadataName="MyOption" />
+    <AdditionalFiles Include="file1.txt" MyOption="This is file1.txt" />
+    <AdditionalFiles Include="file2.txt" MyOption="This is file2.txt" />
   </ItemGroup>
 
 

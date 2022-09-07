@@ -63,5 +63,12 @@ namespace Uno.SourceGeneration
 		/// Unused, present for compatibilty
 		/// </summary>
 		public abstract void ReportDiagnostic(Diagnostic diagnostic);
+
+		public abstract bool TryGetOptionValue(SyntaxTree tree, string key, out string value);
+
+		public abstract bool TryGetOptionValue(AdditionalText textFile, string key, out string value);
+
+		public abstract bool TryGetGlobalOptionValue(string key, out string value);
+
 	}
 }

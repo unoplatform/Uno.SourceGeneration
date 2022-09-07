@@ -34,8 +34,13 @@ namespace Uno.SampleGenerators
 			for (int i = 0; i < count; i++)
 			{
 				var additionalFile = context.AdditionalFiles[i];
+				if (!context.TryGetOptionValue(additionalFile, "build_metadata.AdditionalFiles.MyOption", out var myOptionValue))
+				{
+					myOptionValue = "Not found :(";
+				}
+
 				dictionaryStringBuilder.Append($@"
-							{{ ""{additionalFile.Path.Replace("\\", "\\\\")}"", ""{additionalFile.GetText()}"" }},
+							{{ ""{additionalFile.Path.Replace("\\", "\\\\")}"", ""{additionalFile.GetText()} -- MyOption: {myOptionValue}"" }},
 ");
 			}
 			context.AddSource(

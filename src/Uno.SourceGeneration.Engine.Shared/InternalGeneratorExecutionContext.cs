@@ -47,6 +47,21 @@ namespace Uno.SourceGeneration.Host
 		{
 		}
 
+		public override bool TryGetOptionValue(SyntaxTree tree, string key, out string value)
+		{
+			return Project.AnalyzerOptions.AnalyzerConfigOptionsProvider.GetOptions(tree).TryGetValue(key, out value);
+		}
+
+		public override bool TryGetOptionValue(AdditionalText textFile, string key, out string value)
+		{
+			return Project.AnalyzerOptions.AnalyzerConfigOptionsProvider.GetOptions(textFile).TryGetValue(key, out value);
+		}
+
+		public override bool TryGetGlobalOptionValue(string key, out string value)
+		{
+			return Project.AnalyzerOptions.AnalyzerConfigOptionsProvider.GlobalOptions.TryGetValue(key, out value);
+		}
+
 		internal IEnumerable<KeyValuePair<string, string>> Trees => _trees;
 
 		internal Project Project { get; private set; }
