@@ -45,6 +45,7 @@ namespace Uno.SourceGeneration.Host
 
 		public override void ReportDiagnostic(Diagnostic diagnostic)
 		{
+			throw new InvalidOperationException(diagnostic.GetMessage());
 		}
 
 		public override bool TryGetOptionValue(SyntaxTree tree, string key, out string value)
