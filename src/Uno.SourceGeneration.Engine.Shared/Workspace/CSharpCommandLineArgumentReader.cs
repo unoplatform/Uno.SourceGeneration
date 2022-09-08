@@ -31,7 +31,6 @@ namespace Uno.SourceGeneration.Engine.Workspace
             ReadPlatform();
             ReadReferences();
             ReadSigning();
-            ReadAnalyzerConfig();
 
             AddIfNotNullOrWhiteSpace("appconfig", Project.ReadPropertyString(PropertyNames.AppConfigForCompiler));
             AddIfNotNullOrWhiteSpace("baseaddress", Project.ReadPropertyString(PropertyNames.BaseAddress));
