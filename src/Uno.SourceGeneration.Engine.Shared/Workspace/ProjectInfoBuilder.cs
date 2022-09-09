@@ -12,6 +12,9 @@ using Uno.SourceGeneration.Engine.Workspace.Utilities;
 using Uno.SourceGeneration.Host;
 using Uno.SourceGeneration.Host.Helpers;
 
+// Almost taken from https://github.com/dotnet/roslyn/blob/3e39dd3535962bf9e30bd650e4ff34b610b8349a/src/Workspaces/Core/MSBuild/MSBuild/MSBuildProjectLoader.Worker.cs
+// But not an exact copy.
+
 namespace Uno.SourceGeneration.Engine.Workspace
 {
 	internal class ProjectInfoBuilder

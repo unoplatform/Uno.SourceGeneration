@@ -1,5 +1,7 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+// https://github.com/dotnet/roslyn/blob/main/src/Workspaces/Core/MSBuild/MSBuild/ProjectFile/ProjectFileInfo.cs
+
 using Microsoft.Build.Evaluation;
 using Microsoft.Build.Execution;
 using Microsoft.Build.Framework;
@@ -44,6 +46,19 @@ namespace Uno.SourceGeneration.Engine.Workspace
         /// </summary>
         public string OutputRefFilePath { get; }
 
+        // /// <summary>
+        // /// The default namespace of the project ("" if not defined, which means global namespace),
+        // /// or null if it is unknown or not applicable. 
+        // /// </summary>
+        // /// <remarks>
+        // /// Right now VB doesn't have the concept of "default namespace". But we conjure one in workspace 
+        // /// by assigning the value of the project's root namespace to it. So various feature can choose to 
+        // /// use it for their own purpose.
+        // /// In the future, we might consider officially exposing "default namespace" for VB project 
+        // /// (e.g. through a "defaultnamespace" msbuild property)
+        // /// </remarks>
+        // public string DefaultNamespace { get; }
+
         /// <summary>
         /// The target framework of this project.
         /// This takes the form of the 'short name' form used by NuGet (e.g. net46, netcoreapp2.0, etc.)
@@ -75,9 +90,15 @@ namespace Uno.SourceGeneration.Engine.Workspace
         /// </summary>
         public ImmutableArray<ProjectFileReference> ProjectReferences { get; }
 
+        // /// <summary>
+        // /// The error message produced when a failure occurred attempting to get the info. 
+        // /// If a failure occurred some or all of the information may be inaccurate or incomplete.
+        // /// </summary>
+        // public DiagnosticLog Log { get; }
+
         public override string ToString()
             => string.IsNullOrWhiteSpace(TargetFramework)
-                ? FilePath
+                ? FilePath ?? string.Empty
                 : $"{FilePath} ({TargetFramework})";
 
         private ProjectFileInfo(
@@ -86,12 +107,15 @@ namespace Uno.SourceGeneration.Engine.Workspace
             string filePath,
             string outputFilePath,
             string outputRefFilePath,
+            //string defaultNamespace,
             string targetFramework,
             ImmutableArray<string> commandLineArgs,
             ImmutableArray<DocumentFileInfo> documents,
             ImmutableArray<DocumentFileInfo> additionalDocuments,
             ImmutableArray<DocumentFileInfo> analyzerConfigDocuments,
-            ImmutableArray<ProjectFileReference> projectReferences)
+            ImmutableArray<ProjectFileReference> projectReferences
+            //DiagnosticLog log
+			)
         {
             Debug.Assert(filePath != null);
 
@@ -100,12 +124,14 @@ namespace Uno.SourceGeneration.Engine.Workspace
             this.FilePath = filePath;
             this.OutputFilePath = outputFilePath;
             this.OutputRefFilePath = outputRefFilePath;
+            //this.DefaultNamespace = defaultNamespace;
             this.TargetFramework = targetFramework;
             this.CommandLineArgs = commandLineArgs;
             this.Documents = documents;
             this.AdditionalDocuments = additionalDocuments;
             this.AnalyzerConfigDocuments = analyzerConfigDocuments;
             this.ProjectReferences = projectReferences;
+            //this.Log = log;
         }
 
         public static ProjectFileInfo Create(
@@ -113,39 +139,47 @@ namespace Uno.SourceGeneration.Engine.Workspace
             string filePath,
             string outputFilePath,
             string outputRefFilePath,
+            //string defaultNamespace,
             string targetFramework,
             ImmutableArray<string> commandLineArgs,
             ImmutableArray<DocumentFileInfo> documents,
             ImmutableArray<DocumentFileInfo> additionalDocuments,
             ImmutableArray<DocumentFileInfo> analyzerConfigDocuments,
-            ImmutableArray<ProjectFileReference> projectReferences)
-            => new ProjectFileInfo(
+            ImmutableArray<ProjectFileReference> projectReferences
+            //DiagnosticLog log)
+			)
+            => new(
                 isEmpty: false,
                 language,
                 filePath,
                 outputFilePath,
                 outputRefFilePath,
+                //defaultNamespace,
                 targetFramework,
                 commandLineArgs,
                 documents,
                 additionalDocuments,
                 analyzerConfigDocuments,
-                projectReferences);
+                projectReferences
+                //log
+				);
 
-        public static ProjectFileInfo CreateEmpty(string language, string filePath)
-            => new ProjectFileInfo(
+        public static ProjectFileInfo CreateEmpty(string language, string filePath) // , DiagnosticLog log
+            => new(
                 isEmpty: true,
                 language,
                 filePath,
                 outputFilePath: null,
                 outputRefFilePath: null,
+                //defaultNamespace: null,
                 targetFramework: null,
                 commandLineArgs: ImmutableArray<string>.Empty,
                 documents: ImmutableArray<DocumentFileInfo>.Empty,
                 additionalDocuments: ImmutableArray<DocumentFileInfo>.Empty,
-                analyzerConfigDocuments: ImmutableArray<DocumentFileInfo>.Empty,
-                projectReferences: ImmutableArray<ProjectFileReference>.Empty);
-
+                analyzerConfigDocuments: ImmutableArray<DocumentFileInfo>.Empty
+                projectReferences: ImmutableArray<ProjectFileReference>.Empty
+                //log
+				);
 
 		public static ProjectFileInfo FromMSBuildProjectInstance(string language, Microsoft.Build.Evaluation.Project loadedProject, ProjectInstance project)
 			=> new Builder(loadedProject, project).Build(language);
@@ -193,11 +227,6 @@ namespace Uno.SourceGeneration.Engine.Workspace
 					.Select(MakeAdditionalDocumentFileInfo)
 					.ToImmutableArray();
 
-				var analyzerConfigDocs = _project.GetEditorConfigFiles()
-					.Select(d => MakeNonSourceFileDocumentFileInfo(_project, d))
-					.ToImmutableArray();
-
-
 				return ProjectFileInfo.Create(
 					language,
 					_loadedProject.FullPath,
@@ -207,7 +236,6 @@ namespace Uno.SourceGeneration.Engine.Workspace
 					commandLineArgs,
 					docs,
 					additionalDocs,
-					analyzerConfigDocs,
 					_project.GetProjectReferences().ToImmutableArray()
 				);
 			}
@@ -231,16 +259,6 @@ namespace Uno.SourceGeneration.Engine.Workspace
 				var sourceCodeKind = GetSourceCodeKind(filePath);
 
 				return new DocumentFileInfo(filePath, logicalPath, isLinked, isGenerated, sourceCodeKind);
-			}
-
-			private DocumentFileInfo MakeNonSourceFileDocumentFileInfo(ProjectInstance project, ITaskItem documentItem)
-			{
-				var filePath = GetDocumentFilePath(documentItem);
-				var logicalPath = GetDocumentLogicalPath(documentItem, project.Directory);
-				var isLinked = IsDocumentLinked(documentItem);
-				var isGenerated = IsDocumentGenerated(documentItem);
-
-				return new DocumentFileInfo(filePath, logicalPath, isLinked, isGenerated, SourceCodeKind.Regular);
 			}
 
 			private SourceCodeKind GetSourceCodeKind(string documentFileName)
@@ -340,5 +358,5 @@ namespace Uno.SourceGeneration.Engine.Workspace
 			private ImmutableArray<string> ReadCommandLineArgs(ProjectInstance project)
 				=> CSharpCommandLineArgumentReader.Read(project);
 		}
-	}
+    }
 }

@@ -1,5 +1,7 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+// https://github.com/dotnet/roslyn/blob/3e39dd3535962bf9e30bd650e4ff34b610b8349a/src/Workspaces/Core/MSBuild/MSBuild/ProjectFile/CommandLineArgumentReader.cs
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -40,11 +42,11 @@ namespace Uno.SourceGeneration.Engine.Workspace
             _builder.Add($"/{name}");
         }
 
-        protected void Add(string name, string value)
+        protected void Add(string name, string? value, bool addQuoteIfValueContainsWhitespace = true)
         {
             ValidateName(name);
 
-            if (string.IsNullOrEmpty(value) || value.Any(char.IsWhiteSpace))
+            if (string.IsNullOrEmpty(value) || (addQuoteIfValueContainsWhitespace && value.Contains(char.IsWhiteSpace)))
             {
                 _builder.Add($"/{name}:\"{value}\"");
             }
@@ -59,11 +61,11 @@ namespace Uno.SourceGeneration.Engine.Workspace
             Add(name, value.ToString());
         }
 
-        protected void AddIfNotNullOrWhiteSpace(string name, string value)
+        protected void AddIfNotNullOrWhiteSpace(string name, string? value, bool addQuoteIfValueContainsWhitespace = true)
         {
-            if (!string.IsNullOrWhiteSpace(value))
+            if (!RoslynString.IsNullOrWhiteSpace(value))
             {
-                Add(name, value);
+                Add(name, value, addQuoteIfValueContainsWhitespace);
             }
         }
 
@@ -120,8 +122,9 @@ namespace Uno.SourceGeneration.Engine.Workspace
 
         protected string GetAbsolutePath(string path)
         {
-            var directoryPath = PathUtilities.GetDirectoryName(Project.FullPath);
-            return Path.GetFullPath(FileUtilities.ResolveRelativePath(path, directoryPath) ?? path);
+            var baseDirectory = PathUtilities.GetDirectoryName(Project.FullPath);
+            var absolutePath = FileUtilities.ResolveRelativePath(path, baseDirectory) ?? path;
+            return FileUtilities.TryNormalizeAbsolutePath(absolutePath) ?? absolutePath;
         }
 
         protected void ReadAdditionalFiles()
@@ -169,8 +172,7 @@ namespace Uno.SourceGeneration.Engine.Workspace
             if (emitDebugInfo)
             {
                 var debugType = Project.ReadPropertyString(PropertyNames.DebugType);
-
-                if (s_debugTypeValues.TryGetValue(debugType, out var value))
+                if (debugType != null && s_debugTypeValues.TryGetValue(debugType, out var value))
                 {
                     Add("debug", value);
                 }
@@ -210,9 +212,17 @@ namespace Uno.SourceGeneration.Engine.Workspace
         protected void ReadImports()
         {
             var imports = Project.GetTaskItems(ItemNames.Import);
-            if (imports != null)
+            if (imports == null)
+                return;
+
+            // In case of import alias clause in the form of `aliasname = namespace`,
+            // we want to add quotes to that single clause only instead of the entire imports.
+            AddIfNotNullOrWhiteSpace("imports", string.Join(",", imports.Select(ReadImportItem)), addQuoteIfValueContainsWhitespace: false);
+
+            static string ReadImportItem(MSB.Framework.ITaskItem item)
             {
-                AddIfNotNullOrWhiteSpace("imports", string.Join(",", imports.Select(item => item.ItemSpec.Trim())));
+                var trimmed = item.ItemSpec.Trim();
+                return trimmed.Contains(' ') ? $"\"{trimmed}\"" : trimmed;
             }
         }
 
