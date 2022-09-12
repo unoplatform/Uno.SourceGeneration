@@ -42,11 +42,11 @@ namespace Uno.SourceGeneration.Engine.Workspace
             _builder.Add($"/{name}");
         }
 
-        protected void Add(string name, string? value, bool addQuoteIfValueContainsWhitespace = true)
+        protected void Add(string name, string value, bool addQuoteIfValueContainsWhitespace = true)
         {
             ValidateName(name);
 
-            if (string.IsNullOrEmpty(value) || (addQuoteIfValueContainsWhitespace && value.Contains(char.IsWhiteSpace)))
+            if (string.IsNullOrEmpty(value) || (addQuoteIfValueContainsWhitespace && value.Any(char.IsWhiteSpace)))
             {
                 _builder.Add($"/{name}:\"{value}\"");
             }
@@ -63,7 +63,7 @@ namespace Uno.SourceGeneration.Engine.Workspace
 
         protected void AddIfNotNullOrWhiteSpace(string name, string? value, bool addQuoteIfValueContainsWhitespace = true)
         {
-            if (!RoslynString.IsNullOrWhiteSpace(value))
+            if (!string.IsNullOrWhiteSpace(value))
             {
                 Add(name, value, addQuoteIfValueContainsWhitespace);
             }

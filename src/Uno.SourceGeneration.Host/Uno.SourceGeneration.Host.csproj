@@ -7,7 +7,7 @@
 	<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 	<GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
 	<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-	<LangVersion>7.2</LangVersion>
+	<LangVersion>9</LangVersion>
 	<AppConfig>$(MSBuildThisFileDirectory)app.$(TargetFramework).config</AppConfig>
 	<RollForward>LatestMajor</RollForward>
   </PropertyGroup>

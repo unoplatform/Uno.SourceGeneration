@@ -180,7 +180,7 @@ namespace Uno.SourceGeneration.Engine.Workspace
                 commandLineArgs: ImmutableArray<string>.Empty,
                 documents: ImmutableArray<DocumentFileInfo>.Empty,
                 additionalDocuments: ImmutableArray<DocumentFileInfo>.Empty,
-                analyzerConfigDocuments: ImmutableArray<DocumentFileInfo>.Empty
+                analyzerConfigDocuments: ImmutableArray<DocumentFileInfo>.Empty,
                 projectReferences: ImmutableArray<ProjectFileReference>.Empty
                 //log
 				);
@@ -228,8 +228,13 @@ namespace Uno.SourceGeneration.Engine.Workspace
 					.ToImmutableArray();
 
 				var additionalDocs = _project.GetAdditionalFiles()
-					.Select(MakeAdditionalDocumentFileInfo)
+					.Select(MakeNonSourceFileDocumentFileInfo)
 					.ToImmutableArray();
+
+				var analyzerConfigDocs = _project.GetEditorConfigFiles()
+					.Select(MakeNonSourceFileDocumentFileInfo)
+					.ToImmutableArray();
+
 
 				return ProjectFileInfo.Create(
 					language,
@@ -240,17 +245,17 @@ namespace Uno.SourceGeneration.Engine.Workspace
 					commandLineArgs,
 					docs,
 					additionalDocs,
+					analyzerConfigDocs,
 					_project.GetProjectReferences().ToImmutableArray()
 				);
 			}
 
-			private DocumentFileInfo MakeAdditionalDocumentFileInfo(ITaskItem documentItem)
+			private DocumentFileInfo MakeNonSourceFileDocumentFileInfo(ITaskItem documentItem)
 			{
 				var filePath = GetDocumentFilePath(documentItem);
 				var logicalPath = GetDocumentLogicalPath(documentItem, _project.Directory);
 				var isLinked = IsDocumentLinked(documentItem);
 				var isGenerated = IsDocumentGenerated(documentItem);
-
 				return new DocumentFileInfo(filePath, logicalPath, isLinked, isGenerated, SourceCodeKind.Regular);
 			}
 
