@@ -12,6 +12,9 @@ using Uno.SourceGeneration.Engine.Workspace.Utilities;
 using Uno.SourceGeneration.Host;
 using Uno.SourceGeneration.Host.Helpers;
 
+// Almost taken from https://github.com/dotnet/roslyn/blob/3e39dd3535962bf9e30bd650e4ff34b610b8349a/src/Workspaces/Core/MSBuild/MSBuild/MSBuildProjectLoader.Worker.cs
+// But not an exact copy.
+
 namespace Uno.SourceGeneration.Engine.Workspace
 {
 	internal class ProjectInfoBuilder
@@ -60,6 +63,7 @@ namespace Uno.SourceGeneration.Engine.Workspace
 
 			var documents = CreateDocumentInfos(projectFileInfo.Documents, projectId, commandLineArgs.Encoding);
 			var additionalDocuments = CreateDocumentInfos(projectFileInfo.AdditionalDocuments, projectId, commandLineArgs.Encoding);
+			var analyzerConfigDocuments = CreateDocumentInfos(projectFileInfo.AnalyzerConfigDocuments, projectId, commandLineArgs.Encoding);
 			// CheckForDuplicateDocuments(documents, additionalDocuments, projectPath, projectId);
 
 			var resolvedReferences = ResolveReferencesAsync(projectId, projectFileInfo, commandLineArgs);
@@ -79,16 +83,8 @@ namespace Uno.SourceGeneration.Engine.Workspace
 				analyzerReferences: Enumerable.Empty<AnalyzerReference>(),
 				additionalDocuments: additionalDocuments,
 				isSubmission: false,
-				hostObjectType: null).WithAnalyzerConfigDocuments(commandLineArgs.AnalyzerConfigPaths.Select(CreateDocumentInfo));
-
-			DocumentInfo CreateDocumentInfo(string path)
-			{
-				return DocumentInfo.Create(
-					DocumentId.CreateNewId(projectId, path),
-					name: path,
-					filePath: path,
-					loader: new FileTextLoader(path, commandLineArgs.Encoding));
-			}
+				hostObjectType: null)
+				.WithAnalyzerConfigDocuments(analyzerConfigDocuments);
 		}
 
 		private readonly struct ResolvedReferences

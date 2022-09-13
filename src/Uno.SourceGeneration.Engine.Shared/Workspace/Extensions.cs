@@ -1,5 +1,7 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+// https://github.com/dotnet/roslyn/blob/3e39dd3535962bf9e30bd650e4ff34b610b8349a/src/Workspaces/Core/MSBuild/MSBuild/ProjectFile/Extensions.cs
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
@@ -20,6 +22,9 @@ namespace Uno.SourceGeneration.Engine.Workspace
 
         public static IEnumerable<MSB.Framework.ITaskItem> GetDocuments(this MSB.Execution.ProjectInstance executedProject)
             => executedProject.GetItems(ItemNames.Compile);
+
+        public static IEnumerable<MSB.Framework.ITaskItem> GetEditorConfigFiles(this MSB.Execution.ProjectInstance executedProject)
+            => executedProject.GetItems(ItemNames.EditorConfigFiles);
 
         public static IEnumerable<MSB.Framework.ITaskItem> GetMetadataReferences(this MSB.Execution.ProjectInstance executedProject)
             => executedProject.GetItems(ItemNames.ReferencePath);

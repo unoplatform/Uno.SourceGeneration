@@ -1,5 +1,7 @@
 ﻿// Copyright (c) Microsoft.  All Rights Reserved.  Licensed under the Apache License, Version 2.0.  See License.txt in the project root for license information.
 
+// https://github.com/dotnet/roslyn/blob/3e39dd3535962bf9e30bd650e4ff34b610b8349a/src/Workspaces/Core/MSBuild/MSBuild/CSharp/CSharpCommandLineArgumentReader.cs
+
 using System.Collections.Immutable;
 using Uno.SourceGeneration.Engine.Workspace.Constants;
 using MSB = Microsoft.Build;
@@ -31,7 +33,6 @@ namespace Uno.SourceGeneration.Engine.Workspace
             ReadPlatform();
             ReadReferences();
             ReadSigning();
-            ReadAnalyzerConfig();
 
             AddIfNotNullOrWhiteSpace("appconfig", Project.ReadPropertyString(PropertyNames.AppConfigForCompiler));
             AddIfNotNullOrWhiteSpace("baseaddress", Project.ReadPropertyString(PropertyNames.BaseAddress));
