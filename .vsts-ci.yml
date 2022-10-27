@@ -107,11 +107,11 @@ jobs:
   strategy:
     matrix:
       NetCore_7_0_100_Preview_Override:
-        NETCORE_VERSION: 7.0.100-preview.6.22352.1
+        NETCORE_VERSION: 7.0.100-rc.2.22477.23
         TARGETFRAMEWORKOVERRIDE: net7.0
         NETCORE_PREVIEW: True
       NetCore_7_0_100_Preview:
-        NETCORE_VERSION: 7.0.100-preview.6.22352.1
+        NETCORE_VERSION: 7.0.100-rc.2.22477.23
         NETCORE_PREVIEW: True
       NetCore_6_0_302:
         NETCORE_VERSION: 6.0.302
