@@ -310,16 +310,17 @@ jobs:
          VM_Image: 'macOS-12'
          NETCORE_VERSION: 8.0.100-preview.6.23330.14
          NETCORE_PREVIEW: True
-      Xamarin_6_12_0_NET_8_0_100_Preview_macos13:
-         XamarinVersion: 6_12_17
-         VM_Image: 'macOS-13'
-         NETCORE_VERSION: 8.0.100-preview.6.23330.14
-         NETCORE_PREVIEW: True
-      Xamarin_6_12_0_NET_7_0_100_macos13:
-         XamarinVersion: 6_12_17
-         VM_Image: 'macOS-13'
-         NETCORE_VERSION: 7.0.306
-         NETCORE_PREVIEW: False
+      # Xamarin is not yet available in macos-13 agents
+      # Xamarin_6_12_0_NET_8_0_100_Preview_macos13:
+      #    XamarinVersion: 6_12_17
+      #    VM_Image: 'macOS-13'
+      #    NETCORE_VERSION: 8.0.100-preview.6.23330.14
+      #    NETCORE_PREVIEW: True
+      # Xamarin_6_12_0_NET_7_0_100_macos13:
+      #    XamarinVersion: 6_12_17
+      #    VM_Image: 'macOS-13'
+      #    NETCORE_VERSION: 7.0.306
+      #    NETCORE_PREVIEW: False
       Xamarin_6_12_0_NET_7_0_100:
          XamarinVersion: 6_12_17
          VM_Image: 'macOS-12'
@@ -327,27 +328,27 @@ jobs:
          NETCORE_PREVIEW: False
       Xamarin_6_12_0_NET_6_0_302:
          XamarinVersion: 6_12_0
-         VM_Image: 'macOS-10.15'
+         VM_Image: 'macOS-11'
          NETCORE_VERSION: 6.0.302
          NETCORE_PREVIEW: False
       Xamarin_6_12_0_NET_6_0_100:
          XamarinVersion: 6_12_0
-         VM_Image: 'macOS-10.15'
+         VM_Image: 'macOS-11'
          NETCORE_VERSION: 6.0.100
          NETCORE_PREVIEW: False
       Xamarin_6_6_0_NetCore_5_0:
         XamarinVersion: 6_6_0
-        VM_Image: 'macOS-10.15'
+        VM_Image: 'macOS-11'
         NETCORE_VERSION: 5.0.x
         NETCORE_PREVIEW: False
       Xamarin_6_6_0_NetCore_3_1:
         XamarinVersion: 6_6_0
-        VM_Image: 'macOS-10.15'
+        VM_Image: 'macOS-11'
         NETCORE_VERSION: 3.1.x
         NETCORE_PREVIEW: False
       Xamarin_6_6_0_NetCore_3_0:
         XamarinVersion: 6_6_0
-        VM_Image: 'macOS-10.15'
+        VM_Image: 'macOS-11'
         NETCORE_VERSION: 3.1.x
         NETCORE_PREVIEW: False
 
