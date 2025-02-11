@@ -311,18 +311,15 @@ jobs:
 
   strategy:
     matrix:
-      Xamarin_6_12_0_NET_9_0_100:
-         XamarinVersion: 6_12_17
+      NET_9_0_100:
          VM_Image: 'macOS-13'
          NETCORE_VERSION: 9.0.100
          NETCORE_PREVIEW: False
-      Xamarin_6_12_0_NET_8_0_100_Preview_macos13:
-         XamarinVersion: 6_12_17
+      NET_8_0_100_Preview_macos13:
          VM_Image: 'macOS-13'
          NETCORE_VERSION: 8.0.100
          NETCORE_PREVIEW: False
-      Xamarin_6_12_0_NET_7_0_100_macos13:
-         XamarinVersion: 6_12_17
+      NET_7_0_100_macos13:
          VM_Image: 'macOS-13'
          NETCORE_VERSION: 7.0.306
          NETCORE_PREVIEW: False
@@ -381,10 +378,7 @@ jobs:
       includePreviewVersions: $(NETCORE_PREVIEW)
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
-  - bash: /bin/bash -c "sudo $AGENT_HOMEDIRECTORY/scripts/select-xamarin-sdk.sh $(XamarinVersion)"
-    displayName: Select Xamarin Version
-
-  - bash: msbuild /r /p:Configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /p:SAMPLES_BUILD=true ./src/Uno.SourceGenerator.Samples.Unix.sln /bl:$(build.artifactstagingdirectory)/binlog/macos-sample-build-$(XamarinVersion).binlog
+  - bash: dotnet build -c Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /p:SAMPLES_BUILD=true ./src/Uno.SourceGenerator.Samples.Unix.sln /bl:$(build.artifactstagingdirectory)/binlog/macos-sample-build-$(XamarinVersion).binlog
     displayName: Build
 
   - bash: |
