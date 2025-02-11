@@ -15,7 +15,7 @@
   </metadata>
   <files>
 	<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\net472\**\*.dll" target="build\Dev15.0\net472" exclude="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\net472\**\System.Text.Json.dll" />
-	<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\net472\**\*.pdb" target="build\Dev15.0\net472" exclude="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\net472\**\System.Text.Json.pdb" /> />
+	<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\net472\**\*.pdb" target="build\Dev15.0\net472" exclude="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\net472\**\System.Text.Json.pdb" />
 	<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\net472\*.config" target="build\Dev15.0\net472" />
 	
 	<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\netcoreapp3.1\**\*.dll" target="build\Dev15.0\netcoreapp3.1" />
