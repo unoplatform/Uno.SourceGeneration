@@ -14,15 +14,15 @@
 	<repository url="https://github.com/nventive/Uno.SourceGeneration" />
   </metadata>
   <files>
-	<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\net472\**\*.dll" target="build\Dev15.0\net472" />
-	<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\net472\**\*.pdb" target="build\Dev15.0\net472" />
+	<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\net472\**\*.dll" target="build\Dev15.0\net472" exclude="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\net472\**\System.Text.Json.dll" />
+	<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\net472\**\*.pdb" target="build\Dev15.0\net472" exclude="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\net472\**\System.Text.Json.pdb" />
 	<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\net472\*.config" target="build\Dev15.0\net472" />
 	
 	<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\netcoreapp3.1\**\*.dll" target="build\Dev15.0\netcoreapp3.1" />
 	<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\netcoreapp3.1\**\*.pdb" target="build\Dev15.0\netcoreapp3.1" />
 	<file src="..\src\Uno.SourceGeneratorTasks.Dev15.0\Bin\Release\netcoreapp3.1\*.config" target="build\Dev15.0\netcoreapp3.1" />
 
-	<file src="..\src\Uno.SourceGeneration.Host\bin\Release\net472\**\*.*" target="build\host\net472" />
+	<file src="..\src\Uno.SourceGeneration.Host\bin\Release\net472\**\*.*" target="build\host\net472" exclude="..\src\Uno.SourceGeneration.Host\bin\Release\net472\**\System.Text.Json.dll" />
 	<file src="..\src\Uno.SourceGeneration.Host\bin\Release\netcoreapp3.1\**\*.*" target="build\host\netcoreapp3.1" />
 	<file src="..\src\Uno.SourceGeneration.Host\bin\Release\net5\**\*.*" target="build\host\net5" />
 	<file src="..\src\Uno.SourceGeneration.Host\bin\Release\net6\**\*.*" target="build\host\net6" />
