@@ -2,7 +2,7 @@ jobs:
 - job: Build_Packages
 
   pool:
-    vmImage: 'windows-2019'
+    vmImage: 'windows-2022'
 
   variables:
     NUGET_PACKAGES: $(Pipeline.Workspace)\.nuget\packages
@@ -92,7 +92,7 @@ jobs:
       ArtifactName: unosourcegenerator-drop
       ArtifactType: Container
 
-- job: Windows_VS2019
+- job: Windows_VS2022
   dependsOn:
   - Build_Packages
 
@@ -102,12 +102,15 @@ jobs:
     RestoreLockedMode: false # Until https://github.com/NuGet/Home/issues/8645
 
   pool:
-    vmImage: 'windows-2019'
+    vmImage: 'windows-2022'
 
   strategy:
     matrix:
-      NetCore_8_0_100_Preview:
-        NETCORE_VERSION: 8.0.100-preview.6.23330.14
+      NetCore_9_0_100:
+        NETCORE_VERSION: 9.0.100
+        NETCORE_PREVIEW: True
+      NetCore_8_0_100:
+        NETCORE_VERSION: 8.0.100
         NETCORE_PREVIEW: True
       NetCore_7_0_306:
         NETCORE_VERSION: 7.0.306
@@ -194,9 +197,12 @@ jobs:
 
   strategy:
     matrix:
-      NetCore_8_0_100_Preview:
-        NETCORE_VERSION: 8.0.100-preview.6.23330.14
-        NETCORE_PREVIEW: True
+      NetCore_9_0_100:
+        NETCORE_VERSION: 9.0.100
+        NETCORE_PREVIEW: false
+      NetCore_8_0_100:
+        NETCORE_VERSION: 8.0.100
+        NETCORE_PREVIEW: false
       NetCore_7_0_306:
         NETCORE_VERSION: 7.0.306
       NetCore_6_0_302:
