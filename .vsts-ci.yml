@@ -106,6 +106,9 @@ jobs:
 
   strategy:
     matrix:
+      NetCore_9_0_300:
+        NETCORE_VERSION: 9.0.300
+        NETCORE_PREVIEW: True
       NetCore_9_0_100:
         NETCORE_VERSION: 9.0.100
         NETCORE_PREVIEW: True
