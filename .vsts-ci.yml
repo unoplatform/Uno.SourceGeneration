@@ -16,7 +16,7 @@ jobs:
       key: nuget | **/packages.lock.json
       path: $(NUGET_PACKAGES)
     displayName: Cache NuGet packages
-     
+
   - task: gitversion/setup@0
     retryCountOnTaskFailure: 3
     inputs:
@@ -53,7 +53,7 @@ jobs:
       version: 6.0.100-preview.6.21355.2
       includePreviewVersions: true
       installationPath: $(Agent.ToolsDirectory)/dotnet
-      
+
   - powershell: .\build\build.ps1 -script build\build.cake
     displayName: Build
 
@@ -106,6 +106,9 @@ jobs:
 
   strategy:
     matrix:
+      NetCore_10_0_101:
+        NETCORE_VERSION: 10.0.101
+        NETCORE_PREVIEW: True
       NetCore_9_0_300:
         NETCORE_VERSION: 9.0.300
         NETCORE_PREVIEW: True
@@ -143,7 +146,7 @@ jobs:
       key: nuget | **/packages.lock.json
       path: $(NUGET_PACKAGES)
     displayName: Cache NuGet packages
-     
+
   - task: gitversion/setup@0
     retryCountOnTaskFailure: 3
     inputs:
@@ -166,7 +169,7 @@ jobs:
     inputs:
         sourceFolder: '$(System.ArtifactsDirectory)\unosourcegenerator-drop\build'
         targetFolder: $(build.sourcesdirectory)\src\PackageCache
-      
+
   - task: MSBuild@1
     inputs:
       solution: '$(build.sourcesdirectory)/src/Uno.SourceGenerator.Samples.Windows.sln'
@@ -185,7 +188,7 @@ jobs:
       command: build
       arguments: "--configuration Release -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/binlog/windows-sample-build-netcore.binlog"
       workingDirectory: $(build.sourcesdirectory)/src/Uno.SampleCoreApp
-            
+
   - task: PublishBuildArtifacts@1
     condition: always()
     inputs:
@@ -288,14 +291,14 @@ jobs:
   - bash: msbuild /r /p:Configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /p:SAMPLES_BUILD=true ./src/Uno.SourceGenerator.Samples.Unix.sln /bl:$(build.artifactstagingdirectory)/binlog/linux-sample-build.binlog
     displayName: Build
 
-    
+
   - task: DotNetCoreCLI@2
     displayName: Validate .NET Core CLI build
     inputs:
       command: build
       arguments: "--configuration Release -p:SAMPLES_BUILD=true -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/binlog/linux-sample-build-netcore.binlog"
       workingDirectory: $(build.sourcesdirectory)/src/Uno.SampleCoreApp
-      
+
   - task: PublishBuildArtifacts@1
     condition: always()
     inputs:
@@ -331,7 +334,7 @@ jobs:
     vmImage: $(VM_Image)
 
   steps:
- 
+
   # 2.1 is required for GitVersion@5
   - task: DotNetCoreInstaller@2
     displayName: Installing .NET Core 2.1 CLI
@@ -345,7 +348,7 @@ jobs:
     inputs:
       version: 3.1.x
       installationPath: $(Agent.ToolsDirectory)/dotnet
-     
+
   - task: gitversion/setup@0
     retryCountOnTaskFailure: 3
     inputs:
@@ -388,7 +391,7 @@ jobs:
       cd $(build.sourcesdirectory)/src/Uno.SampleCoreApp
       dotnet build --configuration Release -p:SAMPLES_BUILD=true -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/binlog/macos-sample-build-$(XamarinVersion)-netcore.binlog
     displayName: Validate .NET Core CLI build
-      
+
   - task: PublishBuildArtifacts@1
     condition: always()
     inputs:
