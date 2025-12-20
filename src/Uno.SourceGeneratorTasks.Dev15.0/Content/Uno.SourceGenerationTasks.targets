@@ -74,6 +74,7 @@
   <Target Name="_UnoSourceGenerator"
 				  Condition="'$(BuildingProject)' == 'true' and '$(BuildingInsideUnoSourceGenerator)' == '' and '$(DesignTimeBuild)' != 'true' and '$(MSBuildProjectExtension)'=='.csproj'"
 				  BeforeTargets="@(UnoSourceGeneratorBeforeTarget)"
+				  DependsOnTargets="ResolveAssemblyReferences"
 				  Inputs="@(SourceGeneratorInput)" Outputs="$(_UnoSourceGeneratorCacheFile)">
 	<!-- 
 		This target must run before "CoreCompile" otherwise the dependencies
