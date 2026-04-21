@@ -2,7 +2,7 @@ jobs:
 - job: Build_Packages
 
   pool:
-    vmImage: 'windows-2022'
+    vmImage: 'windows-2025'
 
   variables:
     NUGET_PACKAGES: $(Pipeline.Workspace)\.nuget\packages
@@ -17,12 +17,12 @@ jobs:
       path: $(NUGET_PACKAGES)
     displayName: Cache NuGet packages
      
-  - task: gitversion/setup@0
+  - task: gitversion/setup@3
     retryCountOnTaskFailure: 3
     inputs:
-      versionSpec: '5.10.3'
+      versionSpec: '6.0.5'
 
-  - task: gitversion/execute@0
+  - task: gitversion/execute@3
     retryCountOnTaskFailure: 3
     inputs:
       updateAssemblyInfo: 'False'
@@ -32,25 +32,25 @@ jobs:
 
   - task: NuGetToolInstaller@0
     inputs:
-      versionSpec: 4.7.0
+      versionSpec: 6.10.0
       checkLatest: false
 
   - task: UseDotNet@2
-    displayName: Install .NET Core 3.1 CLI
+    displayName: Install .NET 8.0 LTS SDK
     inputs:
-      version: 3.1.x
+      version: 8.0.x
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
   - task: UseDotNet@2
-    displayName: Install .NET Core 5.0.103 CLI
+    displayName: Install .NET 9.0 SDK
     inputs:
-      version: 5.0.103
+      version: 9.0.x
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
   - task: UseDotNet@2
-    displayName: 'Install .NET 6.0.100-preview.6.21355.2 SDK'
+    displayName: 'Install .NET 10.0 SDK'
     inputs:
-      version: 6.0.100-preview.6.21355.2
+      version: 10.0.x
       includePreviewVersions: true
       installationPath: $(Agent.ToolsDirectory)/dotnet
       
@@ -92,7 +92,7 @@ jobs:
       ArtifactName: unosourcegenerator-drop
       ArtifactType: Container
 
-- job: Windows_VS2022
+- job: Windows_VS2026
   dependsOn:
   - Build_Packages
 
@@ -102,38 +102,18 @@ jobs:
     RestoreLockedMode: false # Until https://github.com/NuGet/Home/issues/8645
 
   pool:
-    vmImage: 'windows-2022'
+    vmImage: 'windows-2025'
 
   strategy:
     matrix:
-      NetCore_9_0_300:
-        NETCORE_VERSION: 9.0.300
+      NetCore_10_0_100:
+        NETCORE_VERSION: 10.0.x
         NETCORE_PREVIEW: True
       NetCore_9_0_100:
-        NETCORE_VERSION: 9.0.100
-        NETCORE_PREVIEW: True
+        NETCORE_VERSION: 9.0.x
+        NETCORE_PREVIEW: False
       NetCore_8_0_100:
-        NETCORE_VERSION: 8.0.100
-        NETCORE_PREVIEW: True
-      NetCore_7_0_306:
-        NETCORE_VERSION: 7.0.306
-      NetCore_7_0_100_Preview:
-        NETCORE_VERSION: 7.0.100-preview.6.22352.1
-        NETCORE_PREVIEW: True
-      NetCore_6_0_302:
-        NETCORE_VERSION: 6.0.302
-        NETCORE_PREVIEW: False
-      NetCore_6_0_300:
-        NETCORE_VERSION: 6.0.300
-        NETCORE_PREVIEW: False
-      NetCore_6_0_100:
-        NETCORE_VERSION: 6.0.100
-        NETCORE_PREVIEW: False
-      NetCore_5_0:
-        NETCORE_VERSION: 5.0.x
-        NETCORE_PREVIEW: False
-      NetCore_3_1:
-        NETCORE_VERSION: 3.1.x
+        NETCORE_VERSION: 8.0.x
         NETCORE_PREVIEW: False
 
   steps:
@@ -144,12 +124,12 @@ jobs:
       path: $(NUGET_PACKAGES)
     displayName: Cache NuGet packages
      
-  - task: gitversion/setup@0
+  - task: gitversion/setup@3
     retryCountOnTaskFailure: 3
     inputs:
-      versionSpec: '5.10.3'
+      versionSpec: '6.0.5'
 
-  - task: gitversion/execute@0
+  - task: gitversion/execute@3
     retryCountOnTaskFailure: 3
     inputs:
       updateAssemblyInfo: 'False'
@@ -173,14 +153,14 @@ jobs:
       msbuildArguments: /m /r /p:configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/binlog/windows-sample-build.binlog
 
   - task: DotNetCoreInstaller@2
-    displayName: Installing .NET Core $(NETCORE_VERSION) CLI
+    displayName: Installing .NET $(NETCORE_VERSION) CLI
     inputs:
       version: $(NETCORE_VERSION)
       includePreviewVersions: $(NETCORE_PREVIEW)
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
   - task: DotNetCoreCLI@2
-    displayName: Validate .NET Core $(NETCORE_VERSION) CLI build
+    displayName: Validate .NET $(NETCORE_VERSION) CLI build
     inputs:
       command: build
       arguments: "--configuration Release -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/binlog/windows-sample-build-netcore.binlog"
@@ -200,34 +180,18 @@ jobs:
 
   strategy:
     matrix:
+      NetCore_10_0_100:
+        NETCORE_VERSION: 10.0.x
+        NETCORE_PREVIEW: true
       NetCore_9_0_100:
-        NETCORE_VERSION: 9.0.100
+        NETCORE_VERSION: 9.0.x
         NETCORE_PREVIEW: false
       NetCore_8_0_100:
-        NETCORE_VERSION: 8.0.100
+        NETCORE_VERSION: 8.0.x
         NETCORE_PREVIEW: false
-      NetCore_7_0_306:
-        NETCORE_VERSION: 7.0.306
-      NetCore_6_0_302:
-        NETCORE_VERSION: 6.0.302
-        NETCORE_PREVIEW: False
-      NetCore_6_0_300:
-        NETCORE_VERSION: 6.0.300
-        NETCORE_PREVIEW: False
-      NetCore_6_0_100:
-        NETCORE_VERSION: 6.0.100
-        NETCORE_PREVIEW: False
-      NetCore_5_0:
-        NETCORE_VERSION: 5.0.x
-        NETCORE_PREVIEW: False
-      NetCore_3_1:
-        NETCORE_VERSION: 3.1.x
-        NETCORE_PREVIEW: False
-
-  container: unoplatform/wasm-build:2.2
 
   pool:
-    vmImage: 'ubuntu-latest'
+    vmImage: 'ubuntu-24.04'
 
   variables:
     NUGET_PACKAGES: $(Pipeline.Workspace)/.nuget/packages
@@ -241,26 +205,12 @@ jobs:
       path: $(NUGET_PACKAGES)
     displayName: Cache NuGet packages
 
-  # 2.1 is required for GitVersion@5
-  - task: DotNetCoreInstaller@2
-    displayName: Installing .NET Core 2.1 CLI
-    inputs:
-      version: 2.1.x
-      installationPath: $(Agent.ToolsDirectory)/dotnet
-
-  # 3.1 is required for Source Generation sample
-  - task: DotNetCoreInstaller@2
-    displayName: Installing .NET Core 3.1 CLI
-    inputs:
-      version: 3.1.x
-      installationPath: $(Agent.ToolsDirectory)/dotnet
-
-  - task: gitversion/setup@0
+  - task: gitversion/setup@3
     retryCountOnTaskFailure: 3
     inputs:
-      versionSpec: '5.10.3'
+      versionSpec: '6.0.5'
 
-  - task: gitversion/execute@0
+  - task: gitversion/execute@3
     retryCountOnTaskFailure: 3
     inputs:
       updateAssemblyInfo: 'False'
@@ -279,18 +229,18 @@ jobs:
         targetFolder: $(build.sourcesdirectory)/src/PackageCache
 
   - task: DotNetCoreInstaller@2
-    displayName: Installing .NET Core $(NETCORE_VERSION) CLI
+    displayName: Installing .NET $(NETCORE_VERSION) CLI
     inputs:
       version: $(NETCORE_VERSION)
       includePreviewVersions: $(NETCORE_PREVIEW)
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
-  - bash: msbuild /r /p:Configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /p:SAMPLES_BUILD=true ./src/Uno.SourceGenerator.Samples.Unix.sln /bl:$(build.artifactstagingdirectory)/binlog/linux-sample-build.binlog
+  - bash: dotnet build -c Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /p:SAMPLES_BUILD=true ./src/Uno.SourceGenerator.Samples.Unix.sln /bl:$(build.artifactstagingdirectory)/binlog/linux-sample-build.binlog
     displayName: Build
 
     
   - task: DotNetCoreCLI@2
-    displayName: Validate .NET Core CLI build
+    displayName: Validate .NET CLI build
     inputs:
       command: build
       arguments: "--configuration Release -p:SAMPLES_BUILD=true -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/binlog/linux-sample-build-netcore.binlog"
@@ -314,44 +264,30 @@ jobs:
 
   strategy:
     matrix:
+      NET_10_0_100:
+         VM_Image: 'macOS-14'
+         NETCORE_VERSION: 10.0.x
+         NETCORE_PREVIEW: True
       NET_9_0_100:
-         VM_Image: 'macOS-13'
-         NETCORE_VERSION: 9.0.100
+         VM_Image: 'macOS-14'
+         NETCORE_VERSION: 9.0.x
          NETCORE_PREVIEW: False
-      NET_8_0_100_Preview_macos13:
-         VM_Image: 'macOS-13'
-         NETCORE_VERSION: 8.0.100
-         NETCORE_PREVIEW: False
-      NET_7_0_100_macos13:
-         VM_Image: 'macOS-13'
-         NETCORE_VERSION: 7.0.306
+      NET_8_0_100:
+         VM_Image: 'macOS-14'
+         NETCORE_VERSION: 8.0.x
          NETCORE_PREVIEW: False
 
   pool:
     vmImage: $(VM_Image)
 
   steps:
- 
-  # 2.1 is required for GitVersion@5
-  - task: DotNetCoreInstaller@2
-    displayName: Installing .NET Core 2.1 CLI
-    inputs:
-      version: 2.1.x
-      installationPath: $(Agent.ToolsDirectory)/dotnet
 
-  # 3.1 is required for Source Generation sample
-  - task: DotNetCoreInstaller@2
-    displayName: Installing .NET Core 3.1.x CLI
-    inputs:
-      version: 3.1.x
-      installationPath: $(Agent.ToolsDirectory)/dotnet
-     
-  - task: gitversion/setup@0
+  - task: gitversion/setup@3
     retryCountOnTaskFailure: 3
     inputs:
-      versionSpec: '5.10.3'
+      versionSpec: '6.0.5'
 
-  - task: gitversion/execute@0
+  - task: gitversion/execute@3
     retryCountOnTaskFailure: 3
     inputs:
       updateAssemblyInfo: 'False'
@@ -381,13 +317,13 @@ jobs:
       includePreviewVersions: $(NETCORE_PREVIEW)
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
-  - bash: dotnet build -c Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /p:SAMPLES_BUILD=true ./src/Uno.SourceGenerator.Samples.Unix.sln /bl:$(build.artifactstagingdirectory)/binlog/macos-sample-build-$(XamarinVersion).binlog
+  - bash: dotnet build -c Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /p:SAMPLES_BUILD=true ./src/Uno.SourceGenerator.Samples.Unix.sln /bl:$(build.artifactstagingdirectory)/binlog/macos-sample-build-$(NETCORE_VERSION).binlog
     displayName: Build
 
   - bash: |
       cd $(build.sourcesdirectory)/src/Uno.SampleCoreApp
-      dotnet build --configuration Release -p:SAMPLES_BUILD=true -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/binlog/macos-sample-build-$(XamarinVersion)-netcore.binlog
-    displayName: Validate .NET Core CLI build
+      dotnet build --configuration Release -p:SAMPLES_BUILD=true -p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/binlog/macos-sample-build-$(NETCORE_VERSION)-netcore.binlog
+    displayName: Validate .NET CLI build
       
   - task: PublishBuildArtifacts@1
     condition: always()

@@ -15,7 +15,7 @@ The `Uno.SourceGeneratorTasks` support updating generators on the fly, making it
 The `Uno.SourceGeneratorTasks` support any target framework for code generation, though there are limitations when [using a mixed targetframeworks graph](https://github.com/dotnet/roslyn/issues/23114), such as generating code
 in a `net47` project that references a `netstandard2.0` project. In such cases, prefer adding a `net47` target instead of targeting `netstandard2.0`.
 
-Visual Studio 2017 15.3+ for Windows, macOS and Linux builds are supported. Building for .NET Core requires .NET 3.0.100 or later.
+Visual Studio 2022 17.x and Visual Studio 2026 (MSBuild 18.x / Roslyn 4.14+) for Windows, macOS and Linux builds are supported. Building for .NET Core requires the .NET 8 SDK or later (.NET 10 SDK is recommended for VS 2026 parity).
 
 ## Build status
 
@@ -34,13 +34,13 @@ Experimental packages are available through this NuGet feed: https://pkgs.dev.az
 
 ## Creating a Source Generator
 
-1. In Visual Studio 2017, create a **.NET Standard Class Library** project named `MyGenerator`
+1. In Visual Studio 2022 / 2026, create a **.NET Standard Class Library** project named `MyGenerator`
 2. In the csproj file
-    1. Change the TargetFramework to `net46`
+    1. Change the TargetFramework to `netstandard2.0` (or `net472` for full‑framework targets)
     2. Add a package reference to `Uno.SourceGeneration` (take the latest version)
     ```xml
     <ItemGroup>
-        <PackageReference Include="Uno.SourceGeneration" Version="1.5.0" />
+        <PackageReference Include="Uno.SourceGeneration" Version="3.0.0" />
     </ItemGroup>
     ```
 3. Add a new source file containing this code :
@@ -68,7 +68,7 @@ Experimental packages are available through this NuGet feed: https://pkgs.dev.az
     ```xml
     <Project>
         <ItemGroup>
-            <SourceGenerator Include="$(MSBuildThisFileDirectory)..\bin\$(Configuration)\net46\MyGenerator.dll"
+            <SourceGenerator Include="$(MSBuildThisFileDirectory)..\bin\$(Configuration)\netstandard2.0\MyGenerator.dll"
                     Condition="Exists('$(MSBuildThisFileDirectory)..\bin')" />
             <SourceGenerator Include="$(MSBuildThisFileDirectory)..\tools\MyGenerator.dll"
                     Condition="Exists('$(MSBuildThisFileDirectory)..\tools')" />
@@ -78,14 +78,14 @@ Experimental packages are available through this NuGet feed: https://pkgs.dev.az
 
 ## Using the generator inside the same solution (another project)
 
-1. In Visual Studio 2017, create a **.NET Standard Class Library** project named `MyLibrary`.
+1. In Visual Studio 2022 / 2026, create a **.NET Standard Class Library** project named `MyLibrary`.
    This is the project where your generator will do its generation.
 1. In the `.csproj` file:
-    1. Change the TargetFramework to `net46` (.Net Framework v4.6)
+    1. Change the TargetFramework to `net472` (.NET Framework v4.7.2) or `net10.0`
     1. Add a package reference to `Uno.SourceGenerationTasks`
     ```xml
     <ItemGroup>
-        <PackageReference Include="Uno.SourceGenerationTasks" Version="1.5.0" />
+        <PackageReference Include="Uno.SourceGenerationTasks" Version="3.0.0" />
     </ItemGroup>
     ```
     > *You can also use the Nuget Package Manager to add this package reference.
@@ -313,6 +313,15 @@ Make sure to visit our [StackOverflow](https://stackoverflow.com/questions/tagge
 
 
 ## Upgrade notes
+
+### earlier versions to 3.0 (Visual Studio 2026 / .NET 10)
+Starting with version 3.0, `Uno.SourceGeneration` and `Uno.SourceGenerationTasks` require:
+- Visual Studio 2022 17.x or Visual Studio 2026 (MSBuild 18.x / Roslyn 4.14+)
+- .NET 8 SDK (LTS) at a minimum, with .NET 10 SDK recommended for full VS 2026 parity
+
+The following out‑of‑process host target frameworks have been **removed**: `netcoreapp3.1`, `net5`, `net6`, `net7`. The host now ships with `net472` (for desktop MSBuild) and `net8.0` / `net10.0` (for `dotnet build`). `<RollForward>LatestMajor</RollForward>` keeps the host runnable under future SDKs.
+
+The `Uno.SourceGeneration` runtime library was repackaged from `lib/net461` to `lib/netstandard2.0`, `lib/net472` and `lib/net10.0`.
 
 ### earlier versions to 1.29
 A breaking change has been introduced to support proper UWP head projects, and when upgrading to Uno.SourceGenerationTasks `1.29` or later

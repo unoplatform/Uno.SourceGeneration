@@ -10,7 +10,8 @@
 	<Otherwise>
 	  <PropertyGroup>
 		<UnoSourceGeneratorTasksPath Condition="'$(DOTNET_HOST_PATH)'==''">$(MSBuildThisFileDirectory)\Uno.SourceGeneratorTasks.Dev15.0\bin\$(Configuration)\net472</UnoSourceGeneratorTasksPath>
-		<UnoSourceGeneratorTasksPath Condition="'$(DOTNET_HOST_PATH)'!=''">$(MSBuildThisFileDirectory)\Uno.SourceGeneratorTasks.Dev15.0\bin\$(Configuration)\netcoreapp3.1</UnoSourceGeneratorTasksPath>
+		<UnoSourceGeneratorTasksPath Condition="'$(DOTNET_HOST_PATH)'!='' and $([MSBuild]::VersionGreaterThanOrEquals('$(NETCoreSdkVersion)', '10.0'))">$(MSBuildThisFileDirectory)\Uno.SourceGeneratorTasks.Dev15.0\bin\$(Configuration)\net10.0</UnoSourceGeneratorTasksPath>
+		<UnoSourceGeneratorTasksPath Condition="'$(DOTNET_HOST_PATH)'!='' and '$(UnoSourceGeneratorTasksPath)'==''">$(MSBuildThisFileDirectory)\Uno.SourceGeneratorTasks.Dev15.0\bin\$(Configuration)\net8.0</UnoSourceGeneratorTasksPath>
 	  </PropertyGroup>
 	</Otherwise>
   </Choose>

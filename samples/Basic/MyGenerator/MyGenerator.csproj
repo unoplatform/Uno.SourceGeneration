@@ -1,14 +1,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net46</TargetFramework>
+    <TargetFramework>net472</TargetFramework>
 		<IsTool>true</IsTool>
 		<Version>1.3</Version> 
   </PropertyGroup>
 
   <ItemGroup>
-		<PackageReference Include="Uno.SourceGeneration" Version="1.29.0-dev.241" PrivateAssets="All" />
-		<PackageReference Include="Uno.SourceGenerationTasks" Version="1.29.0-dev.241" PrivateAssets="None" />
+		<PackageReference Include="Uno.SourceGeneration" Version="3.0.0-dev.*" PrivateAssets="All" />
+		<PackageReference Include="Uno.SourceGenerationTasks" Version="3.0.0-dev.*" PrivateAssets="None" />
 	</ItemGroup>
 
   <ItemGroup>

@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Console;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -31,8 +30,9 @@ namespace Uno.SourceGeneration.Host
 
 		private static int RunGenerationServer(string[] args)
 		{
-			LogExtensionPoint.AmbientLoggerFactory.AddProvider(new ConsoleLoggerProvider((t, l) => true, true));
+			LogExtensionPoint.AmbientLoggerFactory.AddProvider(new HostConsoleLoggerProvider());
 			return new DesktopGenerationServerController(new System.Collections.Specialized.NameValueCollection()).Run(args);
 		}
 	}
 }
+

@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging.Console;
-using System;
+﻿using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -27,7 +26,7 @@ namespace Uno.SourceGeneration.Host
 
 				if (enableConsole)
 				{
-					LogExtensionPoint.AmbientLoggerFactory.AddProvider(new ConsoleLoggerProvider((t, l) => true, true));
+					LogExtensionPoint.AmbientLoggerFactory.AddProvider(new HostConsoleLoggerProvider());
 				}
 
 				using (var responseFile = File.OpenRead(responseFilePath))

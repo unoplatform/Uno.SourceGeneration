@@ -363,13 +363,31 @@ namespace Uno.SourceGeneratorTasks
 				var fx = RuntimeInformation.FrameworkDescription;
 				if (fx.StartsWith(".NET Core", StringComparison.OrdinalIgnoreCase))
 				{
-					hostPlatform = "netcoreapp3.1";
+					// .NET Core 1.x/2.x/3.x are out of support; fall back to the lowest modern host.
+					hostPlatform = "net8.0";
 				}
 				else if (fx.StartsWith(".NET ", StringComparison.OrdinalIgnoreCase))
 				{
-					var version = fx[5];
-					// net6 is the latest being shipped and we have <RollForward>LatestMajor</RollForward>
-					hostPlatform = (version > '6') ? "net6" : "net" + version;
+					// Parse the major version (e.g. ".NET 10.0.5" => 10).
+					int spaceIndex = fx.IndexOf(' ');
+					int dotIndex = fx.IndexOf('.', spaceIndex + 1);
+					int major = 0;
+					if (dotIndex > spaceIndex
+						&& int.TryParse(fx.Substring(spaceIndex + 1, dotIndex - spaceIndex - 1), out var parsed))
+					{
+						major = parsed;
+					}
+
+					// net10.0 is the latest being shipped and we have <RollForward>LatestMajor</RollForward>;
+					// any newer SDK rolls forward into net10.0. Anything older than net8.0 falls back to net8.0.
+					if (major >= 10)
+					{
+						hostPlatform = "net10.0";
+					}
+					else
+					{
+						hostPlatform = "net8.0";
+					}
 				}
 			}
 			var installedPath = Path.Combine(currentPath, "..", "..", "host", hostPlatform);

@@ -1,6 +1,6 @@
-#addin "nuget:?package=Cake.FileHelpers&version=3.2.1"
-#addin "nuget:?package=Cake.Powershell&version=0.4.8"
-#tool "nuget:?package=GitVersion.CommandLine&version=5.0.1"
+#addin "nuget:?package=Cake.FileHelpers&version=7.0.0"
+#addin "nuget:?package=Cake.Powershell&version=2.0.0"
+#tool "nuget:?package=GitVersion.CommandLine&version=6.0.5"
 
 using System;
 using System.Linq;
@@ -83,12 +83,12 @@ Task("Build")
 {
 	Information("\nBuilding Solution");
 
-	var settings = new DotNetCoreBuildSettings
+	var settings = new DotNetBuildSettings
 	{
 		Configuration = "Release",
 	};
 
-	DotNetCoreBuild(Solution, settings);
+	DotNetBuild(Solution, settings);
 
 	var nuGetPackSettings = new NuGetPackSettings
 	{

@@ -15,12 +15,14 @@
 
 		<dependencies>
 			<group>
-				<dependency id="Microsoft.Build" version="14.3.0" />
-				<dependency id="Microsoft.CodeAnalysis.Workspaces.Common" version="1.3.2" />
+				<dependency id="Microsoft.Build" version="18.4.0" />
+				<dependency id="Microsoft.CodeAnalysis.Workspaces.Common" version="4.14.0" />
 			</group>
 		</dependencies>
 	</metadata>
 	<files>
-		<file src="..\src\Uno.SourceGeneration\Bin\Release\net461\Uno.SourceGeneration.dll" target="lib/net461/Uno.SourceGeneration.dll" />
+		<file src="..\src\Uno.SourceGeneration\Bin\Release\netstandard2.0\Uno.SourceGeneration.dll" target="lib/netstandard2.0/Uno.SourceGeneration.dll" />
+		<file src="..\src\Uno.SourceGeneration\Bin\Release\net472\Uno.SourceGeneration.dll" target="lib/net472/Uno.SourceGeneration.dll" />
+		<file src="..\src\Uno.SourceGeneration\Bin\Release\net10.0\Uno.SourceGeneration.dll" target="lib/net10.0/Uno.SourceGeneration.dll" />
 	</files>
 </package>
