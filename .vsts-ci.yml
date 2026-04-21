@@ -50,7 +50,7 @@ jobs:
   - task: UseDotNet@2
     displayName: 'Install .NET 10.0 SDK'
     inputs:
-      version: 10.0.1xx
+      version: 10.0.100
       includePreviewVersions: true
       installationPath: $(Agent.ToolsDirectory)/dotnet
       
@@ -150,7 +150,7 @@ jobs:
   - task: UseDotNet@2
     displayName: 'Install .NET 10.0 SDK (required by global.json)'
     inputs:
-      version: 10.0.1xx
+      version: 10.0.100
       includePreviewVersions: true
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
@@ -238,7 +238,7 @@ jobs:
   - task: UseDotNet@2
     displayName: 'Install .NET 10.0 SDK (required by global.json)'
     inputs:
-      version: 10.0.1xx
+      version: 10.0.100
       includePreviewVersions: true
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
@@ -328,7 +328,7 @@ jobs:
   - task: UseDotNet@2
     displayName: 'Install .NET 10.0 SDK (required by global.json)'
     inputs:
-      version: 10.0.1xx
+      version: 10.0.100
       includePreviewVersions: true
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
