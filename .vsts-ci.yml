@@ -50,7 +50,7 @@ jobs:
   - task: UseDotNet@2
     displayName: 'Install .NET 10.0 SDK'
     inputs:
-      version: 10.0.x
+      version: 10.0.1xx
       includePreviewVersions: true
       installationPath: $(Agent.ToolsDirectory)/dotnet
       
@@ -147,17 +147,17 @@ jobs:
         sourceFolder: '$(System.ArtifactsDirectory)\unosourcegenerator-drop\build'
         targetFolder: $(build.sourcesdirectory)\src\PackageCache
       
+  - task: UseDotNet@2
+    displayName: 'Install .NET 10.0 SDK (required by global.json)'
+    inputs:
+      version: 10.0.1xx
+      includePreviewVersions: true
+      installationPath: $(Agent.ToolsDirectory)/dotnet
+
   - task: MSBuild@1
     inputs:
       solution: '$(build.sourcesdirectory)/src/Uno.SourceGenerator.Samples.Windows.sln'
       msbuildArguments: /m /r /p:configuration=Release /p:SOURCEGEN_VERSION=$(GITVERSION.SemVer) /bl:$(build.artifactstagingdirectory)/binlog/windows-sample-build.binlog
-
-  - task: UseDotNet@2
-    displayName: 'Install .NET 10.0 SDK (required by global.json)'
-    inputs:
-      version: 10.0.x
-      includePreviewVersions: true
-      installationPath: $(Agent.ToolsDirectory)/dotnet
 
   - task: DotNetCoreInstaller@2
     displayName: Installing .NET $(NETCORE_VERSION) CLI
@@ -238,7 +238,7 @@ jobs:
   - task: UseDotNet@2
     displayName: 'Install .NET 10.0 SDK (required by global.json)'
     inputs:
-      version: 10.0.x
+      version: 10.0.1xx
       includePreviewVersions: true
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
@@ -328,7 +328,7 @@ jobs:
   - task: UseDotNet@2
     displayName: 'Install .NET 10.0 SDK (required by global.json)'
     inputs:
-      version: 10.0.x
+      version: 10.0.1xx
       includePreviewVersions: true
       installationPath: $(Agent.ToolsDirectory)/dotnet
 
