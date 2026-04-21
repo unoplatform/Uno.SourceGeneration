@@ -367,9 +367,15 @@ namespace Uno.SourceGeneratorTasks
 				}
 				else if (fx.StartsWith(".NET ", StringComparison.OrdinalIgnoreCase))
 				{
-					var version = fx[5];
-					// net6 is the latest being shipped and we have <RollForward>LatestMajor</RollForward>
-					hostPlatform = (version > '6') ? "net6" : "net" + version;
+					// Extract version number from ".NET X.Y.Z" format
+					var versionStart = ".NET ".Length;
+					var versionEnd = fx.IndexOf('.', versionStart);
+					if (versionEnd > versionStart && int.TryParse(fx.Substring(versionStart, versionEnd - versionStart), out var majorVersion))
+					{
+						// net6 is the latest being shipped and we have <RollForward>LatestMajor</RollForward>
+						// For versions 7 and higher, use net6
+						hostPlatform = (majorVersion > 6) ? "net6" : "net" + majorVersion;
+					}
 				}
 			}
 			var installedPath = Path.Combine(currentPath, "..", "..", "host", hostPlatform);
