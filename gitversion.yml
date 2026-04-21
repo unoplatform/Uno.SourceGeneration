@@ -1,54 +1,57 @@
+workflow: GitHubFlow/v1
 assembly-versioning-scheme: MajorMinorPatch
-mode: Mainline
 next-version: 3.0.0
 
 branches:
   master:
-    mode: ContinuousDeployment
-    regex: master
-    tag: dev
+    regex: ^master$|^main$
+    label: dev
     increment: Minor
+    mode: ContinuousDeployment
+    is-main-branch: true
     is-source-branch-for: ['beta', 'stable']
 
   pull-request:
     regex: ^(pull|pull\-requests|pr)[/-]
-    mode: ContinuousDeployment
-    tag: 'PullRequest'
-    tag-number-pattern: '[/-](?<number>\d+)[-/]'
+    label: 'PullRequest'
+    label-number-pattern: '[/-](?<number>\d+)[-/]'
     increment: Inherit
+    mode: ContinuousDeployment
 
   beta:
-    mode: ContinuousDeployment
     regex: ^release/beta/.*
-    tag: beta
-    increment: none
+    label: beta
+    increment: None
     source-branches: ['master']
+    mode: ContinuousDeployment
 
   stable:
     regex: ^release/stable/.*
-    tag: ''
+    label: ''
     increment: Patch
     source-branches: ['master','beta']
-    is-mainline: true
+    is-main-branch: true
 
   dev:
-    mode: ContinuousDeployment
     regex: ^dev/.*?/(.*?)
-    tag: dev.{BranchName}
+    label: dev.{BranchName}
     source-branches: ['master', 'release', 'projects', 'feature']
-    increment: none
+    increment: None
+    mode: ContinuousDeployment
 
   projects:
-    tag: proj-{BranchName}
     regex: ^projects/(.*?)
+    label: proj-{BranchName}
     source-branches: ['master']
-    increment: none
+    increment: None
 
   feature:
-    tag: feature.{BranchName}
     regex: ^feature/(.*?)
+    label: feature.{BranchName}
     source-branches: ['master']
-    increment: none
+    increment: None
 
 ignore:
   sha: []
+
+
