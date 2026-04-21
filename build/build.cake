@@ -119,11 +119,48 @@ Task("Version")
 	.Description("Updates target versions")
 	.Does(() =>
 {
-	versionInfo = GitVersion(new GitVersionSettings {
-		UpdateAssemblyInfo = true,
-		LogFilePath = System.IO.Path.Combine(EnvironmentVariable("BUILD_ARTIFACTSTAGINGDIRECTORY"), "GitVersionLog.txt"),
-		UpdateAssemblyInfoFilePath = baseDir + "/build/AssemblyVersion.cs"
-	});
+	// Prefer values provided by the Azure DevOps `gitversion/execute@3` step
+	// (which uses GitVersion 6.x and the updated `gitversion.yml` schema).
+	// The bundled `GitVersion.CommandLine` package is only available up to 5.x
+	// and cannot parse the 6.x schema, so we avoid invoking it when the
+	// pipeline has already produced the version information.
+	var envSemVer = EnvironmentVariable("GITVERSION_SEMVER");
+	var envSha = EnvironmentVariable("GITVERSION_SHA");
+	var envAssemblySemVer = EnvironmentVariable("GITVERSION_ASSEMBLYSEMVER");
+	var envAssemblySemFileVer = EnvironmentVariable("GITVERSION_ASSEMBLYSEMFILEVER");
+	var envInformationalVersion = EnvironmentVariable("GITVERSION_INFORMATIONALVERSION");
+
+	if (!string.IsNullOrEmpty(envSemVer) && !string.IsNullOrEmpty(envSha))
+	{
+		versionInfo = new GitVersion {
+			SemVer = envSemVer,
+			Sha = envSha,
+			AssemblySemVer = envAssemblySemVer,
+			AssemblySemFileVer = envAssemblySemFileVer,
+			InformationalVersion = envInformationalVersion,
+		};
+
+		var assemblyVersion = envAssemblySemVer ?? envSemVer;
+		var fileVersion = envAssemblySemFileVer ?? assemblyVersion;
+		var informationalVersion = envInformationalVersion ?? envSemVer;
+		var assemblyInfo = string.Join("\n", new[] {
+			"using System.Reflection;",
+			"",
+			$"[assembly: AssemblyVersion(\"{assemblyVersion}\")]",
+			$"[assembly: AssemblyFileVersion(\"{fileVersion}\")]",
+			$"[assembly: AssemblyInformationalVersion(\"{informationalVersion}\")]",
+			""
+		});
+		System.IO.File.WriteAllText(baseDir + "/build/AssemblyVersion.cs", assemblyInfo);
+	}
+	else
+	{
+		versionInfo = GitVersion(new GitVersionSettings {
+			UpdateAssemblyInfo = true,
+			LogFilePath = System.IO.Path.Combine(EnvironmentVariable("BUILD_ARTIFACTSTAGINGDIRECTORY") ?? "", "GitVersionLog.txt"),
+			UpdateAssemblyInfoFilePath = baseDir + "/build/AssemblyVersion.cs"
+		});
+	}
 
 	Information($"SemVer: {versionInfo.SemVer} Sha: {versionInfo.Sha}");
 
