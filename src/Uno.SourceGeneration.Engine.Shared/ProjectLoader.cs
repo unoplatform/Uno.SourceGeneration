@@ -390,7 +390,7 @@ namespace Uno.SourceGeneration.Host
 			}
 		}
 
-#if NETFRAMEWORK
+#if false
 		// Required to keep using an older version of Cecil.
 		private static string GetInterfaceTypeName(Mono.Cecil.TypeReference i)
 		{

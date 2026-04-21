@@ -53,7 +53,7 @@ namespace Uno.SourceGeneratorTasks
 				_initialized = true;
 
 				LogExtensionPoint.AmbientLoggerFactory.AddProvider(_remoteLoggerProvider);
-				LogExtensionPoint.AmbientLoggerFactory.AddDebug();
+				LogExtensionPoint.AmbientLoggerFactory.AddProvider(new Microsoft.Extensions.Logging.Debug.DebugLoggerProvider());
 
 				// Apply the workaround before registsering assembly loader to avoid
 				// invalid lookups.

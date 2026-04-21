@@ -18,6 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Override transitive vulnerable System.Security.Cryptography.Xml pulled by Microsoft.Build.Tasks.Core -->
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.7" Condition="'$(TargetFramework)'=='net8.0' or '$(TargetFramework)'=='net10.0'" />
     <PackageReference Include="Microsoft.Build">
       <Version>18.4.0</Version>
       <ExcludeAssets>runtime</ExcludeAssets>
@@ -35,13 +37,13 @@
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging">
-      <Version>9.0.0</Version>
+      <Version>10.0.7</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.Console">
-      <Version>9.0.0</Version>
+      <Version>10.0.7</Version>
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Logging.Debug">
-      <Version>9.0.0</Version>
+      <Version>10.0.7</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="..\Uno.SourceGeneration.Protocol\Uno.SourceGeneration.Protocol.projitems" Label="Shared" />
